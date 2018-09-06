@@ -9,4 +9,13 @@ from django.contrib.sessions.models import Session
 from .models import *
 
 def index(request):
-    return HttpResponse('<h1>Ide to!</h1>')
+    return HttpResponse("""<h1>
+    Registrácia tímov na SLU prebieha
+    <a href="http://slu.pythonanywhere.com/prihlasovanie/">TU</a>.
+    </h1>""")
+
+def prihlasovanie(request):
+    pass
+
+def organizacia(request):
+    pass
