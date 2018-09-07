@@ -7,5 +7,5 @@ app_name = 'diary'
 urlpatterns = [
     path('prihlasovanie/', views.prihlasovanie, name='prihlasovanie'),
     path('data/admin/', views.organizacia, name='organizacia'),
-    path('', views.index, name='index'),
+    path('index/', views.index, name='index'),
 ]

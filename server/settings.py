@@ -107,7 +107,7 @@ USE_TZ = True
 
 # Site URL
 
-admin.site.site_url = '/index'
+admin.site.site_url = '/prihlasovanie/'
 
 LOGIN_URL = 'admin:login'
 

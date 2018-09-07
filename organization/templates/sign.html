@@ -1,0 +1,36 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="Internetový obchod s vecami pripojitaľnými na internet">
+    <meta name="author" content="Martin Nevický & Martin Števko">
+    <meta name="keywords" content="eshop, obchod, internet, sieť, veci">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--<meta property="og:url" content="{{ request.META.HTTP_HOST }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Internet vecí" />
+    <meta property="og:description" content="Internetový obchod s vecami pripojitaľnými na internet. Vytvorte si úplne vlatnú kompletnú sieť!" />
+    <meta property="og:image" content="{% static 'img/iot_fb.jpg' %}" />
+
+    <title>SLU prihlasovanie</title>
+    <link rel="icon" href="{% static 'img/logo_invert.png' %}" type="png">
+    <link rel="stylesheet" href="{% static 'css/contact_us.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general.css' %}">-->
+  </head>
+  <body>
+    <form action="" method="POST" autocomplete="off">
+      {% csrf_token %}
+      <table>
+        {{ team_form.as_table }}
+        {{ teacher_form.as_table }}
+        {{ player_form.as_table }}
+        <tr>
+          <td colspan="2"><input type="submit" value="Submit" /></td>
+        </tr>
+      </table>
+  </form>
+  </body>
+</html>
