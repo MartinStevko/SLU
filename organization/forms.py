@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, ChoiceField
+from django.forms import ModelForm, Form, CharField, ChoiceField, BooleanField
 from .models import Teacher, Team
 
 bagety = (
@@ -6,8 +6,16 @@ bagety = (
     ('V', 'vegetariánska bageta'),
 )
 
+class GDPR(Form):
+    suhlas_ou = BooleanField(label='Súhlasím so spracovaním osobných údajov v rozsahu vyššie uvedenom', required=False)
+    suhlas_mf = BooleanField(label='Súhlasím so zverejnením fotiek a videí zhotovených počas SLU za účelom propagácie súťaže', required=False)
+
 class PlayerForm(Form):
-    meno = CharField(label='Meno hráča', max_length=100)
+    meno = CharField(label='Meno a priezvisko hráča', max_length=100)
+    bageta = ChoiceField(label='', choices=bagety)
+
+class UnPlayerForm(Form):
+    meno = CharField(label='Meno a priezvisko hráča', max_length=100, required=False)
     bageta = ChoiceField(label='', choices=bagety)
 
 class TeacherForm(ModelForm):

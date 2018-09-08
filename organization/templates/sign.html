@@ -4,33 +4,135 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="Internetový obchod s vecami pripojitaľnými na internet">
-    <meta name="author" content="Martin Nevický & Martin Števko">
-    <meta name="keywords" content="eshop, obchod, internet, sieť, veci">
+    <meta name="description" content="Registrácia do Stredoškolskej ligy ultimate frisbee">
+    <meta name="author" content="Martin Števko">
+    <meta name="keywords" content="SLU registrácia frisbee ultimate">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!--<meta property="og:url" content="{{ request.META.HTTP_HOST }}" />
+    <meta property="og:url" content="{{ request.META.HTTP_HOST }}" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Internet vecí" />
-    <meta property="og:description" content="Internetový obchod s vecami pripojitaľnými na internet. Vytvorte si úplne vlatnú kompletnú sieť!" />
-    <meta property="og:image" content="{% static 'img/iot_fb.jpg' %}" />
+    <meta property="og:title" content="SLU registrácia" />
+    <meta property="og:description" content="Registrácia do Stredoškolskej ligy ultimate frisbee" />
+    <meta property="og:image" content="{% static 'logo.jpg' %}" />
 
     <title>SLU prihlasovanie</title>
-    <link rel="icon" href="{% static 'img/logo_invert.png' %}" type="png">
-    <link rel="stylesheet" href="{% static 'css/contact_us.css' %}">
-    <link rel="stylesheet" href="{% static 'css/general.css' %}">-->
+    <link rel="icon" href="{% static 'title.jpg' %}" type="jpg">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+      body {
+        background-repeat: no-repeat;
+        background-size: 100% auto;
+        background-attachment: fixed;
+        font-family: 'Barlow Semi Condensed', sans-serif;
+        min-width: 900px;
+        font-size: 17px;
+      }
+
+      .content {
+        margin: 100px;
+        border-radius: 14px;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        background-color: #efefef;
+        margin-bottom: 50px;
+        margin-top: 25%;
+        opacity: 0.95;
+        padding: 20px;
+        padding-top: 50px;
+      }
+
+      table {
+        margin: auto;
+        width: 55%;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      p {
+        padding: 25px;
+      }
+
+      tr {
+        height: 60px;
+      }
+
+      input, select, textarea {
+        height: 40px;
+        min-width: 200px;
+        width: 100%;
+        border-radius: 5px;
+        font-size: 17px;
+      }
+
+      textarea {
+        height: 100px;
+      }
+
+      label {
+        margin-right: 20px;
+      }
+
+      #c {
+        text-align: center;
+      }
+
+      input[type=submit] {
+        background-color: #0a2aa0;
+        color: white;
+      }
+
+      input[type=submit]:hover {
+        background-color: #0a2acc;
+        font-weight: bold;
+      }
+    </style>
   </head>
-  <body>
-    <form action="" method="POST" autocomplete="off">
-      {% csrf_token %}
-      <table>
-        {{ team_form.as_table }}
-        {{ teacher_form.as_table }}
-        {{ player_form.as_table }}
-        <tr>
-          <td colspan="2"><input type="submit" value="Submit" /></td>
-        </tr>
-      </table>
-  </form>
+  <body background="{% static 'logo.jpg' %}" id="all">
+    <div class="content">
+      <form action="" method="POST" autocomplete="off">
+        {% csrf_token %}
+        <h1>Tímové údaje</h1>
+        <table>
+          {{ team_form.as_table }}
+        </table>
+        <h1>Údaje o dozore (učiteľovi)</h1>
+        <table>
+          {{ teacher_form.as_table }}
+        </table>
+        <h1>Súpiska</h1>
+        <p id="c">
+          Vyplň postupne meno a priezvisko každého hráča. Ak máte menej hráčov
+          ako je maximálny počet, nechaj pole prázdne.
+        </p>
+        <table>
+          {% for pf in player_form %}
+            {{ pf.as_table }}
+          {% endfor %}
+        </table>
+        <h1>Súhlas so spracovaním osobných údajov</h1>
+        <p>
+          Súhlasím so spracovaním všetkých osobných údajov vyššie poskytnutých
+          výhradne na účely účasti v športovej lige Stredoškolská liga ultimate
+          frisbee (ďalej len SLU). Osobné údaje nebudú poskytované žiadnym tretím
+          stranám, budú využité jedine na registráciu tímu v SLU, vnútorné
+          štatistiky a archivované za účelom rozvoja SLU. Údaje budú
+          uchovávané po dobu 20-tich rokov. Spracovatelia osobných údajov:
+          Martin Števko
+          (<a href="mailto:mstevko10@gmail.com">mstevko10@gmail.com</a>,
+          +421 905 109 429). Zároveň potvrdzujem, že tento súhlas bol udelený
+          dobrovoľne. Som si však vedomý, že v prípade neudelenia súhlasu
+          nesplním podmienky registrácie do SLU a nebudem sa ligy môcť zúčastniť.
+        </p>
+        <table>
+          {{ gdpr.as_table }}
+          <tr>
+            <td colspan="2"><input type="submit" value="Regstrovať sa" /></td>
+          </tr>
+        </table>
+      </form>
+    </div>
   </body>
 </html>

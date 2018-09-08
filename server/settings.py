@@ -1,6 +1,9 @@
 import os
 from django.contrib import admin
 
+SEZONA = 'zima' # zima / leto
+ROK = '2018'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,7 +18,7 @@ with open('secret_key.txt', 'r') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'pythonanywhere']
 
 
 # Application definition
@@ -64,12 +67,22 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '2018-zima.sqlite3'),
+if SEZONA == 'zima':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, ROK+'-zima.sqlite3'),
+        }
     }
-}
+elif SEZONA == 'leto':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, ROK+'-leto.sqlite3'),
+        }
+    }
+else:
+    raise SystemError('Nespravne zadana sezona!')
 
 
 # Password validation
