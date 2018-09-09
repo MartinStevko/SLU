@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.forms.formsets import formset_factory
 
 from django.contrib.sessions.models import Session
 from django.conf import settings
@@ -18,49 +19,35 @@ def index(request):
 
 def prihlasovanie(request):
     template = 'sign.html'
+    if settings.SEZONA == 'zima':
+        PlayerFormSet = formset_factory(PlayerForm, min_num=4, validate_min=True, extra=4)
+    else:
+        PlayerFormSet = formset_factory(PlayerForm, min_num=5, validate_min=True, extra=5)
 
     if request.method == 'POST':
         teacher_form = TeacherForm(request.POST, prefix='teacher')
         team_form = TeamForm(request.POST, prefix='team')
         gdpr = GDPR(request.POST)
-        if settings.SEZONA == 'zima':
-            player_form = [
-                PlayerForm(request.POST, prefix='1'),
-                PlayerForm(request.POST, prefix='2'),
-                PlayerForm(request.POST, prefix='3'),
-                PlayerForm(request.POST, prefix='4'),
-                UnPlayerForm(request.POST, prefix='5'),
-                UnPlayerForm(request.POST, prefix='6'),
-                UnPlayerForm(request.POST, prefix='7'),
-                UnPlayerForm(request.POST, prefix='8'),
-            ]
-        else:
-            player_form = [
-                PlayerForm(request.POST, prefix='1'),
-                PlayerForm(request.POST, prefix='2'),
-                PlayerForm(request.POST, prefix='3'),
-                PlayerForm(request.POST, prefix='4'),
-                PlayerForm(request.POST, prefix='5'),
-                UnPlayerForm(request.POST, prefix='6'),
-                UnPlayerForm(request.POST, prefix='7'),
-                UnPlayerForm(request.POST, prefix='8'),
-                UnPlayerForm(request.POST, prefix='9'),
-                UnPlayerForm(request.POST, prefix='10'),
-            ]
+        formset = PlayerFormSet(request.POST)
 
-        v = True
-        for pf in player_form:
-            if not pf.is_valid():
-                v = False
+        if all([gdpr.is_valid(), team_form.is_valid(), teacher_form.is_valid(), formset.is_valid()]):
+            try:
+                suhlas_ou = request.POST['suhlas_ou']
+                suhlas_mf = request.POST['suhlas_mf']
+            except:
+                suhlas_ou = False
+                suhlas_mf = False
 
-        if gdpr.is_valid() and teacher_form.is_valid() and team_form.is_valid() and v:
-            # save to database
-            return redirect('admin:index')
+            if suhlas_ou and suhlas_mf:
+
+                return HttpResponse('<h1>Registrácia bola úspešná!</h1>')
+            else:
+                return HttpResponse('<h1>Z dôvodu neudelenia súhlasu nebolo možné sa zaregistrovať.</h1>')
 
         else:
             return render(request, template, {
                 'teacher_form':teacher_form,
-                'player_form':player_form,
+                'player_form':formset,
                 'team_form':team_form,
                 'gdpr':gdpr,
             })
@@ -69,35 +56,11 @@ def prihlasovanie(request):
         teacher_form = TeacherForm(prefix='teacher')
         team_form = TeamForm(prefix='team')
         gdpr = gdpr = GDPR(request.POST)
-
-        if settings.SEZONA == 'zima':
-            player_form = [
-                PlayerForm(prefix='1'),
-                PlayerForm(prefix='2'),
-                PlayerForm(prefix='3'),
-                PlayerForm(prefix='4'),
-                UnPlayerForm(prefix='5'),
-                UnPlayerForm(prefix='6'),
-                UnPlayerForm(prefix='7'),
-                UnPlayerForm(prefix='8'),
-            ]
-        else:
-            player_form = [
-                PlayerForm(prefix='1'),
-                PlayerForm(prefix='2'),
-                PlayerForm(prefix='3'),
-                PlayerForm(prefix='4'),
-                PlayerForm(prefix='5'),
-                UnPlayerForm(prefix='6'),
-                UnPlayerForm(prefix='7'),
-                UnPlayerForm(prefix='8'),
-                UnPlayerForm(prefix='9'),
-                UnPlayerForm(prefix='10'),
-            ]
+        formset = PlayerFormSet()
 
         return render(request, template, {
             'teacher_form':teacher_form,
-            'player_form':player_form,
+            'player_form':formset,
             'team_form':team_form,
             'gdpr':gdpr,
         })

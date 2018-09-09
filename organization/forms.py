@@ -1,22 +1,24 @@
-from django.forms import ModelForm, Form, CharField, ChoiceField, BooleanField
-from .models import Teacher, Team
-
-bagety = (
-    ('M', 'mäsová bageta'),
-    ('V', 'vegetariánska bageta'),
-)
+from django.forms import ModelForm, Form, BooleanField
+from .models import Teacher, Team, Player
 
 class GDPR(Form):
     suhlas_ou = BooleanField(label='Súhlasím so spracovaním osobných údajov v rozsahu vyššie uvedenom', required=False)
-    suhlas_mf = BooleanField(label='Súhlasím so zverejnením fotiek a videí zhotovených počas SLU za účelom propagácie súťaže', required=False)
+    suhlas_mf = BooleanField(label='Súhlasím so zverejnením fotiek a videí, na ktorých som, zhotovených počas SLU za účelom propagácie súťaže', required=False)
 
-class PlayerForm(Form):
-    meno = CharField(label='Meno a priezvisko hráča', max_length=100)
-    bageta = ChoiceField(label='', choices=bagety)
+class PlayerForm(ModelForm):
+    class Meta:
+        model = Player
+        fields = ['pohlavie', 'meno', 'bageta']
 
-class UnPlayerForm(Form):
-    meno = CharField(label='Meno a priezvisko hráča', max_length=100, required=False)
-    bageta = ChoiceField(label='', choices=bagety)
+        labels = {
+            'pohlavie' : 'Pohlavie',
+            'meno' : 'Meno a priezvisko hráča',
+            'bageta' : '',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PlayerForm, self).__init__(*args, **kwargs)
+        self.fields['bageta'].widget.attrs.update({'class': 'last-one'})
 
 class TeacherForm(ModelForm):
     class Meta:

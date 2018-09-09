@@ -30,6 +30,10 @@
         font-size: 17px;
       }
 
+      form {
+        text-align: center;
+      }
+
       .content {
         margin: 100px;
         border-radius: 14px;
@@ -53,6 +57,7 @@
 
       p {
         padding: 25px;
+        text-align: left;
       }
 
       tr {
@@ -65,6 +70,7 @@
         width: 100%;
         border-radius: 5px;
         font-size: 17px;
+        padding: 10px;
       }
 
       textarea {
@@ -72,6 +78,7 @@
       }
 
       label {
+        margin: auto;
         margin-right: 20px;
       }
 
@@ -82,11 +89,22 @@
       input[type=submit] {
         background-color: #0a2aa0;
         color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        width: 500px;
+        margin-top: 40px;
       }
 
       input[type=submit]:hover {
-        background-color: #0a2acc;
         font-weight: bold;
+      }
+
+      .last-one {
+        margin-bottom: 20px;
+      }
+
+      #gdpr {
+        width: 90%;
+        max-width: 675px;
       }
     </style>
   </head>
@@ -108,9 +126,7 @@
           ako je maximálny počet, nechaj pole prázdne.
         </p>
         <table>
-          {% for pf in player_form %}
-            {{ pf.as_table }}
-          {% endfor %}
+          {{ player_form }}
         </table>
         <h1>Súhlas so spracovaním osobných údajov</h1>
         <p>
@@ -126,12 +142,10 @@
           dobrovoľne. Som si však vedomý, že v prípade neudelenia súhlasu
           nesplním podmienky registrácie do SLU a nebudem sa ligy môcť zúčastniť.
         </p>
-        <table>
+        <table id="gdpr">
           {{ gdpr.as_table }}
-          <tr>
-            <td colspan="2"><input type="submit" value="Regstrovať sa" /></td>
-          </tr>
         </table>
+        <input type="submit" value="Registrovať sa" />
       </form>
     </div>
   </body>

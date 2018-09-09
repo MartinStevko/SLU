@@ -1,8 +1,14 @@
 from django.db import models
 
 bagety = (
-    ('M', 'mäsová'),
-    ('V', 'vegetariánska'),
+    ('M', 'mäsová bageta'),
+    ('V', 'vegetariánska bageta'),
+)
+
+pohlavia = (
+    ('M', 'muž'),
+    ('W', 'žena'),
+    ('D', 'iné'),
 )
 
 regiony = (
@@ -55,7 +61,8 @@ class Team(models.Model):
 class Player(models.Model):
     tim = models.ForeignKey(Team, on_delete=models.CASCADE)
     meno = models.CharField(max_length=100)
-    bageta = models.CharField(max_length=20, choices=bagety)
+    bageta = models.CharField(max_length=100, choices=bagety)
+    pohlavie = models.CharField(max_length=100, choices=pohlavia)
 
     def __str__(self):
         return "{} - {}".format(self.meno, self.tim.meno)
