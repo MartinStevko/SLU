@@ -3,6 +3,7 @@ from django.db import models
 bagety = (
     ('M', 'mäsová bageta'),
     ('V', 'vegetariánska bageta'),
+    ('N', 'nechce bagetu'),
 )
 
 pohlavia = (
@@ -70,7 +71,7 @@ class Player(models.Model):
 class FinalMember(models.Model):
     tim = models.ForeignKey(Team, on_delete=models.CASCADE)
     meno = models.CharField(max_length=100)
-    bageta = models.CharField(max_length=20, choices=bagety)
+    bageta = models.CharField(max_length=20, choices=bagety, blank=True)
 
     def __str__(self):
         return "{} - {}".format(self.meno, self.tim.meno)
