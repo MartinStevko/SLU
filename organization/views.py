@@ -39,10 +39,24 @@ def prihlasovanie(request):
                 suhlas_mf = False
 
             if suhlas_ou and suhlas_mf:
-
-                return HttpResponse('<h1>Registrácia bola úspešná!</h1>')
+                ucitel = teacher_form.save(commit=False)
+                ucitelia = Teacher.objects.all()
+                print('Ukladanie ' + ucitel.meno)
+                ucitel.save()
+                tim = team_form.save(commit=False)
+                tim.ucitel = ucitel
+                print('Ukladanie ' + tim.meno)
+                tim.save()
+                for form in formset:
+                    if form.is_valid():
+                        hrac = form.save(commit=False)
+                        hrac.tim = tim
+                        if hrac.meno != '':
+                            print('Ukladanie ' + hrac.meno)
+                            hrac.save()
+                return HttpResponse('<h1 style="text-align: center; margin-top: 50px;">Registrácia bola úspešná!</h1>')
             else:
-                return HttpResponse('<h1>Z dôvodu neudelenia súhlasu nebolo možné sa zaregistrovať.</h1>')
+                return HttpResponse('<h1 style="text-align: center; margin-top: 50px;">Z dôvodu neudelenia súhlasu nebolo možné vás zaregistrovať.</h1>')
 
         else:
             return render(request, template, {
