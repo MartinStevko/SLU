@@ -8,4 +8,5 @@ urlpatterns = [
     path('prihlasovanie/', views.prihlasovanie, name='prihlasovanie'),
     # path('data/admin/', views.organizacia, name='organizacia'),
     path('index/', views.index, name='index'),
+    path('', views.no_match, name='no_match'),
 ]

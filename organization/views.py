@@ -81,3 +81,6 @@ def prihlasovanie(request):
 
 def organizacia(request):
     pass
+
+def no_match(request):
+    return redirect('organization:prihlasovanie')
