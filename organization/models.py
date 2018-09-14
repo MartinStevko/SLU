@@ -9,7 +9,6 @@ bagety = (
 pohlavia = (
     ('M', 'muž'),
     ('W', 'žena'),
-    ('D', 'iné'),
 )
 
 regiony = (
