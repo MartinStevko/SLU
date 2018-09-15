@@ -21,8 +21,10 @@ def prihlasovanie(request):
     template = 'sign.html'
     if settings.SEZONA == 'zima':
         PlayerFormSet = formset_factory(PlayerForm, min_num=4, validate_min=True, extra=4)
+        leto = False
     else:
         PlayerFormSet = formset_factory(PlayerForm, min_num=5, validate_min=True, extra=5)
+        leto = True
 
     if request.method == 'POST':
         teacher_form = TeacherForm(request.POST, prefix='teacher')
@@ -60,6 +62,7 @@ def prihlasovanie(request):
 
         else:
             return render(request, template, {
+                'leto':leto,
                 'teacher_form':teacher_form,
                 'player_form':formset,
                 'team_form':team_form,
@@ -73,6 +76,7 @@ def prihlasovanie(request):
         formset = PlayerFormSet()
 
         return render(request, template, {
+            'leto':leto,
             'teacher_form':teacher_form,
             'player_form':formset,
             'team_form':team_form,

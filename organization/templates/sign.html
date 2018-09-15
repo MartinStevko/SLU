@@ -16,7 +16,11 @@
     <meta property="og:image" content="{% static 'logo.jpg' %}" />
 
     <title>SLU prihlasovanie</title>
-    <link rel="icon" href="{% static 'title.jpg' %}" type="jpg">
+    {% if leto %}
+      <link rel="icon" href="{% static 'logo_leto.png' %}" type="png">
+    {% else %}
+      <link rel="icon" href="{% static 'logo_zima.png' %}" type="png">
+    {% endif %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
