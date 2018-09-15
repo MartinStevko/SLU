@@ -1,0 +1,115 @@
+%%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[top=3cm, left=2.5cm, right=2.5cm, bottom=3cm]{geometry}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{color}
+
+\pagenumbering{gobble}
+
+\parindent=0pt
+\parskip=10pt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
+\newtoks\rok
+\newtoks\cap
+\newtoks\kolo
+\newtoks\sezona
+\newtoks\postupujuci
+\newtoks\usporiadatel
+\newtoks\riaditel
+\newtoks\delegat
+\newtoks\organizacia
+\newtoks\obrazokURL
+
+\newtoks\miesto
+\newtoks\den
+\newtoks\termin
+\newtoks\terminPrihlasky
+\newtoks\casPrichodu
+\newtoks\casPorady
+\newtoks\zaciatok
+
+\newtoks\vMeste
+\newtoks\kontakt
+
+\newcommand\textbox[1]{%
+  \parbox{.333\textwidth}{#1}%
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%% Propozicne makro %%%%%%%%%%%%%%%%%%%%
+\newcommand{\propozicie}[1]{%
+\begin{center}
+\noindent\textbox{%
+    \includegraphics[height=.08\textheight]{\the\obrazokURL}\hfill}\textbox{%
+    \hfil\textbf{\huge{Propozície}}\hfil}\textbox{%
+    \hfill\includegraphics[height=.08\textheight]{logo/safka.PNG}}
+\end{center}
+
+\if\the\kolo1 Kvalifikačné\else Finálové\fi\ kolo celoštátnej Stredoškolskej ligy ultimate frisbee \if\the\sezona1 (outdoor\else (indoor\fi) pre školský rok \the\rok .
+
+\begin{enumerate}[label={\Alph*.},font={\bfseries}]
+    \item \textbf{Všeobecné ustanovenia:}
+    
+    \vspace{5pt}
+    \textbf{Usporiadateľ:} \the\usporiadatel Stredoškolská liga ultimate frisbee, Slovenská asociácia frisbee\par
+    \textbf{Termín:} \the\termin\ (\the\den )\par
+    \textbf{Miesto:} \the\miesto\par
+    \textbf{Organizačný výbor:} 
+    \begin{itemize}[label={}]
+      \item Riaditeľ turnaja: \the\riaditel
+      \the\organizacia
+      \item Delegát SAF: \the\delegat
+    \end{itemize}\par
+    \textbf{Prihlášky:} vyplnením elektronického formulára 
+    (\href{https://tex.stackexchange.com/questions/78167/indentation-within-an-itemized-list}{{\color{blue}\underline{slu.pythonanywhere.com}}}) 
+    do \the\terminPrihlasky\par
+    \textbf{Porada vedúcich:} uskutoční sa dňa \the\termin\ o~\the\casPorady
+    \item \textbf{Technické ustanovenia:}
+    
+    \vspace{5pt}
+    \textbf{Predpis:} Hrá sa podľa platných pravidiel WFDF 2017 a týchto propozícií\par
+    \textbf{Právo štartu:} Žiaci základných a stredných škôl v~školskom roku \the\rok\if\the\kolo2, ktorých tím sa kvalifikoval\fi\par
+    \textbf{Podmienky štartu:} Preukaz poistenca, za zdravotný stav zodpovedá vysielajúca škola, za prípadnú stratu osobných vecí organizátor nezodpovedá, odovzdať školou potvrdenú súpisku organizátorovi, prítomnosť pedagogického dozoru vysielajúcej školy\par
+    \textbf{Formát:} Loose Mix (vždy musí hrať aspoň jedno dievča a aspoň jeden chlapec), 
+    \if\the\sezona1%
+    5 na 5, pull play, 
+    \else
+    4 na 4, continuous, 
+    \fi%
+    1 timeout na zápas na tím, hra do 15, alebo skončenia času, \if\the\cap1 v~skupinovom zápase sa po skončení času dohráva bod, v~krížovom zápase sa po skončení času dohráva bod a následne sa stanoví bodový cap $+1$\else po skončení času sa dohráva bod\fi\par
+    \textbf{Výstroj:} Sada očíslovaných dresov jednotnej farby, \if\the\sezona1 športová obuv\else športová obuv nezanechávajúca šmuhy\par
+    \textbf{Systém:} \if\the\kolo1 Bude oznámený prostredníctvom e-mailu na kontaktné adresy prihlásených tímov, \the\postupujuci\ víťazné tímy postupujú na finálové kolo Stredoškolskej ligy ultimate frisbee\else 2 skupiny po 4 tímy rozdelené podľa nasadenia, skupinové zápasy každý s~každým, krížové zápasy podľa výsledkov v~skupine\fi\par
+    \textbf{Časový rozpis:} 
+    \begin{itemize}
+    \setlength{\itemindent}{15pt}
+      \item \textbf{\the\casPrichodu} -- príchod tímov, 
+      \item \textbf{\the\casPorady} -- porada vedúcich tímov, 
+      \item \textbf{\the\zaciatok} -- začiatok turnaja
+    \end{itemize}\par
+    \textbf{Informácie:} e-mail \textit{slu.central.org@gmail.com}, \the\kontakt\par
+\end{enumerate}
+
+\vfill
+\begin{minipage}{.2\textwidth}
+\begin{center}
+    V~\the\vMeste, \\
+    dňa~\the\day .\the\month .\the\year
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{.25\textwidth}
+\begin{center}
+    \hrulefill\\
+    \the\riaditel
+\end{center}
+\end{minipage}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
