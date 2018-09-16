@@ -12,12 +12,12 @@
 \newtoks\rocnik
 \newtoks\kolo
 \newtoks\sezona
-\newtoks\kedy
-\newtoks\kde
-
-\renewcommand{\arraystretch}{1.48}
+\newtoks\termin
+\newtoks\den
+\newtoks\miesto
 
 \newcommand{\potvrdenka}[3]{%
+\renewcommand{\arraystretch}{1.48}
 \parskip=10pt
 \begin{center}
     {\LARGE\textbf{Potvrdenie o účasti}}
@@ -25,16 +25,16 @@
 
 \begin{tabular}{p{3.2cm} l}
 Súťaž:&Stredoškolská liga ultimate frisbee\\
-Sezóna:&\the\sezona\\
-Kolo:&\the\kolo\\
-Miesto:&\the\kde\\
-Dátum:&\the\kedy\\
+Sezóna:&\if\the\sezona2 indoor\else outdoor\fi\\
+Kolo:&\if\the\kolo2 finálové\else kvalifikačné\fi\\
+Miesto:&\the\miesto\\
+Dátum:&\the\den\ \the\termin\\
 Škola:&#1\\
 Vedúci družstva:&#2\\
 Súpiska:
 \end{tabular}
 
-\vspace{-43pt}
+\vspace{-41pt}
 \begin{center}
 \begin{tabular}{|c|p{6cm}|}
 \hline
