@@ -4,34 +4,10 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[IL2]{fontenc}
-%\usepackage[slovak]{babel}
-%\usepackage{a4wide}
-\usepackage{amsmath,amsfonts,amssymb}
 \usepackage{comment}
 
-\usepackage{graphicx}   % obrazky
-\usepackage{wrapfig}    % obrazky
-
-\usepackage{caption}    % popisky
-\usepackage{subcaption} % popisky
-
-\usepackage{listings}   % python
-\usepackage{color}      % python
-
-\usepackage{array}      % column width
-\usepackage{calc}       % pocitanie vo funkciach (vspace,...)
-
-\usepackage[shellescape,latex]{gmp}     % metapost
-\usepackage{hyperref}   % url
-
-\usepackage{siunitx}    % stvorcek (QED)
-\setlength{\fboxsep}{.5\fboxsep}
-
-\usepackage{pgfplots}   % grafy
-\usepackage{pgf}        % grafy
-\pgfplotsset{compat=1.15}
-
-\usepackage{tikz}       % kreslenie
+\usepackage{graphicx}
+\usepackage{wrapfig}
 
 \pagenumbering{gobble}
 \usepackage[pages=some]{background}
@@ -51,36 +27,10 @@ contents={%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
-\def\obr#1#2{%
-\begin{center}
-\includegraphics[width=#1\textwidth]{#2}
-\end{center}
-}
-
-\def\wrapobr#1#2#3#4#5#6{%
-\begin{wrapfigure}[#1]{#2}{#3\textwidth}
-\vspace{#4pt}
-\begin{center}
-\includegraphics[width=#5\textwidth]{images/#6}
-\end{center}
-\end{wrapfigure}
-}
-
-\def\wrapmpost#1#2#3#4#5#6{%
-\begin{wrapfigure}[#1]{#2}{#3\textwidth}
-\vspace{#4pt}
-\centering
-\resizebox{#5\textwidth}{!}{\input{images/#6}}
-\end{wrapfigure}
-}
-
-\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{L}[1]{>{\leftflushing\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-\newcolumntype{R}[1]{>{\rightflushing\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-
 \newcount\kolo
 \newcount\sezona
-\newtoks\kedy
+\newtoks\termin
+\newtoks\kde
 
 \def\diplom#1{%
 \BgThispage
@@ -89,21 +39,21 @@ contents={%
 
     \vspace{1cm}
     \resizebox{!}{32pt}{\textit{\textbf{#1}}}
-    
+
     \vspace{1cm}
-    \if\the\kolo0{\resizebox{!}{22pt}{za \funderline{} miesto na \if\the\sezona0{halovej }\fi kvalifikácii SLU 2018}}\fi
-    \if\the\kolo1{\resizebox{!}{22pt}{za \funderline{} miesto na \if\the\sezona0{halovom }\fi finále SLU 2018}}\fi
+    \if\the\kolo1{\resizebox{!}{22pt}{za \funderline{} miesto na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+    \if\the\kolo2{\resizebox{!}{22pt}{za \funderline{} miesto na \if\the\sezona2{halovom }\fi finále SLU 2018}}\fi
 \end{center}
 
 \vfill
 
 
-\begin{minipage}{0.2\textwidth}
+\begin{minipage}{0.25\textwidth}
     \parskip=10pt
     \begin{center}
-        \resizebox{!}{16pt}{V Černovej}
-        
-        \resizebox{!}{14pt}{8.6.2018}
+        \resizebox{!}{16pt}{\the\kde}
+
+        \resizebox{!}{14pt}{\the\termin}
     \end{center}
 \end{minipage}
 \hfill
@@ -111,7 +61,7 @@ contents={%
     \parskip=10pt
     \begin{center}
         \rule{4cm}{0.4pt}\hspace{1cm}\rule{4cm}{0.4pt}
-        
+
         \resizebox{!}{14pt}{Podpis organizátora}
     \end{center}
 \end{minipage}
@@ -122,20 +72,21 @@ contents={%
 \BgThispage
 \begin{center}
     \resizebox{!}{22pt}{udeľuje diplom tímu}
-    
+
     \vspace{3.2cm}
-    \resizebox{!}{22pt}{za \funderline{} miesto na finále SLU 2018}
+    \if\the\kolo1{\resizebox{!}{22pt}{za \funderline{} miesto na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+    \if\the\kolo2{\resizebox{!}{22pt}{za \funderline{} miesto na \if\the\sezona2{halovom }\fi finále SLU 2018}}\fi
 \end{center}
 
 \vfill
 
 
-\begin{minipage}{0.2\textwidth}
+\begin{minipage}{0.25\textwidth}
     \parskip=10pt
     \begin{center}
-        \resizebox{!}{16pt}{V Černovej}
-        
-        \resizebox{!}{14pt}{8.6.2018}
+        \resizebox{!}{16pt}{\the\kde}
+
+        \resizebox{!}{14pt}{\the\termin}
     \end{center}
 \end{minipage}
 \hfill
@@ -143,7 +94,7 @@ contents={%
     \parskip=10pt
     \begin{center}
         \rule{4cm}{0.4pt}\hspace{1cm}\rule{4cm}{0.4pt}
-        
+
         \resizebox{!}{14pt}{Podpis organizátora}
     \end{center}
 \end{minipage}
@@ -157,22 +108,23 @@ contents={%
 
     \vspace{2.4cm}
     \rule{14cm}{0.7pt}
-    
+
     \vspace{1cm}
     \resizebox{!}{20pt}{za výhru ocenenia Spirit of The Game}
     \vskip.6cm
-    \resizebox{!}{20pt}{na finále SLU 2018}
+    \if\the\kolo1{\resizebox{!}{20pt}{na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+    \if\the\kolo2{\resizebox{!}{20pt}{na \if\the\sezona2{halovom }\else\fi finále SLU 2018}}\fi
 \end{center}
 
 \vfill
 
 
-\begin{minipage}{0.2\textwidth}
+\begin{minipage}{0.25\textwidth}
     \parskip=10pt
     \begin{center}
-        \resizebox{!}{16pt}{V Černovej}
-        
-        \resizebox{!}{14pt}{8.6.2018}
+        \resizebox{!}{16pt}{\the\kde}
+
+        \resizebox{!}{14pt}{\the\termin}
     \end{center}
 \end{minipage}
 \hfill
@@ -180,11 +132,10 @@ contents={%
     \parskip=10pt
     \begin{center}
         \rule{4cm}{0.4pt}\hspace{1cm}\rule{4cm}{0.4pt}
-        
+
         \resizebox{!}{14pt}{Podpis organizátora}
     \end{center}
 \end{minipage}
 \newpage
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \funderline{}\funderline{}\funderline{}\funderline{}\funderline{}
