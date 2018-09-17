@@ -1,5 +1,4 @@
 # Own gitignore
-latex
 secret_key.txt
 .vscode/
 migrations
