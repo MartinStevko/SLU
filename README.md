@@ -3,8 +3,8 @@ SLU enrollment and other organization stuffs.
 
 ## Requirements installation
 
- - Python (3 or later, version 3.6.0 recommended)
- - Django (version 2.0)
+ - Python (3 or later, version 3.7.0 recommended)
+ - Django (version 2.1)
  - virtual enviroment
 
 ### Windows machine
@@ -23,7 +23,7 @@ In Bash type:
 sudo apt install pip
 ```
 ```bash
-python3 -m pip install Django==2.0
+python3 -m pip install Django==2.1
 ```
 ```bash
 python3 -m pip install virtualenv
@@ -61,13 +61,22 @@ iptables -I INPUT -p tcp -m tcp --dport PORT_NUMBER -j ACCEPT
 Make and then apply migrations. You can do it by typing:
 
 ```
-manage.py makemigrations organization
+py manage.py makemigrations organization
 ```
 ```
-manage.py migrate
+py manage.py migrate
 ```
 
-to your CMD or Bash into `SLU` directory.
+to your CMD or 
+
+```
+python3 manage.py makemigrations organization
+```
+```
+python3 manage.py migrate
+```
+
+to your Bash into `SLU` directory.
 
 
 ## Run server
