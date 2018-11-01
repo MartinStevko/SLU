@@ -1,5 +1,4 @@
 import os
-from django.contrib import admin
 
 SEZONA = 'zima' # zima / leto
 ROK = '2018'
@@ -107,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'sk-sk'
 
 TIME_ZONE = 'Europe/Bratislava'
 
@@ -117,10 +116,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Site URL
-
-admin.site.site_url = '/prihlasovanie/'
 
 LOGIN_URL = 'admin:login'
 

@@ -1,0 +1,36 @@
+<title>SLU Štatistiky</title>
+
+<body style="padding:20px;">
+    <a href="">Späť na administrátorskú stránku</a>
+    <h2>Štatistiky</h2>
+    {% if final %}
+    <p>
+        Moja chabá serverová logika rozoznala, že chceš poznať štatistiky kvalifikovaných tímov,
+        takže sa zobrazujú štatistiky pre ich súpisky na finále. 
+        <br>
+        Ak to tak nie je, najpravdepodobnejšie máš smolu, ale môžeš skúsiť kontaktovať admina.
+    </p>
+    {% endif %}
+    <p>
+        Označených je <strong>{{ t }} tímov</strong>. 
+        <br>
+        V týchto tímoch je spolu <strong>{{ h }} hráčov</strong>, 
+        z toho <strong>{{ m }} chlapcov</strong> a <strong>{{ d }} dievčat</strong>. 
+        <br>
+        Dokopy si objednali <strong>{{ ma }} mäsových</strong> a 
+        <strong>{{ ve }} vegetariánskych bagiet</strong>, 
+        pričom <strong>{{ no }}</strong> hráčov <strong>nechce</strong> bagetu. 
+    </p>
+
+    <h2>Kontakt</h2>
+    <ul>
+        <li><strong>kapitáni:</strong> {{ captains }}</li>
+        <li><strong>učitelia:</strong> {{ teachers }}</li>
+    </ul>
+
+    <h2>Autorské mottá</h2>
+    <ul>
+        <li>Čo neni žena je muž</li>
+        <li>Čo nezadalo bagetu nechce bagetu</li>
+    </ul>
+</body>

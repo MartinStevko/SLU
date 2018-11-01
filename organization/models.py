@@ -36,6 +36,10 @@ class Teacher(models.Model):
     def __str__(self):
         return "{}".format(self.meno)
 
+    class Meta:
+        verbose_name = 'učiteľ'
+        verbose_name_plural = 'učitelia'
+
 class Team(models.Model):
     meno = models.CharField(max_length=30, unique=True)
     diplom_meno = models.CharField(max_length=15, unique=True)
@@ -58,6 +62,10 @@ class Team(models.Model):
     def __str__(self):
         return "{}".format(self.meno)
 
+    class Meta:
+        verbose_name = 'tím'
+        verbose_name_plural = 'tímy'
+
 class Player(models.Model):
     tim = models.ForeignKey(Team, on_delete=models.CASCADE)
     meno = models.CharField(max_length=100)
@@ -67,10 +75,19 @@ class Player(models.Model):
     def __str__(self):
         return "{} - {}".format(self.meno, self.tim.meno)
 
+    class Meta:
+        verbose_name = 'hráč'
+        verbose_name_plural = 'hráči'
+
 class FinalMember(models.Model):
     tim = models.ForeignKey(Team, on_delete=models.CASCADE)
     meno = models.CharField(max_length=100)
     bageta = models.CharField(max_length=20, choices=bagety, blank=True)
+    pohlavie = models.CharField(max_length=100, choices=pohlavia)
 
     def __str__(self):
         return "{} - {}".format(self.meno, self.tim.meno)
+
+    class Meta:
+        verbose_name = 'hráč (finále)'
+        verbose_name_plural = 'hráči (finále)'
