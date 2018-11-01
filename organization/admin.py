@@ -154,7 +154,7 @@ admin.site.register(Player, PlayerAdmin)
 admin.site.register(FinalMember, PlayerAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 
-admin.site.site_header = 'Stredoškolská Liga Ultimate'
+admin.site.site_header = 'Stredoškolská Liga Ultimate Frisbee'
 admin.site.site_title = 'SLU'
-admin.site.index_title = 'Kto sa nám to prihlásil?'
+admin.site.index_title = 'Domov'
 admin.site.site_url = '/prihlasovanie/'
