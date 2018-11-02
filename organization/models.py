@@ -28,6 +28,7 @@ kraje = (
     ('PO', 'Prešvský kraj'),
 )
 
+
 class Teacher(models.Model):
     meno = models.CharField(max_length=100)
     mail = models.EmailField()
@@ -39,6 +40,7 @@ class Teacher(models.Model):
     class Meta:
         verbose_name = 'učiteľ'
         verbose_name_plural = 'učitelia'
+
 
 class Team(models.Model):
     meno = models.CharField(max_length=30, unique=True)
@@ -66,6 +68,7 @@ class Team(models.Model):
         verbose_name = 'tím'
         verbose_name_plural = 'tímy'
 
+
 class Player(models.Model):
     tim = models.ForeignKey(Team, on_delete=models.CASCADE)
     meno = models.CharField(max_length=100)
@@ -78,6 +81,7 @@ class Player(models.Model):
     class Meta:
         verbose_name = 'hráč'
         verbose_name_plural = 'hráči'
+
 
 class FinalMember(models.Model):
     tim = models.ForeignKey(Team, on_delete=models.CASCADE)

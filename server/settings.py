@@ -1,6 +1,6 @@
 import os
 
-SEZONA = 'zima' # zima / leto
+SEZONA = 'zima'  # zima / leto
 ROK = '2018'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -17,7 +17,7 @@ with open('secret_key.txt', 'r') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'pythonanywhere']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'slu.pythonanywhere.com']
 
 
 # Application definition
@@ -123,12 +123,11 @@ LOGIN_URL = 'admin:login'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 '''
-### Deployment ### + set DEBUG = False
-STATIC_ROOT = '/var/www/nanet.pythonanywhere.com/static/'
-# for collectstatic command - '/home/nanet/SEN_eshop/static/'
+# Deployment + set DEBUG = False + set SECRET_KEY
+STATIC_ROOT = '/home/SLU/SLU/static/'
 '''
 
-### Production ###
+# Production
 
 STATIC_ROOT = os.path.dirname(os.path.abspath(__file__))
 

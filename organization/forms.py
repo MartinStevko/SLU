@@ -1,9 +1,14 @@
 from django.forms import ModelForm, Form, BooleanField
 from .models import Teacher, Team, Player
 
+
 class GDPR(Form):
-    suhlas_ou = BooleanField(label='Súhlasím so spracovaním osobných údajov v rozsahu vyššie uvedenom', required=False)
-    suhlas_mf = BooleanField(label='Súhlasím so zverejnením fotiek a videí, na ktorých som, zhotovených počas SLU za účelom propagácie súťaže', required=False)
+    suhlas_ou = BooleanField(label='Súhlasím so spracovaním \
+    osobných údajov v rozsahu vyššie uvedenom', required=False)
+    suhlas_mf = BooleanField(label='Súhlasím so zverejnením fotiek \
+    a videí, na ktorých som, zhotovených počas SLU za účelom \
+    propagácie súťaže', required=False)
+
 
 class PlayerForm(ModelForm):
     class Meta:
@@ -11,14 +16,15 @@ class PlayerForm(ModelForm):
         fields = ['pohlavie', 'meno', 'bageta']
 
         labels = {
-            'pohlavie' : 'Pohlavie',
-            'meno' : 'Meno a priezvisko hráča',
-            'bageta' : '',
+            'pohlavie': 'Pohlavie',
+            'meno': 'Meno a priezvisko hráča',
+            'bageta': '',
         }
 
     def __init__(self, *args, **kwargs):
         super(PlayerForm, self).__init__(*args, **kwargs)
         self.fields['bageta'].widget.attrs.update({'class': 'last-one'})
+
 
 class TeacherForm(ModelForm):
     class Meta:
@@ -26,10 +32,11 @@ class TeacherForm(ModelForm):
         fields = ['meno', 'mail', 'tel_cislo']
 
         labels = {
-            'meno' : 'Meno a priezvisko učiteľa',
-            'mail' : 'E-mail učiteľa',
-            'tel_cislo' : 'Telefónne číslo učiteľa',
+            'meno': 'Meno a priezvisko učiteľa',
+            'mail': 'E-mail učiteľa',
+            'tel_cislo': 'Telefónne číslo učiteľa',
         }
+
 
 class TeamForm(ModelForm):
     class Meta:
@@ -53,18 +60,18 @@ class TeamForm(ModelForm):
         ]
 
         labels = {
-            'meno' : 'Meno tímu',
-            'diplom_meno' : 'Meno tímu na diplome',
+            'meno': 'Meno tímu',
+            'diplom_meno': 'Meno tímu na diplome',
 
-            'mail' : 'Kontaktný e-mail',
-            'tel_cislo' : 'Kontaktné telefónne číslo',
+            'mail': 'Kontaktný e-mail',
+            'tel_cislo': 'Kontaktné telefónne číslo',
 
-            'skola' : 'Názov školy',
-            'adresa' : 'Adresa školy',
-            'okres' : 'Okres',
-            'kraj' : 'Kraj',
-            'region' : 'Región',
+            'skola': 'Názov školy',
+            'adresa': 'Adresa školy',
+            'okres': 'Okres',
+            'kraj': 'Kraj',
+            'region': 'Región',
 
-            'pesnicka' : 'Tímová pesnička (link)',
-            'sprava' : 'Správa organizátorom',
+            'pesnicka': 'Tímová pesnička (link)',
+            'sprava': 'Správa organizátorom',
         }

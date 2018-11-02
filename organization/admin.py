@@ -72,7 +72,7 @@ class TeamAdmin(admin.ModelAdmin):
                     womans += 1
                 else:
                     mans += 1
-                
+
                 if partcp.bageta == 'M':
                     m_bagets += 1
                 elif partcp.bageta == 'V':
@@ -109,7 +109,11 @@ class TeamAdmin(admin.ModelAdmin):
     def get_team_songs(self, request, queryset):
         songs = '<body style="padding:20px;">'
         for team in queryset:
-            songs += '<p>{}: <a href="{}">{}</a></p>'.format(team.meno, str(team.pesnicka), str(team.pesnicka))
+            songs += '<p>{}: <a href="{}">{}</a></p>'.format(
+                team.meno,
+                str(team.pesnicka),
+                str(team.pesnicka)
+            )
         return HttpResponse(songs+'</body>')
     get_team_songs.short_description = 'Pozrieť tímové pesničky'
 
@@ -129,7 +133,7 @@ class TeamAdmin(admin.ModelAdmin):
         response = '<body style="padding: 20px;">'
         for team in queryset:
             response += '\\diplom{' + str(team.diplom_meno) + '}<br>'
-        
+
         for i in range(len(queryset)//5):
             response += '\\diplomPrazdny<br>'
         for i in range(3):
