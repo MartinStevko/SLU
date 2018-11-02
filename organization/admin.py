@@ -23,6 +23,9 @@ class TeamAdmin(admin.ModelAdmin):
         'basic_info',
         'get_team_songs',
         'get_posts',
+        'get_invitations',
+        'get_confirmations',
+        'get_diplomas',
         'make_qualified'
     ]
 
@@ -121,6 +124,40 @@ class TeamAdmin(admin.ModelAdmin):
         else:
             return HttpResponse(posts+'</body>')
     get_posts.short_description = 'Pozrieť správy'
+
+    def get_diplomas(self, request, queryset):
+        response = '<body style="padding: 20px;">'
+        for team in queryset:
+            response += '\\diplom{' + str(team.diplom_meno) + '}<br>'
+        
+        for i in range(len(queryset)//5):
+            response += '\\diplomPrazdny<br>'
+        for i in range(3):
+            response += '\\spirit<br>'
+
+        return HttpResponse(response+'</body>')
+    get_diplomas.short_description = 'Generovať diplomy'
+
+    def get_invitations(self, request, queryset):
+        response = '<body style="padding: 20px;">'
+        for team in queryset:
+            response += '<p>\\tim{' + str(team.diplom_meno) + '}<br>' + \
+            '\\skola{' + str(team.skola) + '}</p>'
+        return HttpResponse(response+'</body>')
+    get_invitations.short_description = 'Generovať pozvánky'
+
+    def get_confirmations(self, request, queryset):
+        c = '<body style="padding: 20px">'
+        for team in queryset:
+            c += '\\potvrdenka{%s}{%s}{%%' % (team.skola, team.ucitel.meno)
+
+            players = Player.objects.filter(tim=team)
+            for i in range(len(players)):
+                c += '<br>%s.& %s \\\\ \\hline' % (str(i+1), players[i].meno)
+            c += '}<br><br>'
+        c += '</body>'
+        return HttpResponse(c)
+    get_confirmations.short_description = 'Generovať potvrdenia o účasti'
 
 
 class PlayerAdmin(admin.ModelAdmin):
