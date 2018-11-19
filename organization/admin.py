@@ -100,7 +100,7 @@ class TeamAdmin(admin.ModelAdmin):
             'no': n_bagets,
             'captains': c_contact,
             'teachers': t_contact,
-            'final': True,
+            'final': final,
         })
 
         return HttpResponse(response)
