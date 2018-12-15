@@ -9,7 +9,7 @@ class TeamAdmin(admin.ModelAdmin):
     list_display = ('meno', 'hraci', 'region', 'skola', 'adresa')
     list_filter = ('kvalifikovany', 'region', 'kraj')
     list_per_page = 100
-    search_fields = ('meno', 'skola')
+    search_fields = (['meno', 'skola', 'tim'])
     ordering = ('-pk',)
 
     def hraci(self, team):
@@ -166,16 +166,16 @@ class TeamAdmin(admin.ModelAdmin):
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('meno', 'pohlavie', 'tim')
-    list_filter = ('pohlavie', 'bageta', 'tim')
+    list_filter = ('pohlavie', 'bageta')
     list_per_page = 100
-    search_fields = ('meno', 'tim')
+    search_fields = (['meno', 'tim', 'skola'])
     ordering = ('-pk',)
 
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('meno', 'mail', 'tim')
     list_per_page = 100
-    search_fields = ('meno', 'tim')
+    search_fields = (['meno', 'tim', 'skola'])
     ordering = ('-pk',)
 
     def tim(self, teacher):
