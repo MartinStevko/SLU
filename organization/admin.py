@@ -168,14 +168,14 @@ class PlayerAdmin(admin.ModelAdmin):
     list_display = ('meno', 'pohlavie', 'tim')
     list_filter = ('pohlavie', 'bageta')
     list_per_page = 100
-    search_fields = ['meno', 'tim', 'tim__skola']
+    search_fields = ['meno', 'tim__meno', 'tim__skola']
     ordering = ('-pk',)
 
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('meno', 'mail', 'tim')
     list_per_page = 100
-    search_fields = ['meno', 'tim', 'tim__skola']
+    search_fields = ['meno', 'tim__meno', 'tim__skola']
     ordering = ('-pk',)
 
     def tim(self, teacher):
