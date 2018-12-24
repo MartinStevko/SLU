@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="sk">
+    <head>
+        <!-- Basic HTML meta tags -->
+        <meta charset="utf-8">
+        <meta name="keywords" content="SLU, stredoškolská, liga, ultimate, frisbee, disk">
+        <meta name="news_keywords" content="SLU, stredoškolská, liga, ultimate, frisbee, disk">
+        <meta name="description" content="Registračný portál Stredoškolskej ligy ultimste frisbee">
+        <meta name="subject" content="Stredoškolská liga ultimate frisbee">
+
+        <meta name="language" content="SK">
+        <meta name="revised" content="Monday, July 20th, 2019, 12:00 pm">
+
+        <meta name="classification" content="Business">
+        <meta name="owner" content="Slovenská asociácia Frisbee">
+        <meta name="author" content="Martin Števko">
+        <meta name="designer" content="Martin Števko">
+        <meta name="copyright"content="Martin Števko">
+
+        <meta name="url" content="https://slu.szf.sk">
+        <meta name="identifier-URL" content="https://slu.szf.sk">
+
+        <meta name="coverage" content="worldwide">
+        <meta name="distribution" content="global">
+        <meta name="rating" content="general">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- OpenGraph meta tags -->
+        <meta property="og:url" content="{{ request.META.HTTP_HOST }}">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Stredoškolská liga ultimate frisbee">
+        <meta name="og:site_name" content="SLU"/>
+        <meta property="og:description" content="Registračný portál Stredoškolskej ligy ultimste frisbee">
+        <meta property="og:image" content="{% static 'img/logo.jpg' %}">
+
+        <meta name="fb:page_id" content="StredoskolskaLigaUltimate">
+
+        <meta name="og:region" content="SR"/>
+        <meta name="og:country-name" content="Slovakia"/>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+        {% block css %}
+        {% endblock %}
+
+        <!-- Title and icon -->
+        <title>{% block title %}{% endblock %} | SLU</title>
+
+        {% if indoor %}
+            <link rel="icon" href="{% static 'img/blue_icon.png' %}" type="image/png">
+        {% endif %}
+        {% if outdoor %}
+            <link rel="icon" href="{% static 'img/red_icon.png' %}" type="image/png">
+        {% endif %}
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <a class="navbar-brand" href="#">SLU</a>
+                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+                    <ul class="navbar-nav mr-auto">
+                        {% for tab in tabs %}
+                            <li class="nav-item {{ tab.class }}">
+                                <a class="nav-link" href="{{ tab.url }}">{{ tab.caption }}</a>
+                            </li>
+                        {% endfor %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">O ultimate</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'admin:logout' %}">Odhlásiť sa</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <main role="main">
+            {% block content %}
+            {% endblock %}
+
+            <!-- FOOTER -->
+            <footer class="container">
+                <p class="float-right"><a href="{% url 'admin:login' %}">Prihlásiť sa</a></p>
+                <p>© <a href="https://szf.sk/">Slovenská asociácia Frisbee</a></p>
+            </footer>
+        </main>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/docs/4.2/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        {% block js %}
+        {% endblock %}
+    </body>
+</html>

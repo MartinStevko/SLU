@@ -1,7 +1,9 @@
 # Own gitignore
 secret_key.txt
+
 .vscode/
-migrations
+migrations/
+!migrations/__init__.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
