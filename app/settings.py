@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'content.apps.ContentConfig',
     'tournament.apps.TournamentConfig',
     'registration.apps.RegistrationConfig',
+    'user.apps.UserConfig',
     'form_utils',
     'bootstrap4',
 ]

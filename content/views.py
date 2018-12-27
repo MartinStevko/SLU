@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, View, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 
-from content.models import Section, News, Message, Organizer
+from content.models import Section, News, Message, OrganizerProfile
 from content.forms import ContactForm
 
 class ContentView(TemplateView):
@@ -40,7 +40,7 @@ class ContentView(TemplateView):
 
 class OrganizersView(ListView):
     template_name = 'content/contact.html'
-    model = Organizer
+    model = OrganizerProfile
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

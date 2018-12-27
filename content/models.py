@@ -44,7 +44,7 @@ class Message(models.Model):
         return '{} - {}'.format(self.subject, self.text)
 
 
-class Organizer(models.Model):
+class OrganizerProfile(models.Model):
     full_name = models.CharField(max_length=200)
     email = models.EmailField()
     image = models.ImageField(upload_to='organizers')
