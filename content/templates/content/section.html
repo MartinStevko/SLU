@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+        {% if news %}
+            {% include 'content/about_slu.html' %}
+            {% for section in news %}
+                <div class="row featurette">
+                    <div class="col-md-7">
+                        <h2 class="featurette-heading">{{ section.title }}</h2>
+                        <p class="lead">{{ section.description }}</p>
+                    </div>
+                    <div class="col-md-5 text-center">
+                        <img class="featurette-image img-fluid mx-auto" src="{{ section.image.url }}" width="400" height="auto">
+                    </div>
+                </div>
+                <hr class="featurette-divider">
+            {% endfor %}
+        {% endif %}
+        {% for section in sections %}
+            <div class="row featurette">
+                <div class="col-md-7">
+                    <h2 class="featurette-heading">{{ section.title }}</h2>
+                    <p class="lead">{{ section.description }}</p>
+                </div>
+                <div class="col-md-5 text-center">
+                    <img class="featurette-image img-fluid mx-auto" src="{{ section.image.url }}" width="400" height="auto">
+                </div>
+            </div>
+            <hr class="featurette-divider">
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function() {
+            $("div.col-md-7:odd").addClass("order-md-2");
+            $("div.col-md-5:odd").addClass("order-md-1");
+        });
+    </script>
+{% endblock %}

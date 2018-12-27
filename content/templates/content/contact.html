@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load form_utils %}
+{% load bootstrap4 %}
+
+{% block title %}Kontakt{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+        <div class="featurette">
+            <form class="" method="POST" action="">
+                {% csrf_token %}
+                {% bootstrap_form_errors form %}
+                {% for fieldset in form.fieldsets %}
+                    <fieldset>
+                        <h2>
+                            {{ fieldset.name }}<br>
+                        </h2>
+                        <p class="lead">
+                            {% if fieldset.description %}
+                                {{ fieldset.description }}
+                            {% endif %}
+                        </p>
+                        {% for field in fieldset %}
+                            {% bootstrap_field field layout='horizontal' %}
+                        {% endfor %}
+                    </fieldset>
+                {% endfor %}
+                <small><span style="color: red">*</span>Toto pole je povinné</small>
+
+                <button class="btn btn-primary btn-block" type="submit">Odoslať</button>
+            </form>
+        </div>
+        <hr class="featurette-divider">
+
+        <div class="row featurette">
+            <div class="col-md-4">
+                <h4 id="biggestContact" class="featurette-heading info">Stredoškolská liga Ultimate Frisbee</h4>
+                <p class="text-body">
+                    <a class="text-body" href="mailto:slu.central.org@gmail.com">slu.central.org@gmail.com</a><br>
+                    <a class="text-body" href="mailto:ult-komisia-saf@googlegroups.com">ult-komisia-saf@googlegroups.com</a><br>
+                    +421 905 109 429<br>
+                    <a class="text-body" href="https://slu.szf.sk">slu.szf.sk</a>
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4 class="featurette-heading info">Slovenská asociácia Frisbee</h4>
+                <p class="text-body">
+                    Einsnerova 13<br>
+                    841 07 Bratislava<br>
+                    <a class="text-body" href="mailto:predseda@szf.sk">predseda@szf.sk</a><br>
+                    +421 905 109 429
+                </p>
+            </div>
+            <div class="col-md-4">
+                <h4 class="featurette-heading info">Fakturačné údaje</h4>
+                <p class="text-body">
+                    Eisnerova 6131/13<br>
+                    841 07 Bratislava – Devínska Nová Ves<br>
+                    IČO: 317 49 852  DIČ: 202 130 5594<br>
+                    VÚB: SK62 0200 0000 0000 7763 5012
+                </p>
+            </div>
+        </div>
+        <hr class="featurette-divider">
+
+        <div class="row featurette justify-content-center">
+            {% for org in object_list %}
+                <div class="card m-3" style="width:300px">
+                    <img class="card-img-top" src="{{ org.image.url }}" style="width:100%">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ org.full_name }}</h4>
+                        <p class="card-text mb-2">
+                            E-mail: <a href="mailto:{{ org.email }}" class="card-link">{{ org.email }}</a>
+                        </p>
+                        <p class="card-text">
+                            Org. od: {{ org.start_season }}<br>
+                            Org. do: {{ org.end_season }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <hr class="featurette-divider">
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function() {
+            $("div.col-md-4>h4.info").height(
+                $("#biggestContact").height()
+            );
+        });
+    </script>
+{% endblock %}

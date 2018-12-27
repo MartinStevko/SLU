@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="sk">
     <head>
@@ -41,6 +43,15 @@
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+        <style>
+            main {
+                margin-top: 56px;
+            }
+
+            div.container {
+                padding-top: 44px;
+            }
+        </style>
         {% block css %}
         {% endblock %}
 
@@ -57,19 +68,23 @@
     <body>
         <header>
             <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <a class="navbar-brand" href="#">SLU</a>
+                <a class="navbar-brand" href="{% url 'content:home' %}">SLU</a>
                 <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse" id="navbarCollapse" style="">
                     <ul class="navbar-nav mr-auto">
-                        {% for tab in tabs %}
-                            <li class="nav-item {{ tab.class }}">
-                                <a class="nav-link" href="{{ tab.url }}">{{ tab.caption }}</a>
-                            </li>
-                        {% endfor %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">O ultimate</a>
+                        <li class="nav-item {% if 'rules' in request.build_absolute_uri %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'content:rules' %}">Pravidlá</a>
+                        </li>
+                        <li class="nav-item {% if 'ultimate' in request.build_absolute_uri %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'content:ultimate' %}">O ultimate</a>
+                        </li>
+                        <li class="nav-item {% if 'tournament' in request.build_absolute_uri %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'tournament:list' %}">Turnaje</a>
+                        </li>
+                        <li class="nav-item {% if 'contact' in request.build_absolute_uri %}active{% endif %}">
+                            <a class="nav-link" href="{% url 'content:contact' %}">Kontakt</a>
                         </li>
                         {% if user.is_authenticated %}
                             <li class="nav-item">
@@ -93,7 +108,6 @@
         </main>
 
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/docs/4.2/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
         <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
         {% block js %}
         {% endblock %}
