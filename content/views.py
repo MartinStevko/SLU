@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from datetime import datetime
 from django.urls import reverse
+from django.contrib import messages
 
 from django.views.generic import TemplateView, View, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
@@ -54,19 +55,14 @@ class ContactFormView(SingleObjectMixin, FormView):
     form_class = ContactForm
     model = Message
 
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseForbidden()
-        self.object = self.get_object()
-        return super().post(request, *args, **kwargs)
-
     def form_valid(self, form):
-        form.send_email()
-        return super().form_valid(form)
+        form.send_mail()
+        form.save()
+        messages.success(self.request, 'Správa bola úspešne odoslaná!')
+        return super(ContactFormView, self).form_valid(form)
 
     def get_success_url(self):
-        messages.success(request, 'Správa bola úspešne odoslaná!')
-        return reverse('contact')
+        return reverse('content:contact')
 
 
 class ContactView(View):
