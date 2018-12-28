@@ -6,6 +6,17 @@ GENDERS = (
     ('female', 'žena'),
 )
 
+REGIONS = (
+    ('BA', 'Bratislavský kraj'),
+    ('TT', 'Trnavský kraj'),
+    ('TN', 'Trenčiansky kraj'),
+    ('NI', 'Nitriansky kraj'),
+    ('ZI', 'Žilinský kraj'),
+    ('BB', 'Banskobystrický kraj'),
+    ('PO', 'Prešovský kraj'),
+    ('KE', 'Košický kraj'),
+)
+
 
 class School(models.Model):
     name = models.CharField(max_length=255)
@@ -30,7 +41,10 @@ class School(models.Model):
         ]
     )
     city = models.CharField(max_length=255)
-    region = models.CharField(max_length=255)
+    region = models.CharField(
+        max_length=255,
+        choices=REGIONS
+    )
 
     def __str__(self):
         return "{}, {}, {} {}".format(
@@ -48,6 +62,8 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=255)
 
     email = models.EmailField()
+    email_verified = models.BooleanField(default=False)
+
     phone_number = models.CharField(
         max_length=31,
         validators=[
