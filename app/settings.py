@@ -26,10 +26,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'content.apps.ContentConfig',
-    'tournament.apps.TournamentConfig',
-    'registration.apps.RegistrationConfig',
     'user.apps.UserConfig',
+    'content.apps.ContentConfig',
+    'registration.apps.RegistrationConfig',
+    'tournament.apps.TournamentConfig',
     'form_utils',
     'bootstrap4',
 ]

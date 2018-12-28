@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from datetime import datetime
 from django.urls import reverse
 from django.contrib import messages
 
@@ -28,7 +27,10 @@ class ContentView(TemplateView):
         else:
             news = []
             for obj in News.objects.all():
+                '''
                 if obj.expiration.replace(tzinfo=None) > datetime.now():
+                    news.append(obj)'''
+                if not obj.expired():
                     news.append(obj)
 
             context.update({
@@ -46,7 +48,6 @@ class OrganizersView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = ContactForm()
-        print(context)
         return context
 
 

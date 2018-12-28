@@ -86,11 +86,6 @@
                         <li class="nav-item {% if 'contact' in request.build_absolute_uri %}active{% endif %}">
                             <a class="nav-link" href="{% url 'content:contact' %}">Kontakt</a>
                         </li>
-                        {% if user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'admin:logout' %}">Odhlásiť sa</a>
-                            </li>
-                        {% endif %}
                     </ul>
                 </div>
             </nav>
@@ -102,7 +97,14 @@
 
             <!-- FOOTER -->
             <footer class="container">
-                <p class="float-right"><a href="{% url 'admin:login' %}">Prihlásiť sa</a></p>
+                {% if not user.is_authenticated %}
+                    <p class="float-right"><a href="{% url 'admin:login' %}">Prihlásiť sa</a></p>
+                {% else %}
+                    <p class="float-right">
+                        <a href="{% url 'admin:index' %}" style="margin-right: 20px;">Administrátor</a>
+                        <a href="{% url 'admin:logout' %}">Odhlásiť sa</a>
+                    </p>
+                {% endif %}
                 <p>© <a href="https://szf.sk/">Slovenská asociácia Frisbee</a></p>
             </footer>
         </main>

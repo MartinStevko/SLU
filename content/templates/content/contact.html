@@ -51,7 +51,7 @@
                     <a class="text-body" href="mailto:slu.central.org@gmail.com">slu.central.org@gmail.com</a><br>
                     <a class="text-body" href="mailto:ult-komisia-saf@googlegroups.com">ult-komisia-saf@googlegroups.com</a><br>
                     +421 905 109 429<br>
-                    <a class="text-body" href="https://slu.szf.sk">slu.szf.sk</a>
+                    <a class="text-body" href="{% url 'content:home' %}">slu.szf.sk</a>
                 </p>
             </div>
             <div class="col-md-4">
@@ -60,7 +60,7 @@
                     Einsnerova 13<br>
                     841 07 Bratislava<br>
                     <a class="text-body" href="mailto:predseda@szf.sk">predseda@szf.sk</a><br>
-                    +421 905 109 429
+                    +421 903-363 033
                 </p>
             </div>
             <div class="col-md-4">
@@ -76,7 +76,7 @@
         <hr class="featurette-divider">
 
         <div class="row featurette justify-content-center">
-            {% for org in object_list %}
+            {% for org in organizerprofile_list %}
                 <div class="card m-3" style="width:300px">
                     <img class="card-img-top" src="{{ org.image.url }}" style="width:100%">
                     <div class="card-body">
