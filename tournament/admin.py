@@ -15,11 +15,27 @@ class SeasonAdmin(admin.ModelAdmin):
     ]
     ordering = ('-school_year', '-pk')
 
+    filter_horizontal = ['orgs']
+
+
+class ResultInline(admin.TabularInline):
+    model = Result
+    extra = 0
+
+
+class MatchInline(admin.TabularInline):
+    model = Match
+    extra = 1
+
+    exclude = ['begining_time']
+
 
 class TournamentAdmin(admin.ModelAdmin):
     list_display = ('season', 'date', 'place')
     list_filter = ('season__season', 'region', 'player_stats')
     list_per_page = 100
+
+    inlines = [ResultInline, MatchInline]
 
     search_fields = [
         'orgs__username',
@@ -31,12 +47,15 @@ class TournamentAdmin(admin.ModelAdmin):
     ]
     ordering = ('-season__school_year', '-date', '-pk')
 
+    filter_horizontal = ['orgs']
+
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('tournament', 'school', 'teacher')
+    list_display = ('tournament', 'school', 'teacher', 'confirmed')
     list_filter = (
         'tournament__season__season',
         'tournament__region',
+        'confirmed',
         'accept_gdpr'
     )
     list_per_page = 100
@@ -52,6 +71,8 @@ class TeamAdmin(admin.ModelAdmin):
         'school__city'
     ]
     ordering = ('name', '-pk')
+
+    filter_horizontal = ['players']
 
 
 class ResultAdmin(admin.ModelAdmin):
@@ -78,13 +99,13 @@ class ResultAdmin(admin.ModelAdmin):
     )
 
 
-class MatchInline(admin.StackedInline):
-    model = TeamInMatchRegistration
+class PointInline(admin.TabularInline):
+    model = Point
     extra = 0
 
 
 class MatchAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'begining_time', 'tournament')
+    list_display = ('home_team', 'host_team', 'begining_time', 'tournament')
     list_filter = (
         'tournament__season__season',
         'tournament__region',
@@ -92,14 +113,10 @@ class MatchAdmin(admin.ModelAdmin):
     )
     list_per_page = 100
 
-    inlines = [MatchInline]
+    inlines = [PointInline]
 
+    search_fields = ['home_team', 'host_team']
     ordering = ('-pk',)
-
-
-class PointInline(admin.TabularInline):
-    model = PlayerInPoint
-    extra = 0
 
 
 class PointAdmin(admin.ModelAdmin):
@@ -111,8 +128,7 @@ class PointAdmin(admin.ModelAdmin):
     )
     list_per_page = 100
 
-    inlines = [PointInline]
-
+    search_fields = ['score', 'assist']
     ordering = ('-pk',)
 
 

@@ -3,10 +3,20 @@ from django.contrib import admin
 from .models import *
 
 
+class TeacherInline(admin.TabularInline):
+    model = Teacher
+    extra = 0
+
+    exclude = ['email_verified']
+    can_delete = False
+
+
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('name', 'street', 'city', 'web')
     list_filter = ('region',)
     list_per_page = 100
+
+    inlines = [TeacherInline]
 
     search_fields = ['name', 'street', 'city']
     ordering = ('-pk',)

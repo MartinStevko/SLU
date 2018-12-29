@@ -163,6 +163,7 @@ class Tournament(models.Model):
 
 class Team(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    confirmed = models.BooleanField(default=False)
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT)
@@ -220,30 +221,25 @@ class Match(models.Model):
         null=True
     )
 
+    home_team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name='home_team'
+    )
+    host_team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name='host_team'
+    )
+
     class Meta:
         verbose_name_plural = 'matches'
 
     def __str__(self):
-        t = TeamInMatchRegistration.objects.filter(match=self)
-        if len(t) != 2:
-            raise ValueError('Match can not \
-            has {} participants!'.format(len(t)))
-        else:
-            return "{} vs. {}".format(t[0], t[1])
-
-
-class TeamInMatchRegistration(models.Model):
-    match = models.ForeignKey(
-        Match,
-        on_delete=models.CASCADE
-    )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.PROTECT
-    )
-
-    def __str__(self):
-        return "{}".format(self.team.get_name())
+        return "{} vs. {}".format(
+            self.home_team,
+            self.host_team
+        )
 
 
 class Point(models.Model):
@@ -253,30 +249,26 @@ class Point(models.Model):
     )
     time = models.DurationField()
 
+    score = models.ForeignKey(
+        Player,
+        on_delete=models.PROTECT,
+        related_name='score',
+        blank=True,
+        null=True
+    )
+    assist = models.ForeignKey(
+        Player,
+        on_delete=models.PROTECT,
+        related_name='assist',
+        blank=True,
+        null=True
+    )
+
     def __str__(self):
         return "{} - {}".format(
             str(self.time),
             self.match
         )
-
-
-class PlayerInPoint(models.Model):
-    point = models.ForeignKey(
-        Point,
-        on_delete=models.CASCADE
-    )
-
-    player = models.ForeignKey(
-        Player,
-        on_delete=models.CASCADE
-    )
-    role = models.CharField(
-        max_length=15,
-        choices=ROLES
-    )
-
-    def __str__(self):
-        return "{} - {}".format(self.player, self.role)
 
 
 @deconstructible
