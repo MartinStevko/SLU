@@ -8,6 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 from content.models import Section, News, Message, OrganizerProfile
 from content.forms import ContactForm
 
+
 class ContentView(TemplateView):
     title = 'other'
     template_name = 'content/section.html'

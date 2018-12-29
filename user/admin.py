@@ -21,13 +21,32 @@ class OrganizerChangeForm(EmailRequiredMixin, UserChangeForm):
     pass
 
 
-class EmailRequiredUserAdmin(UserAdmin):
+class SpecialPermissionInline(admin.StackedInline):
+    model = SpecialPermission
+
+
+class OrganizerUserAdmin(UserAdmin):
     form = OrganizerChangeForm
     add_form = OrganizerCreationForm
     add_fieldsets = ((None, {
         'fields': ('username', 'email', 'password1', 'password2'), 
         'classes': ('wide',)
     }),)
+
+    list_filter = UserAdmin.list_filter + (
+        'specialpermission__email_verified',
+    )
+    list_per_page = 100
+
+    inlines = UserAdmin.inlines + [SpecialPermissionInline]
+
+    search_fields = [
+        'username',
+        'first_name',
+        'last_name',
+        'email',
+    ]
+    ordering = ('-pk',)
 
 
 class SpecialPermissionAdmin(admin.ModelAdmin):
@@ -43,5 +62,7 @@ class SpecialPermissionAdmin(admin.ModelAdmin):
     ordering = ('-pk',)
 
 admin.site.unregister(User)
-admin.site.register(User, EmailRequiredUserAdmin)
-admin.site.register(SpecialPermission, SpecialPermissionAdmin)
+admin.site.register(User, OrganizerUserAdmin)
+
+# It isn't necessary to have SpecialPermissions shown
+# admin.site.register(SpecialPermission, SpecialPermissionAdmin)

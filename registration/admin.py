@@ -13,6 +13,7 @@ class TeacherInline(admin.TabularInline):
 
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('name', 'street', 'city', 'web')
+    list_display_links = ('name',)
     list_filter = ('region',)
     list_per_page = 100
 
@@ -21,9 +22,23 @@ class SchoolAdmin(admin.ModelAdmin):
     search_fields = ['name', 'street', 'city']
     ordering = ('-pk',)
 
+    fieldsets = (
+        ('Základné informácie', {
+            'classes': ('wide',),
+            'fields': ('name', 'web'),
+            # 'description': 'optional description',
+        }),
+        ('Adresa', {
+            'classes': ('wide',),
+            'fields': ('street', 'postcode', ('city', 'region')),
+            # 'description': 'optional description',
+        }),
+    )
+
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
+    list_display_links = ('first_name',)
     list_filter = ('email_verified', 'school__region')
     list_per_page = 100
 
@@ -37,9 +52,23 @@ class TeacherAdmin(admin.ModelAdmin):
     ]
     ordering = ('-pk',)
 
+    fieldsets = (
+        ('Základné informácie', {
+            'classes': ('wide',),
+            'fields': ('school', ('first_name', 'last_name')),
+            # 'description': 'optional description',
+        }),
+        ('Kontakt', {
+            'classes': ('wide',),
+            'fields': (('email', 'email_verified'), 'phone_number'),
+            # 'description': 'optional description',
+        }),
+    )
+
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
+    list_display_links = ('first_name',)
     list_filter = ('sex', 'school__region')
     list_per_page = 100
 
@@ -51,6 +80,22 @@ class PlayerAdmin(admin.ModelAdmin):
         'school__city'
     ]
     ordering = ('-pk',)
+
+    radio_fields = {'sex': admin.HORIZONTAL}
+
+    fieldsets = (
+        ('Základné informácie', {
+            'classes': ('wide',),
+            'fields': ('school', ('first_name', 'last_name')),
+            # 'description': 'Základné informácie o hráčovi',
+        }),
+        ('Turnajové štatistiky', {
+            'classes': ('wide',),
+            'fields': ('sex', 'is_exception'),
+            # 'description': 'Informácie potrebné na \
+            # generovanie štatistík a rebríčku hráčov',
+        }),
+    )
 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Teacher, TeacherAdmin)

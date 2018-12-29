@@ -10,6 +10,19 @@ class NewsAdmin(admin.ModelAdmin):
     search_fields = ['title', 'description']
     ordering = ('-expiration', '-pk',)
 
+    fieldsets = (
+        ('Hlavička', {
+            'classes': ('wide',),
+            'fields': ('title', 'expiration',),
+            # 'description': 'optional description',
+        }),
+        ('Obsah', {
+            'classes': ('wide',),
+            'fields': ('description','image',),
+            # 'description': 'optional description',
+        }),
+    )
+
 
 class SectionAdmin(admin.ModelAdmin):
     list_display = ('category', 'title')
@@ -19,13 +32,46 @@ class SectionAdmin(admin.ModelAdmin):
     search_fields = ['title', 'description']
     ordering = ('-pk',)
 
+    fieldsets = (
+        ('Hlavička', {
+            'classes': ('wide',),
+            'fields': ('title', 'category'),
+            # 'description': 'optional description',
+        }),
+        ('Obsah', {
+            'classes': ('wide',),
+            'fields': ('description','image',),
+            # 'description': 'optional description',
+        }),
+    )
+
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('from_email', 'send_time', 'subject')
+    list_display = ('subject', 'from_email', 'send_time')
     list_per_page = 100
 
     search_fields = ['from_email', 'subject', 'text']
     ordering = ('-send_time', '-pk')
+
+    date_hierarchy = 'send_time'
+
+    fieldsets = (
+        ('Hlavička', {
+            'classes': ('wide',),
+            'fields': ('from_email', 'subject'),
+            # 'description': 'optional description',
+        }),
+        ('Podrobné informácie', {
+            'classes': ('collapse',),
+            'fields': ('send_time',),
+            # 'description': 'optional description',
+        }),
+        ('Obsah', {
+            'classes': ('wide',),
+            'fields': ('text',),
+            # 'description': 'optional description',
+        }),
+    )
 
 
 class OrganizerProfileAdmin(admin.ModelAdmin):
@@ -35,6 +81,19 @@ class OrganizerProfileAdmin(admin.ModelAdmin):
 
     search_fields = ['full_name', 'email']
     ordering = ('-pk',)
+
+    fieldsets = (
+        ('Základné infromácie', {
+            'classes': ('wide',),
+            'fields': ('full_name', 'email'),
+            # 'description': 'optional description',
+        }),
+        ('Obsah', {
+            'classes': ('wide',),
+            'fields': ('image', ('start_season', 'end_season')),
+            # 'description': 'optional description',
+        }),
+    )
 
 
 admin.site.register(News, NewsAdmin)

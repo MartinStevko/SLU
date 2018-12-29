@@ -35,9 +35,13 @@ REGIONS = (
     ('F', 'finále'),
 )
 
-ROLES = (
-    ('P', 'bod'),
-    ('A', 'asistencia'),
+STATUSES = (
+    ('registered', 'zaregistrovaný'),
+    ('invited', 'pozvaný'),
+    ('waitlisted', 'čakajúci na pozvanie'),
+    ('canceled', 'odmietnutý'),
+    ('attended', 'zúčastnený'),
+    ('not_attended', 'nezúčastnený'),
 )
 
 
@@ -47,7 +51,8 @@ class Season(models.Model):
         limit_choices_to={
             'is_staff': True,
             'specialpermission__email_verified': True
-        }
+        },
+        blank=True
     )
 
     school_year = models.CharField(
@@ -86,12 +91,24 @@ class Tournament(models.Model):
         limit_choices_to={
             'is_staff': True,
             'specialpermission__email_verified': True
-        }
+        },
+        blank=True
     )
 
-    delegate = models.CharField(max_length=255)
-    director = models.CharField(max_length=255)
-    institute = models.CharField(max_length=255)
+    delegate = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
+    director = models.CharField(
+        max_length=255,
+        default='Stredo3kolská liga Ultimate Frisbee'
+    )
+    institute = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True
+    )
 
     date = models.DateField(
         auto_now=False,
@@ -102,7 +119,11 @@ class Tournament(models.Model):
     in_city = models.CharField(max_length=63)
 
     image = models.ImageField(upload_to='tournaments')
-    prop_image = models.ImageField(upload_to='tournaments/propositions')
+    prop_image = models.ImageField(
+        upload_to='tournaments/propositions',
+        null=True,
+        blank=True
+    )
 
     cap = models.BooleanField(default=False)
     game_duration = models.DurationField(default=timedelta(0, 720))
@@ -163,7 +184,13 @@ class Tournament(models.Model):
 
 class Team(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+
     confirmed = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=63,
+        choices=STATUSES,
+        default='registered'
+    )
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT)
