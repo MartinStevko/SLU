@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class ContentConfig(AppConfig):
     name = 'content'
-    verbose_name = 'obsah'
+    verbose_name = 'Obsah'
