@@ -46,7 +46,7 @@ class Season(models.Model):
         User,
         limit_choices_to={
             'is_staff': True,
-            'specialpermission.email_verified': True
+            'specialpermission__email_verified': True
         }
     )
 
@@ -85,7 +85,7 @@ class Tournament(models.Model):
         User,
         limit_choices_to={
             'is_staff': True,
-            'specialpermission.email_verified': True
+            'specialpermission__email_verified': True
         }
     )
 
@@ -154,7 +154,7 @@ class Tournament(models.Model):
         else:
             name = '' + temp[0].upper() + temp[1:]
 
-        name += ' SLU ' + self.school_year
+        name += ' SLU ' + self.season.school_year
         return name
 
     def __str__(self):
@@ -197,7 +197,7 @@ class Result(models.Model):
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
     place = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(6),
+            MinValueValidator(1),
             MaxValueValidator(16),
         ]
     )
@@ -242,6 +242,9 @@ class TeamInMatchRegistration(models.Model):
         on_delete=models.PROTECT
     )
 
+    def __str__(self):
+        return "{}".format(self.team.get_name())
+
 
 class Point(models.Model):
     match = models.ForeignKey(
@@ -271,6 +274,9 @@ class PlayerInPoint(models.Model):
         max_length=15,
         choices=ROLES
     )
+
+    def __str__(self):
+        return "{} - {}".format(self.player, self.role)
 
 
 @deconstructible
