@@ -10,7 +10,7 @@ from django.core.validators import (
 
 import os
 from uuid import uuid4
-from datetime import time, timedelta
+import datetime
 
 from django.contrib.auth.models import User
 from registration.models import School, Teacher, Player
@@ -42,6 +42,13 @@ STATUSES = (
     ('canceled', 'odmietnutý'),
     ('attended', 'zúčastnený'),
     ('not_attended', 'nezúčastnený'),
+)
+
+STATES = (
+    ('not_public', 'nezverejnený'),
+    ('public', 'čakajúci na otvorenie registrácie'),
+    ('registration', 'registrácia tímov'),
+    ('results', 'výsledky verejné'),
 )
 
 
@@ -80,10 +87,37 @@ class Season(models.Model):
         return "{}, {}".format(self.season, self.school_year)
 
 
+class TournamentManager(models.Manager):
+
+    def get_queryset(self):
+        return super(
+            TournamentManager,
+            self
+        ).get_queryset().exclude(state='not_public')
+
+    def get_previous(self):
+        return self.exclude(
+            date__gte=datetime.date.today(),
+        ).order_by('-date')
+
+    def get_next(self):
+        return self.filter(
+            date__gte=datetime.date.today(),
+        ).order_by('-date')
+
+
 class Tournament(models.Model):
+    objects = models.Manager()
+    public = TournamentManager()
+
     season = models.ForeignKey(
         Season,
         on_delete=models.PROTECT
+    )
+    state = models.CharField(
+        max_length=63,
+        choices=STATES,
+        default='registration'
     )
 
     orgs = models.ManyToManyField(
@@ -126,7 +160,10 @@ class Tournament(models.Model):
     )
 
     cap = models.BooleanField(default=False)
-    game_duration = models.DurationField(default=timedelta(0, 720))
+    game_duration = models.DurationField(
+        blank=True,
+        null=True
+    )
     region = models.CharField(
         max_length=63,
         choices=REGIONS
@@ -147,15 +184,15 @@ class Tournament(models.Model):
             MaxValueValidator(16),
         ]
     )
-    signup_deadline = models.DateTimeField(
+    signup_deadline = models.DateField(
         auto_now=False,
         auto_now_add=False
     )
 
-    arrival_time = models.TimeField(default=time(8, 0))
-    meeting_time = models.TimeField(default=time(8, 30))
-    game_time = models.TimeField(default=time(8, 45))
-    end_time = models.TimeField(default=time(14, 00))
+    arrival_time = models.TimeField(default=datetime.time(8, 0))
+    meeting_time = models.TimeField(default=datetime.time(8, 30))
+    game_time = models.TimeField(default=datetime.time(8, 45))
+    end_time = models.TimeField(default=datetime.time(14, 00))
 
     def get_name(self):
         if self.region == 'F':
@@ -177,6 +214,23 @@ class Tournament(models.Model):
 
         name += ' SLU ' + self.season.school_year
         return name
+
+    def team_count(self):
+        return len(Team.objects.filter(
+            tournament=self.id
+        ))
+
+    def confirmed_team_count(self):
+        return len(Team.objects.filter(
+            tournament=self.id,
+            confirmed=True
+        ))
+
+    def is_registration_open(self):
+        if self.signup_deadline >= datetime.date.today():
+            return True
+        else:
+            return False
 
     def __str__(self):
         return "{}".format(self.get_name())

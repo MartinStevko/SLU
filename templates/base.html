@@ -48,8 +48,13 @@
                 margin-top: 56px;
             }
 
-            div.container {
+            main > div.container {
                 padding-top: 44px;
+            }
+
+            label.required::after {
+                content: ' *';
+                color: red;
             }
         </style>
         {% block css %}
@@ -68,25 +73,42 @@
     <body>
         <header>
             <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <a class="navbar-brand" href="{% url 'content:home' %}">SLU</a>
-                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse" id="navbarCollapse" style="">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item {% if 'rules' in request.build_absolute_uri %}active{% endif %}">
-                            <a class="nav-link" href="{% url 'content:rules' %}">Pravidlá</a>
-                        </li>
-                        <li class="nav-item {% if 'ultimate' in request.build_absolute_uri %}active{% endif %}">
-                            <a class="nav-link" href="{% url 'content:ultimate' %}">O ultimate</a>
-                        </li>
-                        <li class="nav-item {% if 'tournament' in request.build_absolute_uri %}active{% endif %}">
-                            <a class="nav-link" href="{% url 'tournament:list' %}">Turnaje</a>
-                        </li>
-                        <li class="nav-item {% if 'contact' in request.build_absolute_uri %}active{% endif %}">
-                            <a class="nav-link" href="{% url 'content:contact' %}">Kontakt</a>
-                        </li>
-                    </ul>
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'content:home' %}">SLU</a>
+                    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item {% if 'rules' in request.build_absolute_uri %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'content:rules' %}">Pravidlá</a>
+                            </li>
+                            <li class="nav-item {% if 'ultimate' in request.build_absolute_uri %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'content:ultimate' %}">O ultimate</a>
+                            </li>
+                            <li class="nav-item {% if 'tournament' in request.build_absolute_uri %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'tournament:list' %}">Turnaje</a>
+                            </li>
+                            <li class="nav-item {% if 'contact' in request.build_absolute_uri %}active{% endif %}">
+                                <a class="nav-link" href="{% url 'content:contact' %}">Kontakt</a>
+                            </li>
+                        </ul>
+                        <!--Right side navbar:
+                        <ul class="navbar-nav">
+                            {% if not user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'admin:login' %}">Prihlásiť sa</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'admin:index' %}">Administrátor</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'admin:logout' %}">Odhlásiť sa</a>
+                                </li>
+                            {% endif %}
+                        </ul>-->
+                    </div>
                 </div>
             </nav>
         </header>
@@ -109,8 +131,17 @@
             </footer>
         </main>
 
-        <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
         <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'js/jquery.cookie.js' %}"></script>
+        <script>
+            $(function() {
+                try {
+                    $(':input[required]').parent().parent().children().filter('label').addClass('required');
+                }
+                catch {}
+            });
+        </script>
         {% block js %}
         {% endblock %}
     </body>

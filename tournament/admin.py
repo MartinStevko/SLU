@@ -53,7 +53,7 @@ class MatchInline(admin.TabularInline):
 class TournamentAdmin(admin.ModelAdmin):
     list_display = ('season', 'date', 'place')
     list_display_links = ('season',)
-    list_filter = ('season__season', 'region', 'player_stats')
+    list_filter = ('state', 'season__season', 'region', 'player_stats')
     list_per_page = 100
 
     inlines = [ResultInline, MatchInline]
@@ -82,7 +82,7 @@ class TournamentAdmin(admin.ModelAdmin):
         }),
         ('Systémové informácie', {
             'classes': ('wide',),
-            'fields': ('season', 'region'),
+            'fields': ('season', 'region', 'state'),
             # 'description': 'optional description',
         }),
         ('Nastavenia', {

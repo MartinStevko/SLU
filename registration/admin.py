@@ -39,7 +39,7 @@ class SchoolAdmin(admin.ModelAdmin):
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
     list_display_links = ('first_name',)
-    list_filter = ('email_verified', 'school__region')
+    list_filter = ('school__region',)
     list_per_page = 100
 
     search_fields = [
@@ -60,7 +60,7 @@ class TeacherAdmin(admin.ModelAdmin):
         }),
         ('Kontakt', {
             'classes': ('wide',),
-            'fields': (('email', 'email_verified'), 'phone_number'),
+            'fields': ('email', 'phone_number'),
             # 'description': 'optional description',
         }),
     )

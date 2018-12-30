@@ -1,11 +1,12 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import path
 
-app_name = 'tournament'
+from tournament.views import TournamentListView, TournamentDetailView
 
-from django.views.generic import ListView
+app_name = 'tournament'
 
 urlpatterns = [
     #path('<int:pk>/submit/', staff_member_required(SubmitFormView.as_view()), name='submit'),
-    path('', ListView.as_view(), name='list')
+    path('<int:pk>/detail/', TournamentDetailView.as_view(), name='detail'),
+    path('', TournamentListView.as_view(), name='list'),
 ]

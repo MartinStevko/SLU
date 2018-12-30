@@ -62,7 +62,6 @@ class Teacher(models.Model):
     last_name = models.CharField(max_length=255)
 
     email = models.EmailField()
-    email_verified = models.BooleanField(default=False)
 
     phone_number = models.CharField(
         max_length=31,

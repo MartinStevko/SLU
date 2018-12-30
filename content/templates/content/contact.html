@@ -27,11 +27,11 @@
                         <h2>
                             {{ fieldset.name }}<br>
                         </h2>
-                        <p class="lead">
-                            {% if fieldset.description %}
+                        {% if fieldset.description %}
+                            <p class="lead">
                                 {{ fieldset.description }}
-                            {% endif %}
-                        </p>
+                            </p>
+                        {% endif %}
                         {% for field in fieldset %}
                             {% bootstrap_field field layout='horizontal' %}
                         {% endfor %}
@@ -76,7 +76,7 @@
         <hr class="featurette-divider">
 
         <div class="row featurette justify-content-center">
-            {% for org in organizerprofile_list %}
+            {% for org in organizers %}
                 <div class="card m-3" style="width:300px">
                     <img class="card-img-top" src="{{ org.image.url }}" style="width:100%">
                     <div class="card-body">

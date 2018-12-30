@@ -44,7 +44,9 @@ class ContentView(TemplateView):
 
 class OrganizersView(ListView):
     template_name = 'content/contact.html'
+
     model = OrganizerProfile
+    context_object_name = 'organizers'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

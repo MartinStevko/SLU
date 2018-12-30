@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load bootstrap4 %}
+
+{% block title %}Turnaje{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+        {% if next_tournaments %}
+            {% for tournament, tags in next_tournaments %}
+                <div id="accordion{{ tournament.pk }}">
+                    <div class="card bg-light mb-3">
+                        <a class="card-header btn" id="heading{{ tournament.pk }}" data-toggle="collapse" data-target="#collapse{{ tournament.pk }}" aria-expanded="true" aria-controls="{{ tournament.pk }}">
+                            <h5 class="mb-0 float-left">
+                                {{ tournament }}
+                            </h5>
+                        </a>
+                        <div id="collapse{{ tournament.pk }}" class="collapse show" aria-labelledby="heading{{ tournament.pk }}" data-parent="#accordion{{ tournament.pk }}">
+                            <div class="card-body">
+                                <div class="row featurette">
+                                    <div class="col-md-7">
+                                        {% include 'include/tournament.html' with next=True %}
+                                        {% include 'tournament/view_buttons.html' with next=True %}
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <img class="featurette-image img-fluid mx-auto" src="{{ tournament.image.url }}" width="400" height="auto">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <hr class="featurette-divider my-4">
+        {% endif %}
+
+        {% include 'include/pagination.html' %}
+
+        {% if previous_tournaments %}
+            {% for tournament in previous_tournaments %}
+                <div id="accordion{{ tournament.pk }}">
+                    <div class="card bg-light mb-3">
+                        <a class="card-header btn collapsed" id="heading{{ tournament.pk }}" data-toggle="collapse" data-target="#collapse{{ tournament.pk }}" aria-expanded="false" aria-controls="{{ tournament.pk }}">
+                            <h5 class="mb-0 float-left">
+                                {{ tournament }}
+                            </h5>
+                        </a>
+                        <div id="collapse{{ tournament.pk }}" class="collapse" aria-labelledby="heading{{ tournament.pk }}" data-parent="#accordion{{ tournament.pk }}">
+                            <div class="card-body">
+                                <div class="row featurette">
+                                    <div class="col-md-7">
+                                        {% include 'include/tournament.html' with next=False %}
+                                        {% include 'tournament/view_buttons.html' with next=False %}
+                                    </div>
+                                    <div class="col-md-5 text-center">
+                                        <img class="featurette-image img-fluid mx-auto" src="{{ tournament.image.url }}" width="400" height="auto">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <hr class="featurette-divider">
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function() {
+            $("div.col-md-7:odd").addClass("order-md-2");
+            $("div.col-md-5:odd").addClass("order-md-1");
+
+            if ($(window).width() < 751) {
+                $("a.btn-secondary.btn-lg").addClass("btn-block my-3");
+                $("div.mt-optional-jq").removeClass("mt-3");
+                $("div.col-md-8>span.lead").addClass("font-weight-normal")
+            };
+
+            $('#paginator-3000').on('click', function() {
+                $.cookie('pagination_view', true, { expires : 1 });
+            });
+
+            if (!!$.cookie('pagination_view')) {
+                $.removeCookie('pagination_view');
+                $('html, body').animate({scrollTop: $('#paginator-3000').offset().top}, 1500);
+            };
+        });
+    </script>
+{% endblock %}

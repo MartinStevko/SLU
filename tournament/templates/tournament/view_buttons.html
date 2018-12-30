@@ -1,0 +1,14 @@
+<div class="row mt-3 mt-optional-jq">
+    <div class="col-md-12">
+        <a href="{% url 'tournament:detail' tournament.pk %}" class="btn btn-secondary btn-lg{% if tags.2 and next %} mr-3{% endif %}" role="button">Detail</a>
+        {% if tags.2 and next %}
+            {% if tags.1 %}
+                <a href="{% url 'registration:create' %}" class="btn btn-secondary btn-lg disabled" role="button" aria-disabled="true">Registrácia</a>
+            {% else %}
+                <a href="{% url 'registration:create' %}" class="btn btn-secondary btn-lg" role="button">Registrácia</a>
+            {% endif %}
+        {% else %}
+            
+        {% endif %}
+    </div>
+</div>
