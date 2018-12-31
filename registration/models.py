@@ -46,6 +46,8 @@ class School(models.Model):
         choices=REGIONS
     )
 
+    have_disc = models.BooleanField(default=False)
+
     def __str__(self):
         return "{}, {}, {} {}".format(
             self.name,

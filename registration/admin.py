@@ -14,7 +14,7 @@ class TeacherInline(admin.TabularInline):
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ('name', 'street', 'city', 'web')
     list_display_links = ('name',)
-    list_filter = ('region',)
+    list_filter = ('region', 'have_disc')
     list_per_page = 100
 
     inlines = [TeacherInline]
@@ -25,7 +25,7 @@ class SchoolAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Základné informácie', {
             'classes': ('wide',),
-            'fields': ('name', 'web'),
+            'fields': ('name', 'web', 'have_disc'),
             # 'description': 'optional description',
         }),
         ('Adresa', {

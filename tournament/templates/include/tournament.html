@@ -38,30 +38,62 @@
     </div>
 </div>
 
+{% if detail %}
+    {% ifnotequal tournament.region 'F' %}
+        <div class="row mb-1">
+            <div class="col-md-4">
+                <span class="lead">Kvalifikačné miesta:</span>
+            </div>
+            <div class="col-md-8">
+                <span class="lead">{{ tournament.number_qualified }}</span>
+            </div>
+        </div>
+    {% endifnotequal %}
+{% endif %}
+
 <div class="row mb-1">
     <div class="col-md-4">
         <span class="lead">Hrací formát:</span>
     </div>
     <div class="col-md-8">
-        <p class="lead mb-0"><a href="{% url 'content:rules' %}" class="badge badge-pill badge-info px-3">
-            {% ifequal tournament.season.game_format 'man' %}
-                Muži
-            {% endifequal %}
-            {% ifequal tournament.season.game_format 'open' %}
-                Open
-            {% endifequal %}
-            {% ifequal tournament.season.game_format 'loose_mix' %}
-                Loose Mix
-            {% endifequal %}
-            {% ifequal tournament.season.game_format 'mix' %}
-                Mix
-            {% endifequal %}
-            {% ifequal tournament.season.game_format 'woman' %}
-                Ženy
-            {% endifequal %}
-        </a></p>
+        <p class="lead mb-0">
+            <a href="{% url 'content:rules' %}" class="badge badge-pill badge-info px-3">
+                {% ifequal tournament.season.game_format 'man' %}
+                    Muži
+                {% endifequal %}
+                {% ifequal tournament.season.game_format 'open' %}
+                    Open
+                {% endifequal %}
+                {% ifequal tournament.season.game_format 'loose_mix' %}
+                    Loose Mix
+                {% endifequal %}
+                {% ifequal tournament.season.game_format 'mix' %}
+                    Mix
+                {% endifequal %}
+                {% ifequal tournament.season.game_format 'woman' %}
+                    Ženy
+                {% endifequal %}
+            </a>
+            {% if detail and tournament.cap %}
+                &ensp;<a href="{% url 'content:rules' %}" class="badge badge-pill badge-info px-3">Cap</a>
+            {% endif %}
+        </p>
     </div>
 </div>
+
+{% if next %}
+{% else %}
+    {% if detail %}
+        <div class="row mb-1">
+            <div class="col-md-4">
+                <span class="lead">Trvanie zápasu:</span>
+            </div>
+            <div class="col-md-8">
+                <span class="lead">{{ tournament.game_duration }}</span>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
 
 {% if next %}
     <div class="row mb-1">
@@ -79,8 +111,29 @@
                     {% endif %}
                 {% endif %}
             {% else %}
-                <p class="lead mb-0"><span class="badge badge-pill badge-danger px-3">Registrácia uzavretá</span></p>
+                <p class="lead mb-0"><span class="badge badge-pill badge-danger px-3">
+                    {% ifequal tournament.region 'F' %}
+                        Len pre pozvané tímy
+                    {% else %}
+                        {% ifequal tournament.state 'public' %}
+                            {{ tournament.signup_deadline }} - neotvorená
+                        {% else %}
+                            Registrácia uzavretá
+                        {% endifequal %}
+                    {% endifequal %}
+                </span></p>
             {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% if detail %}
+    <div class="row mb-1">
+        <div class="col-md-4">
+            <span class="lead">Voľné miesta:</span>
+        </div>
+        <div class="col-md-8">
+            <span class="lead">{{ c_spots }}{% if spots %} ({{ spots }}){% endif %}</span>
         </div>
     </div>
 {% endif %}

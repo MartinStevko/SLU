@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container marketing">
+        <h2 class="featurette-heading mb-4">{{ tournament }}</h2>
+        {% if tabs %}
+            <ul class="nav nav-tabs">
+                {% for title,url,warn in tabs %}
+                    <li class="nav-item{% ifequal url request.get_full_path %} active{% endifequal %}">
+                        <a href="{% ifnotequal url request.get_full_path %}{{ url }}{% endifnotequal %}">
+                            {{ title }}
+                            {% if warn %}
+                                <span class="label label-warning">{{ warn }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+                {% if toolbox %}
+                    <li class="nav-item dropdown">
+                        <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Správa turnaja</a>
+                        <div class="dropdown-menu">
+                            {% for group in toolbox %}
+                                {% for url,tool in group %}
+                                    <a class="dropdown-item" href="{{ url }}">{{ tool }}</a>
+                                {% endfor %}
+                                <div class="dropdown-divider"></div>
+                            {% endfor %}
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+        {% block body %}
+        {% endblock %}
+    </div>
+{% endblock %}

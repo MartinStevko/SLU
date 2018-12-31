@@ -48,6 +48,7 @@ STATES = (
     ('not_public', 'nezverejnený'),
     ('public', 'čakajúci na otvorenie registrácie'),
     ('registration', 'registrácia tímov'),
+    ('active', 'turnaj prebieha'),
     ('results', 'výsledky verejné'),
 )
 
@@ -227,7 +228,17 @@ class Tournament(models.Model):
         ))
 
     def is_registration_open(self):
-        if self.signup_deadline >= datetime.date.today():
+        if (
+            self.signup_deadline >= datetime.date.today() and
+            self.state != 'public' and
+            self.region != 'F'
+        ):
+            return True
+        else:
+            return False
+
+    def is_next(self):
+        if self.date >= datetime.date.today():
             return True
         else:
             return False

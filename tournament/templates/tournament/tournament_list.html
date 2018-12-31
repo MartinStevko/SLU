@@ -1,14 +1,11 @@
 {% extends "base.html" %}
 
-{% load staticfiles %}
-{% load bootstrap4 %}
-
 {% block title %}Turnaje{% endblock %}
 
 {% block content %}
     <div class="container marketing">
         {% if next_tournaments %}
-            {% for tournament, tags in next_tournaments %}
+            {% for tournament,tags in next_tournaments %}
                 <div id="accordion{{ tournament.pk }}">
                     <div class="card bg-light mb-3">
                         <a class="card-header btn" id="heading{{ tournament.pk }}" data-toggle="collapse" data-target="#collapse{{ tournament.pk }}" aria-expanded="true" aria-controls="{{ tournament.pk }}">
@@ -21,7 +18,7 @@
                                 <div class="row featurette">
                                     <div class="col-md-7">
                                         {% include 'include/tournament.html' with next=True %}
-                                        {% include 'tournament/view_buttons.html' with next=True %}
+                                        {% include 'include/tournament_buttons.html' with next=True %}
                                     </div>
                                     <div class="col-md-5 text-center">
                                         <img class="featurette-image img-fluid mx-auto" src="{{ tournament.image.url }}" width="400" height="auto">
@@ -51,7 +48,7 @@
                                 <div class="row featurette">
                                     <div class="col-md-7">
                                         {% include 'include/tournament.html' with next=False %}
-                                        {% include 'tournament/view_buttons.html' with next=False %}
+                                        {% include 'include/tournament_buttons.html' with next=False %}
                                     </div>
                                     <div class="col-md-5 text-center">
                                         <img class="featurette-image img-fluid mx-auto" src="{{ tournament.image.url }}" width="400" height="auto">
