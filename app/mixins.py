@@ -1,5 +1,6 @@
 from django.forms import model_to_dict
 
+
 class OverwriteOnlyModelFormMixin(object):
     '''
     Delete POST keys that were not actually found in the POST dict

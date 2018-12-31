@@ -56,7 +56,7 @@ class TournamentAdmin(admin.ModelAdmin):
     list_filter = ('state', 'season__season', 'region', 'player_stats')
     list_per_page = 100
 
-    inlines = [ResultInline, MatchInline]
+    inlines = [MatchInline, ResultInline]
 
     search_fields = [
         'orgs__username',

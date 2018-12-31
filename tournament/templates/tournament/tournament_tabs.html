@@ -6,11 +6,11 @@
         {% if tabs %}
             <ul class="nav nav-tabs">
                 {% for title,url,warn in tabs %}
-                    <li class="nav-item{% ifequal url request.get_full_path %} active{% endifequal %}">
-                        <a href="{% ifnotequal url request.get_full_path %}{{ url }}{% endifnotequal %}">
+                    <li class="nav-item">
+                        <a class="nav-link{% ifequal url request.get_full_path %} active{% endifequal %}" href="{% ifnotequal url request.get_full_path %}{{ url }}{% endifnotequal %}">
                             {{ title }}
                             {% if warn %}
-                                <span class="label label-warning">{{ warn }}</span>
+                                <span class="badge badge-warning">{{ warn }}</span>
                             {% endif %}
                         </a>
                     </li>
@@ -20,7 +20,7 @@
                         <a href="" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Správa turnaja</a>
                         <div class="dropdown-menu">
                             {% for group in toolbox %}
-                                {% for url,tool in group %}
+                                {% for tool,url in group %}
                                     <a class="dropdown-item" href="{{ url }}">{{ tool }}</a>
                                 {% endfor %}
                                 <div class="dropdown-divider"></div>
@@ -30,7 +30,9 @@
                 {% endif %}
             </ul>
         {% endif %}
-        {% block body %}
-        {% endblock %}
+        <div class="mt-4">
+            {% block body %}
+            {% endblock %}
+        </div>
     </div>
 {% endblock %}
