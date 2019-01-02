@@ -1,0 +1,17 @@
+{% extends 'tournament/tables.html' %}
+
+{% block head %}
+    <th scope="row">#</th>
+    <th class="text-left">Tím</th>
+    <th class="text-left">Škola</th>
+{% endblock %}
+
+{% block table %}
+    {% for r in results %}
+        <tr>
+            <td scope="row">.</td>
+            <td class="text-left">{{ r.team }}</td>
+            <td class="text-left">{{ r.team.school }}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}

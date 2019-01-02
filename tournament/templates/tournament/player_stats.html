@@ -1,0 +1,23 @@
+{% extends 'tournament/tables.html' %}
+
+{% block head %}
+    <th scope="row">#</th>
+    <th class="text-left">Hráč</th>
+    <th class="text-left">Škola</th>
+    <th class="text-center">Body</th>
+    <th class="text-center">Asistencie</th>
+    <th class="text-center">Spolu</th>
+{% endblock %}
+
+{% block table %}
+    {% for p,s in stats %}
+        <tr>
+            <td scope="row">.</td>
+            <td class="text-left">{{ p }}</td>
+            <td class="text-left">{{ p.school }}</td>
+            <td class="text-center">{{ s.0 }}</td>
+            <td class="text-center">{{ s.1 }}</td>
+            <td class="text-center">{{ s.2 }}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}
