@@ -170,7 +170,10 @@ class Tournament(models.Model):
         choices=REGIONS
     )
 
-    player_stats = models.BooleanField(default=False)
+    player_stats = models.BooleanField(
+        default=False,
+        help_text='Toto po začatí turnaja za žiadnych okolností nemeň!',
+    )
 
     number_qualified = models.PositiveSmallIntegerField(
         validators=[
@@ -259,7 +262,10 @@ class Team(models.Model):
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT)
-    players = models.ManyToManyField(Player)
+    players = models.ManyToManyField(
+        Player,
+        related_name='team',
+    )
 
     name = models.CharField(
         max_length=31,
@@ -281,7 +287,7 @@ class Team(models.Model):
             return self.school
 
     def __str__(self):
-        return "{}".format(self.school)
+        return "{}".format(self.get_name())
 
 
 class Result(models.Model):
@@ -308,7 +314,7 @@ class Match(models.Model):
         Tournament,
         on_delete=models.CASCADE
     )
-    begining_time = models.DateTimeField(
+    begining_time = models.TimeField(
         blank=True,
         null=True
     )
@@ -339,7 +345,7 @@ class Point(models.Model):
         Match,
         on_delete=models.CASCADE
     )
-    time = models.DurationField()
+    time = models.TimeField(default=datetime.datetime.now().time())
 
     score = models.ForeignKey(
         Player,

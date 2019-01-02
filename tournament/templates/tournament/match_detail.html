@@ -1,0 +1,89 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% load form_utils %}
+{% load bootstrap4 %}
+
+{% block title %}{{ match }}{% endblock %}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    {% if match.time %}
+                        <th scope="row" class="h4">{{ match.time }}</th>
+                    {% else %}
+                        <th scope="row" class="h4">-</th>
+                    {% endif %}
+                    <th class="text-right h4">{{ match.home_team }}</th>
+                    <th class="text-center h4">{{ score.0 }}</th>
+                    <th class="text-center h4 mx-0 px-0">:</th>
+                    <th class="text-center h4">{{ score.1 }}</th>
+                    <th class="text-left h4">{{ match.host_team }}</th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% if user.is_staff %}
+        <div class="mb-4">
+        <form method="POST">
+            {% csrf_token %}
+            {% bootstrap_form_errors form %}
+            {% if tournament.player_stats %}
+                {% for fieldset in form.fieldsets %}
+                    <fieldset>
+                        {% if fieldset.name %}
+                            <h2>{{ fieldset.name }}</h2>
+                        {% endif %}
+                        {% if fieldset.description %}
+                            <p class="lead">
+                                {{ fieldset.description }}
+                            </p>
+                        {% endif %}
+                        {% for field in fieldset %}
+                            {% bootstrap_field field layout='horizontal' %}
+                        {% endfor %}
+                    </fieldset>
+                {% endfor %}
+            {% endif %}
+            <div class="row">
+                <div class="col-md-6">
+                    <input class="btn btn-success btn-block" type="submit" name="add_to_home_team" value="+ {{ match.home_team}}">
+                </div>
+                <div class="col-md-6">
+                    <input class="btn btn-success btn-block" type="submit" name="add_to_host_team" value="+ {{ match.host_team}}">
+                </div>
+            </div>
+        </form>
+        </div>
+    {% endif %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <tbody>
+                {% for point,team in points %}
+                    <tr>
+                        <td scope="row">{{ point.time }}</td>
+                        <td class="text-left">{{ team }}</td>
+                        {% if tournament.player_stats %}
+                            <td class="text-center">{% ifequal point.score None %}-{% else %}{{ point.score }}{% endifequal %}</td>
+                            <td class="text-center">{% ifequal point.assist None %}-{% else %}{{ point.assist }}{% endifequal %}</td>
+                        {% endif %}
+                        {% if user.is_staff %}
+                            <td class="text-center"><a href="{% url 'tournament:delete_point' match=match.pk pk=point.pk %}"><i class="fa fa-close text-danger"></i></a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr class="featurette-divider">
+{% endblock %}

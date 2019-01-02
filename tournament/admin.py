@@ -1,6 +1,9 @@
 from django.contrib import admin
+from django import forms
+from django.urls import resolve
 
 from .models import *
+from registration.models import Player
 
 
 class SeasonAdmin(admin.ModelAdmin):
@@ -42,12 +45,38 @@ class ResultInline(admin.TabularInline):
 
     can_delete = False
 
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+
+        t = Tournament.objects.get(
+            pk=resolve(request.path_info).kwargs['object_id']
+        )
+
+        if db_field.name == 'team':
+            kwargs['queryset'] = Team.objects.filter(
+                tournament=t,
+                confirmed=True
+            )
+
+        return super(ResultInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class MatchInline(admin.TabularInline):
     model = Match
     extra = 1
 
-    exclude = ['begining_time']
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+
+        t = Tournament.objects.get(
+            pk=resolve(request.path_info).kwargs['object_id']
+        )
+
+        if db_field.name in ['home_team', 'host_team']:
+            kwargs['queryset'] = Team.objects.filter(
+                tournament=t,
+                confirmed=True
+            )
+
+        return super(MatchInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class TournamentAdmin(admin.ModelAdmin):
@@ -207,8 +236,42 @@ class PointInline(admin.TabularInline):
     model = Point
     extra = 0
 
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+
+        m = Match.objects.get(
+            pk=resolve(request.path_info).kwargs['object_id']
+        )
+
+        if db_field.name in ['score', 'assist']:
+            kwargs['queryset'] = Player.objects.filter(
+                team__in=[m.home_team, m.host_team],
+            )
+
+        return super(PointInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class MatchAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = Match
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(MatchAdminForm, self).__init__(*args, **kwargs)
+
+        try:
+            ins = self.instance.tournament
+        except:
+            pass
+        else:
+            if ins:
+                self.fields['home_team'].queryset = Team.objects.filter(tournament=ins)
+                self.fields['host_team'].queryset = Team.objects.filter(tournament=ins)
+
 
 class MatchAdmin(admin.ModelAdmin):
+    form = MatchAdminForm
+
     list_display = ('tournament', 'home_team', 'host_team', 'begining_time',)
     list_display_links = ('tournament',)
     list_filter = (
@@ -223,7 +286,7 @@ class MatchAdmin(admin.ModelAdmin):
     search_fields = ['home_team', 'host_team']
     ordering = ('-pk',)
 
-    date_hierarchy = 'begining_time'
+    date_hierarchy = 'tournament__date'
 
     fieldsets = (
         ('Turnajové nastavenie', {
