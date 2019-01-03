@@ -60,7 +60,8 @@ class Season(models.Model):
             'is_staff': True,
             'specialpermission__email_verified': True
         },
-        blank=True
+        blank=True,
+        verbose_name='Organizátori'
     )
 
     school_year = models.CharField(
@@ -70,19 +71,26 @@ class Season(models.Model):
                 regex='^\d{4}\/\d{4}$',
                 message='Školský rok musí byť vo formáte YYYY/YYYY.',
             ),
-        ]
+        ],
+        verbose_name='Školský rok'
     )
 
     season = models.CharField(
         max_length=31,
-        choices=SEASONS
+        choices=SEASONS,
+        verbose_name='Sezóna'
     )
 
     game_format = models.CharField(
         max_length=15,
         choices=FORMATS,
-        default='loose_mix'
+        default='loose_mix',
+        verbose_name='Hrací formát'
     )
+
+    class Meta:
+        verbose_name = 'sezóna'
+        verbose_name_plural = 'sezóny'
 
     def __str__(self):
         return "{}, {}".format(self.season, self.school_year)
@@ -113,12 +121,16 @@ class Tournament(models.Model):
 
     season = models.ForeignKey(
         Season,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        verbose_name='Sezóna'
     )
     state = models.CharField(
         max_length=63,
         choices=STATES,
-        default='registration'
+        default='registration',
+        verbose_name='Stav',
+        help_text='Odvíjajú sa od neho akcie, ktoré môžu \
+        návštevníci pri turnaji vykonávať.'
     )
 
     orgs = models.ManyToManyField(
@@ -127,76 +139,126 @@ class Tournament(models.Model):
             'is_staff': True,
             'specialpermission__email_verified': True
         },
-        blank=True
+        blank=True,
+        verbose_name='Organizátori'
     )
 
     delegate = models.CharField(
         max_length=255,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Delegát SAF'
     )
     director = models.CharField(
         max_length=255,
-        default='Stredo3kolská liga Ultimate Frisbee'
+        default='Stredoškolská liga Ultimate Frisbee',
+        verbose_name='Riaditeľ turnaja',
+        help_text='Ak si sponzor želá aby tu bol niekto iný, môže byť zmenené.'
     )
     institute = models.CharField(
         max_length=255,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Zastrešujúci inštitút',
+        help_text='Môže ostať prázdne, podstatné je to iba ak si to vyžaduje sponzor.'
     )
 
     date = models.DateField(
         auto_now=False,
-        auto_now_add=False
+        auto_now_add=False,
+        verbose_name='Dátum'
     )
 
-    place = models.CharField(max_length=255)
-    in_city = models.CharField(max_length=63)
+    place = models.CharField(
+        max_length=255,
+        verbose_name='Miesto konania',
+        help_text='Miesto spolu s adresov, takže v tvare \
+        napríklad "ihrisko, SOŠ Ostrovského 1, Košice".'
+    )
+    in_city = models.CharField(
+        max_length=63,
+        verbose_name='V meste',
+        help_text='Mesto konania vyskloňované v lokále, napríklad "Košiciach".'
+    )
 
-    image = models.ImageField(upload_to='tournaments')
+    image = models.ImageField(
+        upload_to='tournaments',
+        verbose_name='Obrázok',
+        help_text='Bude zobrazený pri turnaji a jeho náhľade.')
     prop_image = models.ImageField(
         upload_to='tournaments/propositions',
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Logo do propozícií',
+        help_text='V hlavičke propozícií bude na pravej strane \
+        logo SAF a na ľavej toto logo, alebo ak nie je nahrané, logo SLU.'
     )
 
-    cap = models.BooleanField(default=False)
+    cap = models.BooleanField(
+        default=False,
+        help_text='Budú zápasy s capom?')
     game_duration = models.DurationField(
         blank=True,
-        null=True
+        null=True,
+        verbose_name='Trvanie zápasu'
     )
     region = models.CharField(
         max_length=63,
-        choices=REGIONS
+        choices=REGIONS,
+        verbose_name='Región'
     )
 
     player_stats = models.BooleanField(
         default=False,
-        help_text='Toto po začatí turnaja za žiadnych okolností nemeň!',
+        verbose_name='Hráčske štatistiky',
+        help_text='Toto po začatí turnaja za žiadnych okolností nemeň! \
+        Zaškrtni ak bude na turnaji súťaž aj o najlepšieho hráča, povolí \
+        to pridávanie hráčov, ktorí skórovali a asistovali pri skórovaní.'
     )
 
     number_qualified = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(2),
             MaxValueValidator(3),
-        ]
+        ],
+        verbose_name='Kvalifikovaní',
+        help_text='Počet kvalifikovaných tímov.'
     )
 
     max_teams = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(6),
             MaxValueValidator(16),
-        ]
+        ],
+        verbose_name='Max. tímov',
+        help_text='Maximálny počet tímov, ktoré budú na turnaj zavolané.'
     )
     signup_deadline = models.DateField(
         auto_now=False,
-        auto_now_add=False
+        auto_now_add=False,
+        verbose_name='Dátum registrácie'
     )
 
-    arrival_time = models.TimeField(default=datetime.time(8, 0))
-    meeting_time = models.TimeField(default=datetime.time(8, 30))
-    game_time = models.TimeField(default=datetime.time(8, 45))
-    end_time = models.TimeField(default=datetime.time(14, 00))
+    arrival_time = models.TimeField(
+        default=datetime.time(8, 0),
+        verbose_name='Čas príchodu'
+    )
+    meeting_time = models.TimeField(
+        default=datetime.time(8, 30),
+        verbose_name='Začiatok porady'
+    )
+    game_time = models.TimeField(
+        default=datetime.time(8, 45),
+        verbose_name='Začiatok zápasov'
+    )
+    end_time = models.TimeField(
+        default=datetime.time(14, 00),
+        verbose_name='Predpokladaný koniec'
+    )
+
+    class Meta:
+        verbose_name = 'turnaj'
+        verbose_name_plural = 'turnaje'
 
     def get_name(self):
         if self.region == 'F':
@@ -251,34 +313,71 @@ class Tournament(models.Model):
 
 
 class Team(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        verbose_name='Turnaj'
+    )
 
-    confirmed = models.BooleanField(default=False)
+    confirmed = models.BooleanField(
+        default=False,
+        verbose_name='Registrácia potvrdená'
+    )
     status = models.CharField(
         max_length=63,
         choices=STATUSES,
         default='registered'
     )
 
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT)
+    school = models.ForeignKey(
+        School,
+        on_delete=models.CASCADE,
+        verbose_name='Škola'
+    )
+    teacher = models.ForeignKey(
+        Teacher,
+        on_delete=models.PROTECT,
+        verbose_name='Učiteľ'
+    )
     players = models.ManyToManyField(
         Player,
         related_name='team',
+        verbose_name='Súpiska'
     )
 
     name = models.CharField(
         max_length=31,
         null=True,
-        blank=True
+        blank=True,
+        verbose_name='Názov tímu'
+    )
+    extra_email = models.EmailField(
+        null=True,
+        blank=True,
+        verbose_name='Kontaktný email',
+        help_text='Všetka komunikácia s tímom bude prebiehať \
+        s učiteľom prostredníctvo jeho e-mailovej adresy. \
+        AK chcete aby aj niekto iný dostával správy o turnaji, \
+        zadajtu tu jeho email.'
     )
 
     identifier = models.UUIDField(
         primary_key=False,
         default=uuid4,
-        editable=False
+        editable=False,
+        verbose_name='Identifikátor'
     )
-    accept_gdpr = models.BooleanField(default=False)
+    accept_gdpr = models.BooleanField(
+        default=True,
+        verbose_name='Akceptovali GDPR',
+        help_text='Keďže SAF neprejavila záujem starať sa o GDPR \
+        a iné právne veci, toto pole je prednastavené ako zaškrtnuté \
+        a tímy ho zatiaľ nedokážu ovplyvniť.'
+    )
+
+    class Meta:
+        verbose_name = 'tím'
+        verbose_name_plural = 'tímy'
 
     def get_name(self):
         if self.name:
@@ -291,15 +390,28 @@ class Team(models.Model):
 
 
 class Result(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.PROTECT,
+        verbose_name='Turnaj'
+    )
 
-    team = models.ForeignKey(Team, on_delete=models.PROTECT)
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        verbose_name='Tím'
+    )
     place = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(16),
-        ]
+        ],
+        verbose_name='Umiestnenie'
     )
+
+    class Meta:
+        verbose_name = 'výsledok'
+        verbose_name_plural = 'výsledky'
 
     def __str__(self):
         return "{}. {} - {}".format(
@@ -312,26 +424,31 @@ class Result(models.Model):
 class Match(models.Model):
     tournament = models.ForeignKey(
         Tournament,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='Turnaj'
     )
     begining_time = models.TimeField(
         blank=True,
-        null=True
+        null=True,
+        verbose_name='Začiatok'
     )
 
     home_team = models.ForeignKey(
         Team,
         on_delete=models.PROTECT,
-        related_name='home_team'
+        related_name='home_team',
+        verbose_name='Domáci tím'
     )
     host_team = models.ForeignKey(
         Team,
         on_delete=models.PROTECT,
-        related_name='host_team'
+        related_name='host_team',
+        verbose_name='Hosťujúci tím'
     )
 
     class Meta:
-        verbose_name_plural = 'matches'
+        verbose_name = 'zápas'
+        verbose_name_plural = 'zápasy'
 
     def __str__(self):
         return "{} vs. {}".format(
@@ -343,24 +460,34 @@ class Match(models.Model):
 class Point(models.Model):
     match = models.ForeignKey(
         Match,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        verbose_name='zápas'
     )
-    time = models.TimeField(default=datetime.datetime.now().time())
+    time = models.TimeField(
+        default=datetime.datetime.now().time(),
+        verbose_name='Čas'
+    )
 
     score = models.ForeignKey(
         Player,
         on_delete=models.PROTECT,
         related_name='score',
         blank=True,
-        null=True
+        null=True,
+        verbose_name='Skórujúci'
     )
     assist = models.ForeignKey(
         Player,
         on_delete=models.PROTECT,
         related_name='assist',
         blank=True,
-        null=True
+        null=True,
+        verbose_name='Asistujúci'
     )
+
+    class Meta:
+        verbose_name = 'bod'
+        verbose_name_plural = 'body'
 
     def __str__(self):
         return "{} - {}".format(
@@ -388,14 +515,25 @@ class PathAndRename(object):
 
 
 class Photo(models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        verbose_name='Turnaj'
+    )
 
-    image = models.ImageField(upload_to=PathAndRename(
-        os.path.join(
-            settings.MEDIA_ROOT,
-            'tournaments'
-        )
-    ))
+    image = models.ImageField(
+        upload_to=PathAndRename(
+            os.path.join(
+                settings.MEDIA_ROOT,
+                'tournaments'
+            )
+        ),
+        verbose_name='Fotka'
+    )
+
+    class Meta:
+        verbose_name = 'fotka'
+        verbose_name_plural = 'fotky'
 
     def __str__(self):
         return "Image {} - {}".format(self.pk, self.tournament.get_name())

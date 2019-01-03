@@ -19,8 +19,14 @@ REGIONS = (
 
 
 class School(models.Model):
-    name = models.CharField(max_length=255)
-    web = models.URLField(max_length=255)
+    name = models.CharField(
+        max_length=255,
+        verbose_name='Názov'
+    )
+    web = models.URLField(
+        max_length=255,
+        verbose_name='Webová stránka'
+    )
 
     street = models.CharField(
         max_length=255,
@@ -29,7 +35,8 @@ class School(models.Model):
                 regex='^[ a-zA-ZáäčďéěíĺľňóŕřšťúýžÁČĎÉĚÍĹĽŇÓŔŘŠŤÚÝŽ]{3,}[\/0-9]{1,10}$',
                 message='Ulica musí byť vo formáte Hlavná pri Rieke 14.',
             )
-        ]
+        ],
+        verbose_name='Ulica'
     )
     postcode = models.CharField(
         max_length=7,
@@ -38,15 +45,27 @@ class School(models.Model):
                 regex='^\d{3} \d{2}$',
                 message='PSČ musí byť vo formáte 123 45.',
             )
-        ]
+        ],
+        verbose_name='PSČ'
     )
-    city = models.CharField(max_length=255)
+    city = models.CharField(
+        max_length=255,
+        verbose_name='Mesto (obec)'
+    )
     region = models.CharField(
         max_length=255,
-        choices=REGIONS
+        choices=REGIONS,
+        verbose_name='Kraj'
     )
 
-    have_disc = models.BooleanField(default=False)
+    have_disc = models.BooleanField(
+        default=False,
+        verbose_name='Dostali disk'
+    )
+
+    class Meta:
+        verbose_name = 'škola'
+        verbose_name_plural = 'školy'
 
     def __str__(self):
         return "{}, {}, {} {}".format(
@@ -58,12 +77,22 @@ class School(models.Model):
 
 
 class Teacher(models.Model):
-    school = models.ForeignKey(School, on_delete=models.PROTECT)
+    school = models.ForeignKey(
+        School,
+        on_delete=models.PROTECT,
+        verbose_name='Škola'
+    )
 
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
+    first_name = models.CharField(
+        max_length=255,
+        verbose_name='Meno'
+    )
+    last_name = models.CharField(
+        max_length=255,
+        verbose_name='Priezvisko'
+    )
 
-    email = models.EmailField()
+    email = models.EmailField(verbose_name='E-mail')
 
     phone_number = models.CharField(
         max_length=31,
@@ -72,8 +101,13 @@ class Teacher(models.Model):
                 regex='^\+42(1|0)( \d{3}){3}$',
                 message='Telefónne číslo musí byť vo formáte +421 123 456 789.',
             ),
-        ]
+        ],
+        verbose_name='Telefónne číslo'
     )
+
+    class Meta:
+        verbose_name = 'učiteľ'
+        verbose_name_plural = 'učitelia'
 
     def __str__(self):
         return "{} {}".format(
@@ -83,16 +117,34 @@ class Teacher(models.Model):
 
 
 class Player(models.Model):
-    school = models.ForeignKey(School, on_delete=models.PROTECT)
-
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    sex = models.CharField(
-        max_length=7,
-        choices=GENDERS
+    school = models.ForeignKey(
+        School,
+        on_delete=models.PROTECT,
+        verbose_name='Škola'
     )
 
-    is_exception = models.BooleanField(default=False)
+    first_name = models.CharField(
+        max_length=255,
+        verbose_name='Meno'
+    )
+    last_name = models.CharField(
+        max_length=255,
+        verbose_name='Priezvisko'
+    )
+    sex = models.CharField(
+        max_length=7,
+        choices=GENDERS,
+        verbose_name='Pohlavie'
+    )
+
+    is_exception = models.BooleanField(
+        default=False,
+        verbose_name='Je výnimka'
+    )
+
+    class Meta:
+        verbose_name = 'hráč'
+        verbose_name_plural = 'hráči'
 
     def __str__(self):
         return "{} {}".format(
