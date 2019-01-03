@@ -24,9 +24,9 @@
                 {% bootstrap_form_errors form %}
                 {% for fieldset in form.fieldsets %}
                     <fieldset>
-                        <h2>
+                        <h3>
                             {{ fieldset.name }}<br>
-                        </h2>
+                        </h3>
                         {% if fieldset.description %}
                             <p class="lead">
                                 {{ fieldset.description }}

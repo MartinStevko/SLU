@@ -34,37 +34,39 @@
         </table>
     </div>
     {% if user.is_staff %}
-        <div class="mb-4">
-        <form method="POST">
-            {% csrf_token %}
-            {% bootstrap_form_errors form %}
-            {% if tournament.player_stats %}
-                {% for fieldset in form.fieldsets %}
-                    <fieldset>
-                        {% if fieldset.name %}
-                            <h2>{{ fieldset.name }}</h2>
-                        {% endif %}
-                        {% if fieldset.description %}
-                            <p class="lead">
-                                {{ fieldset.description }}
-                            </p>
-                        {% endif %}
-                        {% for field in fieldset %}
-                            {% bootstrap_field field layout='horizontal' %}
+        {% ifequal tournament.state 'active' %}
+            <div class="mb-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% bootstrap_form_errors form %}
+                    {% if tournament.player_stats %}
+                        {% for fieldset in form.fieldsets %}
+                            <fieldset>
+                                {% if fieldset.name %}
+                                    <h2>{{ fieldset.name }}</h2>
+                                {% endif %}
+                                {% if fieldset.description %}
+                                    <p class="lead">
+                                        {{ fieldset.description }}
+                                    </p>
+                                {% endif %}
+                                {% for field in fieldset %}
+                                    {% bootstrap_field field layout='horizontal' %}
+                                {% endfor %}
+                            </fieldset>
                         {% endfor %}
-                    </fieldset>
-                {% endfor %}
-            {% endif %}
-            <div class="row">
-                <div class="col-md-6">
-                    <input class="btn btn-success btn-block" type="submit" name="add_to_home_team" value="+ {{ match.home_team}}">
-                </div>
-                <div class="col-md-6">
-                    <input class="btn btn-success btn-block" type="submit" name="add_to_host_team" value="+ {{ match.host_team}}">
-                </div>
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input class="btn btn-success btn-block" type="submit" name="add_to_home_team" value="+ {{ match.home_team}}">
+                        </div>
+                        <div class="col-md-6">
+                            <input class="btn btn-success btn-block" type="submit" name="add_to_host_team" value="+ {{ match.host_team}}">
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
-        </div>
+        {% endifequal %}
     {% endif %}
     <div class="table-responsive">
         <table class="table table-striped">
