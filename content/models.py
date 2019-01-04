@@ -14,18 +14,18 @@ CATEGORIES = (
 class News(models.Model):
     title = models.CharField(
         max_length=127,
-        verbose_name='Nadpis'
+        verbose_name='nadpis'
     )
     expiration = models.DateTimeField(
-        verbose_name='Dátum expirácie'
+        verbose_name='dátum expirácie'
     )
 
     description = models.TextField(
-        verbose_name='Popis'
+        verbose_name='popis'
     )
     image = models.ImageField(
         upload_to='news',
-        verbose_name='Obrázok'
+        verbose_name='obrázok'
     )
 
     class Meta:
@@ -45,21 +45,21 @@ class News(models.Model):
 class Section(models.Model):
     title = models.CharField(
         max_length=127,
-        verbose_name='Nadpis'
+        verbose_name='nadpis'
     )
     category = models.CharField(
         max_length=15,
         default='other',
         choices=CATEGORIES,
-        verbose_name='Kategória'
+        verbose_name='kategória'
     )
 
     description = models.TextField(
-        verbose_name='Popis'
+        verbose_name='popis'
     )
     image = models.ImageField(
         upload_to='sections',
-        verbose_name='Obrázok'
+        verbose_name='obrázok'
     )
 
     class Meta:
@@ -72,21 +72,21 @@ class Section(models.Model):
 
 class Message(models.Model):
     from_email = models.EmailField(
-        verbose_name='Odosielateľ'
+        verbose_name='odosielateľ'
     )
     send_time = models.DateTimeField(
         default=timezone.now,
-        verbose_name='Čas poslania'
+        verbose_name='čas poslania'
     )
 
     subject = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        verbose_name='Predmet'
+        verbose_name='predmet'
     )
     text = models.TextField(
-        verbose_name='Správa'
+        verbose_name='správa'
     )
 
     class Meta:
@@ -100,14 +100,14 @@ class Message(models.Model):
 class OrganizerProfile(models.Model):
     full_name = models.CharField(
         max_length=255,
-        verbose_name='Celé meno'
+        verbose_name='celé meno'
     )
     email = models.EmailField(
-        verbose_name='E-mail'
+        verbose_name='e-mail'
     )
     image = models.ImageField(
         upload_to='organizers',
-        verbose_name='Fotka'
+        verbose_name='fotka'
     )
 
     start_season = models.CharField(
@@ -118,7 +118,7 @@ class OrganizerProfile(models.Model):
                 message='Začiatok aj koniec sezóny musia byť vo formáte leto/zima, YYYY.',
             ),
         ],
-        verbose_name='Začiatok organizácie'
+        verbose_name='začiatok organizácie'
     )
     end_season = models.CharField(
         max_length=15,
@@ -129,7 +129,7 @@ class OrganizerProfile(models.Model):
                 message='Začiatok aj koniec sezóny musia byť vo formáte leto/zima, YYYY.',
             ),
         ],
-        verbose_name='Koniec organizácie'
+        verbose_name='koniec organizácie'
     )
 
     class Meta:

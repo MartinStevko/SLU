@@ -21,11 +21,11 @@ REGIONS = (
 class School(models.Model):
     name = models.CharField(
         max_length=255,
-        verbose_name='Názov'
+        verbose_name='názov'
     )
     web = models.URLField(
         max_length=255,
-        verbose_name='Webová stránka'
+        verbose_name='webová stránka'
     )
 
     street = models.CharField(
@@ -36,7 +36,7 @@ class School(models.Model):
                 message='Ulica musí byť vo formáte Hlavná pri Rieke 14.',
             )
         ],
-        verbose_name='Ulica'
+        verbose_name='ulica'
     )
     postcode = models.CharField(
         max_length=7,
@@ -50,17 +50,17 @@ class School(models.Model):
     )
     city = models.CharField(
         max_length=255,
-        verbose_name='Mesto (obec)'
+        verbose_name='mesto (obec)'
     )
     region = models.CharField(
         max_length=255,
         choices=REGIONS,
-        verbose_name='Kraj'
+        verbose_name='kraj'
     )
 
     have_disc = models.BooleanField(
         default=False,
-        verbose_name='Dostali disk'
+        verbose_name='dostali disk'
     )
 
     class Meta:
@@ -80,19 +80,19 @@ class Teacher(models.Model):
     school = models.ForeignKey(
         School,
         on_delete=models.PROTECT,
-        verbose_name='Škola'
+        verbose_name='škola'
     )
 
     first_name = models.CharField(
         max_length=255,
-        verbose_name='Meno'
+        verbose_name='meno'
     )
     last_name = models.CharField(
         max_length=255,
-        verbose_name='Priezvisko'
+        verbose_name='priezvisko'
     )
 
-    email = models.EmailField(verbose_name='E-mail')
+    email = models.EmailField(verbose_name='e-mail')
 
     phone_number = models.CharField(
         max_length=31,
@@ -102,7 +102,7 @@ class Teacher(models.Model):
                 message='Telefónne číslo musí byť vo formáte +421 123 456 789.',
             ),
         ],
-        verbose_name='Telefónne číslo'
+        verbose_name='telefónne číslo'
     )
 
     class Meta:
@@ -120,26 +120,26 @@ class Player(models.Model):
     school = models.ForeignKey(
         School,
         on_delete=models.PROTECT,
-        verbose_name='Škola'
+        verbose_name='škola'
     )
 
     first_name = models.CharField(
         max_length=255,
-        verbose_name='Meno'
+        verbose_name='meno'
     )
     last_name = models.CharField(
         max_length=255,
-        verbose_name='Priezvisko'
+        verbose_name='priezvisko'
     )
     sex = models.CharField(
         max_length=7,
         choices=GENDERS,
-        verbose_name='Pohlavie'
+        verbose_name='pohlavie'
     )
 
     is_exception = models.BooleanField(
         default=False,
-        verbose_name='Je výnimka'
+        verbose_name='je výnimka'
     )
 
     class Meta:

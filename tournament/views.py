@@ -29,13 +29,13 @@ def get_tabs(request, t):
         if t.max_teams > t.team_count()+3:
             tabs.append((
                 'Registrácia',
-                reverse('registration:create'),
+                reverse('registration:create', kwargs={'pk': t.pk}),
                 False
             ))
         elif t.max_teams > t.confirmed_team_count():
             tabs.append((
                 'Registrácia',
-                reverse('registration:create'),
+                reverse('registration:create', kwargs={'pk': t.pk}),
                 'Posledné miesta'
             ))
         else:
@@ -83,11 +83,13 @@ def get_tabs(request, t):
                 else:
                     name_str = team.get_name()
 
-                tabs.append((
+                tab = (
                     name_str,
                     reverse('registration:change', kwargs={'pk': team.pk}),
                     False
-                ))
+                )
+                if tab not in tabs:
+                    tabs.append(tab)
 
     return tabs
 
