@@ -1,7 +1,11 @@
 # Own gitignore
 secret_key.txt
+hit_log.txt
+
 .vscode/
-migrations
+migrations/
+media/
+!migrations/__init__.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

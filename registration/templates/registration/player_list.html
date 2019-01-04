@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% load form_utils %}
+{% load bootstrap4 %}
+
+{% block title %}Súpiska{% endblock %}
+
+{% block css %}
+    <style>
+        .responsive-form {
+            display: none;
+        }
+
+        @media (max-width: 575px) {
+            .responsive-form {
+                display: block;
+            }
+
+            .responsive-form-header {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="featurette">
+            <h3>Registrácia tímu</h3>
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <span class="lead">Škola:</span>
+                </div>
+                <div class="col-md-9">
+                    <span class="lead">{{ team.school }}</span>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <span class="lead">Učiteľ:</span>
+                </div>
+                <div class="col-md-9">
+                    <span class="lead">{{ team.teacher }}</span>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <span class="lead">Registrácia:</span>
+                </div>
+                <div class="col-md-9">
+                    {% if team.confirmed %}
+                        <p class="lead mb-0"><span class="badge badge-pill badge-success px-3">Potvrdená</span></p>
+                    {% else %}
+                        <p class="lead mb-0"><span class="badge badge-pill badge-danger px-3">Nepotvrdená</span></p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <span class="lead">Turnaj:</span>
+                </div>
+                <div class="col-md-9">
+                    <span class="lead">{{ team.tournament }}</span>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <span class="lead">Status:</span>
+                </div>
+                <div class="col-md-9">
+                    <p class="lead mb-0">
+                        {% ifequal team.status 'registered' %}
+                            <span class="badge badge-pill badge-info px-3">Zaregistrovaný</span>
+                        {% endifequal %}
+                        {% ifequal team.status 'invited' %}
+                            <span class="badge badge-pill badge-success px-3">Pozvaný</span>
+                        {% endifequal %}
+                        {% ifequal team.status 'waitlisted' %}
+                            <span class="badge badge-pill badge-warning px-3">Čakajúci na pozvanie</span>
+                        {% endifequal %}
+                        {% ifequal team.status 'canceled' %}
+                            <span class="badge badge-pill badge-danger px-3">Odmietnutý</span>
+                        {% endifequal %}
+                        {% ifequal team.status 'attended' %}
+                            <span class="badge badge-pill badge-success px-3">Zúčastnený</span>
+                        {% endifequal %}
+                        {% ifequal team.status 'not_attended' %}
+                            <span class="badge badge-pill badge-danger px-3">Nezúčastnený</span>
+                        {% endifequal %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <hr class="featurette-divider">
+
+        <div class="featurette">
+            <h3>Súpiska</h3>
+            <div class="row responsive-form-header">
+                <div class="form-group col-sm-4">
+                    <strong>Meno <span style="color: red">*</span></strong>
+                </div>
+                <div class="form-group col-sm-4">
+                    <strong>Priezvisko <span style="color: red">*</span></strong>
+                </div>
+                <div class="form-group col-sm-4">
+                    <strong>Pohlavie <span style="color: red">*</span></strong>
+                </div>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.management_form }}
+                {% bootstrap_formset_errors form %}
+                {% for dict in form.errors %}
+                    {% for error in dict.values %}
+                        {{ error }}
+                    {% endfor %}
+                {% endfor %}
+
+                {% for f in form %}
+                    {% bootstrap_form_errors f %}
+                    <div class="row">
+                        <!--{% for field in f %}
+                            {% bootstrap_field field show_label=False form_group_class='form-group col-sm-4' %}
+                        {% endfor %}-->
+                        {% bootstrap_form f show_label=False form_group_class='form-group col-sm-4' %}
+                    </div>
+                    <hr class="featurette-divider responsive-form mt-2 mb-4">
+                {% endfor %}
+
+                <button class="btn btn-primary btn-block" type="submit">Odoslať</button>
+            </form>
+        </div>
+        <hr class="featurette-divider">
+    </div>
+{% endblock %}

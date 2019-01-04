@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Zmazať?{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+        <form method="POST">
+            {% csrf_token %}
+            <p class="lead">Určite chceš zmazať bod "{{ object }}"?</p>
+            <input type="submit" value="Potvrdiť" class="btn btn-danger">
+        </form>
+        <hr class="featurette-divider">
+    </div>
+{% endblock %}

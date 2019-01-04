@@ -1,0 +1,24 @@
+{% load static %}
+
+<div class="row featurette">
+    <div class="col-md-7">
+        <h2 class="featurette-heading">Čo je SLU?</h2>
+        <p class="lead">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dictum porta arcu, 
+            ac ultricies felis volutpat ut. In ultrices accumsan felis. Vivamus a feugiat ipsum. Sed 
+            cursus metus nec luctus ornare. In accumsan diam sit amet enim volutpat elementum. Nunc 
+            at neque at orci placerat cursus et quis massa. Etiam et auctor massa. Suspendisse elit 
+            velit, sollicitudin ac cursus vestibulum, aliquam quis lacus. Cras varius felis ut velit 
+            pretium scelerisque.
+        </p>
+    </div>
+    <div class="col-md-5 text-center">
+        {% if indoor %}
+            <img class="featurette-image img-fluid mx-auto" src="{% static 'img/blue_icon.png' %}" alt="SLU srdiečko" width="400" height="auto">
+        {% endif %}
+        {% if outdoor %}
+            <img class="featurette-image img-fluid mx-auto" src="{% static 'img/red_icon.png' %}" alt="SLU srdiečko" width="400" height="auto">
+        {% endif %}
+    </div>
+</div>
+<hr class="featurette-divider">

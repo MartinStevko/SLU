@@ -1,0 +1,41 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% block title %}O turnaji{% endblock %}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row featurette">
+        <div class="col-md-7">
+            {% include 'include/tournament.html' %}
+        </div>
+        <div class="col-md-5 text-center">
+            <img class="featurette-image img-fluid mx-auto" src="{{ tournament.image.url }}" width="400" height="auto">
+        </div>
+    </div>
+    <div class="row featurette">
+        <div class="col-md-12">
+            {% include 'include/tournament_buttons.html' %}
+        </div>
+    </div>
+    <hr class="featurette-divider">
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function() {
+            if ($(window).width() < 751) {
+                $("a.btn-secondary.btn-lg").addClass("btn-block my-3");
+                $("div.mt-optional-jq").removeClass("mt-3");
+                $("div.col-md-8>span.lead").addClass("font-weight-normal")
+            };
+        });
+    </script>
+{% endblock %}

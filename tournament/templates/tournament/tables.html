@@ -1,0 +1,30 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% block title %}Štatistiky hráčov{% endblock %}
+
+{% block css %}
+    <style>
+        .css-number {
+            counter-reset: serial-number;
+        }
+
+        .css-number td:first-child:before {
+            counter-increment: serial-number;
+            content: counter(serial-number);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="table-responsive">
+        <table class="table table-hover css-number">
+            <tr>
+                {% block head %}
+                {% endblock %}
+            </tr>
+            {% block table %}
+            {% endblock %}
+        </table>
+    </div>
+    <hr class="featurette-divider">
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% block title %}Rozpis zápasov{% endblock %}
+
+{% block css %}
+    <style>
+        {% if tournament.player_stats %}
+            tr.clickable-row {
+                cursor: pointer;
+            }
+        {% endif %}
+
+        tr.clickable-row:hover {
+            background-color: #f8f8f8;
+        }
+
+        tr.striped {
+            background-color: #f1f1f1;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="table-responsive">
+        <table class="table">
+            <tbody>
+                {% for match,score in matches %}
+                    <tr class="clickable-row" data-pk="{{ match.pk }}">
+                        {% if match.time %}
+                            <td scope="row">{{ match.time }}</td>
+                        {% else %}
+                            <td scope="row">-</td>
+                        {% endif %}
+                        <td class="text-right">{{ match.home_team }}</td>
+                        <td class="text-center">{{ score.0 }}</td>
+                        <td class="text-center mx-0 px-0">:</td>
+                        <td class="text-center">{{ score.1 }}</td>
+                        <td class="text-left">{{ match.host_team }}</td>
+                        <td class="text-center"><a href="{% url 'tournament:match_detail' match.pk %}"><i class="fa fa-external-link"></i></a></td>
+                    </tr>
+                    <script>
+                        obj = document.getElementsByClassName("clickable-row");
+                        if (obj.length%2 === 1) {
+                            obj[obj.length-1].classList.add("striped");
+                        }
+                    </script>
+                    <tr class="points">
+                        <td class="py-0" colspan="7">
+                            <div id="tablerow{{ match.pk }}" class="p-2 ml-5" style="display: none;"></div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <hr class="featurette-divider">
+{% endblock %}
+
+{% block js %}
+<script>
+    jQuery(document).ready(function($) {
+        {% if tournament.player_stats %}
+            $('.clickable-row').click(function () {
+                var pk = parseInt($(this).data("pk"))
+                var obj = $('#tablerow' + pk)
+
+                if (obj.is(":hidden")) {
+                    $.ajax({
+                        url: "{% url 'tournament:ajax_match_points' tournament.pk %}",
+                        data: {
+                            'match': pk,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.length != 0) {
+                                var html = '<table class="table"><tbody>';
+
+                                var team;
+                                var score;
+                                var assist;
+
+                                for (i=0; i < data.length; i++) {
+                                    team = data[i].score__team__name;
+
+                                    if (team == null) {
+                                        team = data[i].score__team__school__name
+                                    };
+
+                                    score = data[i].score__first_name + ' ' + data[i].score__last_name;
+                                    assist = data[i].assist__first_name + ' ' + data[i].assist__last_name;
+
+                                    if (score == 'null null') {
+                                        score = '-'
+                                    };
+
+                                    if (assist == 'null null') {
+                                        assist = '-'
+                                    };
+
+                                    html = html + '<tr><td class="text-left">'+team+'</td><td class="text-left">'+data[i].time+'</td><td class="text-center">'+score+'</td><td class="text-center">'+assist+'</td></tr>';
+                                };
+
+                                html = html + '</tbody></table>';
+                                html = $.parseHTML(html);
+
+                                obj.html(html);
+                            } else {
+                                obj.html("Žiadne body v tomto zápase ešte nepadli.");
+                            };
+                        }
+                    });
+                }
+
+                obj.fadeToggle('slow');
+            });
+        {% endif %}
+
+        $('tr.clickable-row').each(function (index) {
+            $(this).toggleClass('striped', !!(index-1 & 1));
+        });
+    });
+</script>
+{% endblock %}

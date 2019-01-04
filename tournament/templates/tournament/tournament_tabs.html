@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container marketing">
+        <h2 class="featurette-heading mb-4">{{ tournament }}</h2>
+        {% if tabs %}
+            <nav class="navbar navbar-expand-lg navbar-light px-0">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                    <ul class="nav nav-tabs navbar-nav mr-auto mx-0" style="width:100%">
+                        {% for title,url,warn in tabs %}
+                            <li class="nav-item">
+                                <a class="px-3 nav-link{% ifequal url request.get_full_path %} active{% endifequal %}" href="{% ifnotequal url request.get_full_path %}{{ url }}{% endifnotequal %}">
+                                    {{ title }}
+                                    {% if warn %}
+                                        <span class="badge badge-warning">{{ warn }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        {% if toolbox %}
+                            <li class="nav-item dropdown">
+                                <a href="" class="px-3 nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Správa turnaja</a>
+                                <div class="dropdown-menu">
+                                    {% for group in toolbox %}
+                                        {% for tool,url in group %}
+                                            <a class="dropdown-item" href="{{ url }}">{{ tool }}</a>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        {% endif %}
+        <div class="mt-4">
+            {% block body %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
