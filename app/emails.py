@@ -44,7 +44,7 @@ class SendMail:
     def tournament_full(self, team):
         # pre tim, turnaj je plny a su waitlisted
         pass
-    
+
     def team_confirmation(self, team):
         # pre orgov, ze tim potvrdil registraciu
         pass
