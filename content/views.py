@@ -6,6 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from content.models import Section, News, Message, OrganizerProfile
 from content.forms import ContactForm
+from app.emails import SendMail
 
 
 class ContentView(TemplateView):
@@ -59,8 +60,13 @@ class ContactFormView(SingleObjectMixin, FormView):
     model = Message
 
     def form_valid(self, form):
-        form.send_mail()
-        form.save()
+        message = form.save(commit=False)
+        SendMail(
+            'contact',
+            message.subject
+        ).contact_form(message)
+        message.save()
+
         messages.success(self.request, 'Správa bola úspešne odoslaná!')
         return super(ContactFormView, self).form_valid(form)
 

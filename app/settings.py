@@ -14,7 +14,7 @@ CRYPTOGRAPHY_KEY = '1778c94b9c7e4f17acc01da3cf3d7546'
 KEY_EXPIRATION = 2
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost']
 

@@ -112,8 +112,6 @@ class TeamRegistrationView(FormView):
 
         message = form.cleaned_data.get('message', '')
 
-        team.save()
-
         SendMail(
             org_list(team.tournament),
             'Registrácia - '+str(team.school)
@@ -122,6 +120,8 @@ class TeamRegistrationView(FormView):
             team.get_emails(),
             'Potvrdenie registrácie'
         ).registration_email(team)
+
+        team.save()
 
         messages.success(self.request, 'Váš tím je úspešne zaregistrovaný \
         na tento turnaj. Pre potvrdenie registrácie prosím kliknite na odkaz \

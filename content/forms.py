@@ -7,10 +7,6 @@ from content.models import Message
 
 class ContactForm(OverwriteOnlyModelFormMixin, BetterModelForm):
 
-    def send_mail(self):
-        # send email using the self.cleaned_data dictionary
-        pass
-
     def fieldsets(self):
         self._fieldsets = [
             ('Kontaktujte nás',
