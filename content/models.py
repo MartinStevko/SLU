@@ -134,7 +134,7 @@ class OrganizerProfile(models.Model):
 
     class Meta:
         verbose_name = 'profil organizátora'
-        verbose_name_plural = 'profili organizátorov'
+        verbose_name_plural = 'profily organizátorov'
 
     def __str__(self):
         return '{}'.format(self.full_name)
