@@ -1,22 +1,18 @@
 import os
 from django.contrib import messages
 
+from app.local_settings import *
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=p&ptuj_=+t9xasscjh_arab!&iot^9t1=l36^v3asn%_o-i^g'
-CRYPTOGRAPHY_KEY = '1778c94b9c7e4f17acc01da3cf3d7546'
-KEY_EXPIRATION = 2
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+SECURE_SSL_REDIRECT = (DEBUG == False)
 
 
 # Application definition
@@ -52,7 +48,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR, 'app', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -65,6 +61,10 @@ TEMPLATES = [
             ],
         },
     },
+]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'app', 'static'),
 ]
 
 WSGI_APPLICATION = 'app.wsgi.application'
@@ -80,9 +80,24 @@ DATABASES = {
     }
 }
 
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mydatabase', # full path to DB
+        'USER': 'mydatabaseuser',
+        'PASSWORD': 'mypassword',
+        'HOST': '127.0.0.1', # '/var/run/mysql'
+        'PORT': '5432',
+    }
+}
+'''
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+
+LOGIN_URL = 'admin:login'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -107,6 +122,8 @@ LANGUAGE_CODE = 'sk-sk'
 
 TIME_ZONE = 'Europe/Bratislava'
 
+FIRST_DAY_OF_WEEK = 1
+
 USE_I18N = True
 
 USE_L10N = True
@@ -117,19 +134,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-LOGIN_URL = 'admin:login'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'emails')
+
+
+# Cookie and session settings
+
+CSRF_COOKIE_SECURE = (DEBUG == False)
+
+SESSION_COOKIE_SECURE = (DEBUG == False)
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
 # Messages
 

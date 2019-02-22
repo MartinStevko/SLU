@@ -47,15 +47,16 @@ class ResultInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
 
-        t = Tournament.objects.get(
-            pk=resolve(request.path_info).kwargs['object_id']
-        )
-
-        if db_field.name == 'team':
-            kwargs['queryset'] = Team.objects.filter(
-                tournament=t,
-                confirmed=True
+        if kwargs:
+            t = Tournament.objects.get(
+                pk=resolve(request.path_info).kwargs['object_id']
             )
+
+            if db_field.name == 'team':
+                kwargs['queryset'] = Team.objects.filter(
+                    tournament=t,
+                    confirmed=True
+                )
 
         return super(ResultInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -66,15 +67,16 @@ class MatchInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
 
-        t = Tournament.objects.get(
-            pk=resolve(request.path_info).kwargs['object_id']
-        )
-
-        if db_field.name in ['home_team', 'host_team']:
-            kwargs['queryset'] = Team.objects.filter(
-                tournament=t,
-                confirmed=True
+        if kwargs:
+            t = Tournament.objects.get(
+                pk=resolve(request.path_info).kwargs['object_id']
             )
+
+            if db_field.name in ['home_team', 'host_team']:
+                kwargs['queryset'] = Team.objects.filter(
+                    tournament=t,
+                    confirmed=True
+                )
 
         return super(MatchInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -238,14 +240,15 @@ class PointInline(admin.TabularInline):
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
 
-        m = Match.objects.get(
-            pk=resolve(request.path_info).kwargs['object_id']
-        )
-
-        if db_field.name in ['score', 'assist']:
-            kwargs['queryset'] = Player.objects.filter(
-                team__in=[m.home_team, m.host_team],
+        if kwargs:
+            m = Match.objects.get(
+                pk=resolve(request.path_info).kwargs['object_id']
             )
+
+            if db_field.name in ['score', 'assist']:
+                kwargs['queryset'] = Player.objects.filter(
+                    team__in=[m.home_team, m.host_team],
+                )
 
         return super(PointInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
