@@ -8,11 +8,12 @@ def variables_processor(request):
     season = Season.objects.all().order_by('-pk')
     if season:
         season = season[0]
-    else:
-        r.update({'outdoor': True})
 
-    if season.season == 'indoor':
-        r.update({'indoor': True})
+        if season.season == 'indoor':
+            r.update({'indoor': True})
+        else:
+            r.update({'outdoor': True})
+
     else:
         r.update({'outdoor': True})
 
