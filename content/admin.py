@@ -25,7 +25,7 @@ class NewsAdmin(admin.ModelAdmin):
 
 
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ('category', 'title')
+    list_display = ('category', 'title', 'order')
     list_filter = ('category',)
     list_per_page = 100
 
@@ -35,7 +35,7 @@ class SectionAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Hlavička', {
             'classes': ('wide',),
-            'fields': ('title', 'category'),
+            'fields': ('title', 'category', 'order'),
             # 'description': 'optional description',
         }),
         ('Obsah', {

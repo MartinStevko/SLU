@@ -17,12 +17,12 @@ class ContentView(TemplateView):
         context = super(ContentView, self).get_context_data(**kwargs)
         if self.title == 'ultimate':
             context.update({
-                'sections': Section.objects.filter(category='ultimate').order_by('-pk'),
+                'sections': Section.objects.filter(category='ultimate').order_by('order'),
                 'title': 'O ultimate',
             })
         elif self.title == 'rules':
             context.update({
-                'sections': Section.objects.filter(category='rules').order_by('-pk'),
+                'sections': Section.objects.filter(category='rules').order_by('order'),
                 'title': 'Pravidlá',
             })
         else:
@@ -35,7 +35,7 @@ class ContentView(TemplateView):
                     news.append(obj)
 
             context.update({
-                'sections': Section.objects.filter(category='other').order_by('-pk'),
+                'sections': Section.objects.filter(category='other').order_by('order'),
                 'title': 'Domov',
                 'news': news,
             })
