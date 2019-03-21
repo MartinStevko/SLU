@@ -1,0 +1,11 @@
+Dobrý deň,
+
+k vášmu e-mailu bolo vytvorené nové používateľské konto. 
+Ak ste ho nevytvorili vy, túto správu môžete ignorovať. 
+V opačnom prípade prosím použite následujúce prihlasujúce 
+údaje a heslo si hneď po prihlásení zmeňte: 
+
+- meno: {{ username }}
+- heslo: {{ password }}
+
+S pozdravom, váš tím SLU!

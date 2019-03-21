@@ -4,6 +4,16 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
 
+import random
+import string
+
+'''
+SendMail(
+    ['contact1', 'contact2'],
+    'subject'
+).method(instance)
+'''
+
 
 def org_list(tournament):
     organizer_emails = []
@@ -35,6 +45,23 @@ class SendMail:
             self.subject = prefix + ' ' + subject
         else:
             self.subject = subject
+
+    def user_creation(self, user):
+        plaintext = get_template('emails/user_creation.txt')
+
+        password = ''.join(random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits
+        ) for _ in range(16))
+        user.set_password(password)
+        user.save()
+
+        context = {
+            'name': user.get_full_name(),
+            'username': user.username,
+            'password': password,
+        }
+
+        self.send_rendered_email(context, plaintext)
 
     def contact_form(self, message):
         email = EmailMessage(
@@ -106,5 +133,6 @@ class SendMail:
                 text_content,
                 getattr(settings, 'FROM_EMAIL_NAME', 'SLU'),
                 self.recipients,
+                reply_to=['slu.central.org@gmail.com'],
             )
             email.send(fail_silently=False)
