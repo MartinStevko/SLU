@@ -62,6 +62,11 @@ class Section(models.Model):
         verbose_name='obrázok'
     )
 
+    order = models.SmallIntegerField(
+        default=0,
+        verbose_name='poradie'
+    )
+
     class Meta:
         verbose_name = 'sekcia'
         verbose_name_plural = 'sekcie'
