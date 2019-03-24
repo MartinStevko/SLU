@@ -10,12 +10,12 @@ class SpecialPermission(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Používateľ',
+        verbose_name='používateľ',
     )
 
     email_verified = models.BooleanField(
         default=False,
-        verbose_name='Potvrdený e-mail',
+        verbose_name='potvrdený e-mail',
     )
 
     def __str__(self):
