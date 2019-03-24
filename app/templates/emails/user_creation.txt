@@ -1,11 +1,11 @@
 Dobrý deň,
 
-k vášmu e-mailu bolo vytvorené nové používateľské konto. 
-Ak ste ho nevytvorili vy, túto správu môžete ignorovať. 
-V opačnom prípade prosím použite následujúce prihlasujúce 
-údaje a heslo si hneď po prihlásení zmeňte: 
+k Vášmu e-mailu bolo práve v administračnom systéme SLU vytvorené 
+nové používateľské konto. Ak si tento účet neželáte mať, správu 
+môžete ignorovať. V opačnom prípade prosím použite následujúce 
+prihlasujúce údaje a heslo si hneď po prihlásení zmeňte.
 
 - meno: {{ username }}
 - heslo: {{ password }}
 
-S pozdravom, váš tím SLU!
+S pozdravom, Váš tím SLU!
