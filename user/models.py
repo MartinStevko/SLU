@@ -7,9 +7,16 @@ from app.emails import SendMail
 
 
 class SpecialPermission(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Používateľ',
+    )
 
-    email_verified = models.BooleanField(default=False)
+    email_verified = models.BooleanField(
+        default=False,
+        verbose_name='Potvrdený e-mail',
+    )
 
     def __str__(self):
         return "{}".format(self.user.get_full_name())
