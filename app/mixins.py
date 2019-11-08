@@ -2,12 +2,6 @@ from django.forms import model_to_dict
 
 
 class OverwriteOnlyModelFormMixin(object):
-    '''
-    Delete POST keys that were not actually found in the POST dict
-    to prevent accidental overwriting of fields due to missing POST data.
-    Based on:
-     https://yuji.wordpress.com/2013/03/12/django-prevent-modelform-from-updating-values-if-user-did-not-submit-them/
-    '''
 
     def clean(self):
         cleaned_data = super(OverwriteOnlyModelFormMixin, self).clean()

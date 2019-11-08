@@ -46,7 +46,7 @@ class SchoolRegistrationView(FormView):
             data = decode(key, data) + '-' + str(school.pk)
             self.request.session['registration_data'] = encode(key, data)
 
-        messages.success(self.request, 'Škola bola úspešne vytvorená. \
+        messages.success(self.request, 'Škola bola úspešne pridaná. \
         Pre dokončenie registrácie pokračujte vyplnením údajov o učiteľovi a tíme.')
         return super(SchoolRegistrationView, self).form_valid(form)
 
@@ -78,7 +78,7 @@ class TeacherRegistrationView(FormView):
             temp += '-' + str(pk)
         self.request.session['registration_data'] = encode(key, temp[1:])
 
-        messages.success(self.request, 'Učiteľ bol úspešne vytvorený. \
+        messages.success(self.request, 'Učiteľ bol úspešne pridaný. \
         Pre dokončenie registrácie pokračujte vyplnením údajov o tíme.')
         return super(TeacherRegistrationView, self).form_valid(form)
 

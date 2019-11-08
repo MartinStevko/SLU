@@ -52,7 +52,7 @@ class SchoolForm(OverwriteOnlyModelFormMixin, BetterModelForm):
             (
                 'Vytvoriť školu',
                 {'fields': ('name', 'web', 'street', 'postcode', 'city', 'region'),
-                 'description': 'Vyberte školu zo zoznamu nižšie, alebo \
+                 'description': 'Vyberte školu zo zoznamu vyššie, alebo \
                  vytvorte novú školu. Všetci hráči musia byť žiakmi tejto \
                  školy a pod jej menom zároveň budú súťažiť.',
                 }

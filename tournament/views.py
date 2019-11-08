@@ -42,7 +42,7 @@ def get_tabs(request, t):
             pass
 
     # Schedule view
-    if len(Match.objects.filter(tournament=t.id)) >= 5:
+    if len(Match.objects.filter(tournament=t.id)) > 0:
         tabs.append((
             'Rozpis zápasov',
             reverse('tournament:match_list', kwargs={'pk': t.pk}),
