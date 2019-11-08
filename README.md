@@ -1,5 +1,5 @@
 # SLU
-SLU enrollment and other organization stuffs.
+SLU teamm registration and other organization stuffs.
 
 ## Requirements installation
 
