@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.urls import resolve
+from django.shortcuts import redirect
 
 from .models import *
 from registration.models import Player
@@ -143,6 +144,9 @@ class TournamentAdmin(admin.ModelAdmin):
             # 'description': 'optional description',
         }),
     )
+
+    def response_change(self, request, tournament):
+        return redirect('tournament:detail', pk=tournament.pk)
 
 
 class TeamAdmin(admin.ModelAdmin):

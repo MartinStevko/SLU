@@ -57,6 +57,14 @@
                 content: ' *';
                 color: red;
             }
+
+            .dropdown-toggle::after {
+                transition: transform 0.15s linear; 
+            }
+            
+            .show.dropdown .dropdown-toggle::after {
+                transform: translateY(3px);
+            }
         </style>
         {% block css %}
         {% endblock %}
@@ -90,25 +98,20 @@
                             <li class="nav-item {% if 'tournament' in request.build_absolute_uri %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'tournament:list' %}">Turnaje</a>
                             </li>
+                            <li class="nav-item dropdown">
+                                {% if user.is_authenticated and my_tournaments %}
+                                    <a class="nav-link dropdown-toggle" href="#" id="my_tournaments" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Moje turnaje</a>
+                                    <div class="dropdown-menu" aria-labelledby="my_tournaments">
+                                        {% for tournament in my_tournaments %}
+                                            <a class="dropdown-item" href="{% url 'tournament:detail' tournament.id %}">{{ tournament }}</a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </li>
                             <li class="nav-item {% if 'contact' in request.build_absolute_uri %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'content:contact' %}">Kontakt</a>
                             </li>
                         </ul>
-                        <!--Right side navbar:
-                        <ul class="navbar-nav">
-                            {% if not user.is_authenticated %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin:login' %}">Prihlásiť sa</a>
-                                </li>
-                            {% else %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin:index' %}">Administrátor</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin:logout' %}">Odhlásiť sa</a>
-                                </li>
-                            {% endif %}
-                        </ul>-->
                     </div>
                 </div>
             </nav>
@@ -141,6 +144,32 @@
                     $(':input[required]').parent().parent().children().filter('label').addClass('required');
                 }
                 catch {}
+            });
+
+            const $dropdown = $(".dropdown");
+            const $dropdownToggle = $(".dropdown-toggle");
+            const $dropdownMenu = $(".dropdown-menu");
+            const showClass = "show";
+            
+            $(window).on("load resize", function() {
+            if (this.matchMedia("(min-width: 768px)").matches) {
+                $dropdown.hover(
+                function() {
+                    const $this = $(this);
+                    $this.addClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "true");
+                    $this.find($dropdownMenu).addClass(showClass);
+                },
+                function() {
+                    const $this = $(this);
+                    $this.removeClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "false");
+                    $this.find($dropdownMenu).removeClass(showClass);
+                }
+                );
+            } else {
+                $dropdown.off("mouseenter mouseleave");
+            }
             });
         </script>
         {% block js %}
