@@ -87,7 +87,7 @@
                     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+                    <div class="navbar-collapse collapse" id="navbarCollapse">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item {% if 'rules' in request.build_absolute_uri %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'content:rules' %}">Pravidlá</a>
@@ -121,6 +121,24 @@
             {% block content %}
             {% endblock %}
 
+            <!-- MODAL -->
+            <div class="modal fade" id="cookieModal" tabindex="-1" role="dialog" aria-labelledby="cookieModalLabel" aria-hidden="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cookieModalLabel">SLU súbory cookie</h5>
+                        </div>
+                        <div class="modal-body">
+                            Táto stránka používa súbory cookie na zjednodušenie ovládania stránky.
+                            Pokračovaním v používaní stránky s tým súhlasíte.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close" onclick="$.cookie('cAgree', true, { expires : 100 });">Súhlasím</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- FOOTER -->
             <footer class="container">
                 {% if not user.is_authenticated %}
@@ -145,6 +163,10 @@
                 }
                 catch {}
             });
+
+            if (typeof $.cookie('cAgree') === 'undefined') {
+                $('#cookieModal').modal('show');
+            };
 
             const $dropdown = $(".dropdown");
             const $dropdownToggle = $(".dropdown-toggle");
