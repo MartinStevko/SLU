@@ -1,6 +1,7 @@
 # Project
 local_settings.py
 media/
+static/
 
 */migrations/*
 !*/migrations/__init__.py
@@ -35,14 +36,16 @@ wheels/
 *.log
 *.sqlite3
 
-# pyenv
-.python-version
-
 # Environments
 .env
 .venv
 env/
-venv/
 ENV/
+venv/
+env.old/
 env.bak/
 venv.bak/
+.python-version
+
+# Server
+app.reload
