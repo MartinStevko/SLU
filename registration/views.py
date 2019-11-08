@@ -48,13 +48,14 @@ class SchoolRegistrationView(FormView):
         school = form.cleaned_data.get('choose_school', None)
         if not school:
             school = form.save()
+            school = str(school.pk)
 
         data = self.request.session.get('registration_data', None)
         if not data:
             raise PermissionDenied('Registrácia neplatná, chcete nás hacknúť?!')
         else:
             key = get_key()
-            data = decode(key, data) + '-' + str(school.pk)
+            data = decode(key, data) + '-' + school
             self.request.session['registration_data'] = encode(key, data)
 
         messages.success(self.request, 'Škola bola úspešne pridaná. \

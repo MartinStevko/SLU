@@ -38,6 +38,7 @@ class School(models.Model):
         ],
         verbose_name='ulica'
     )
+    # Warnign! Forms.py rely exactly on this Regex pattern.
     postcode = models.CharField(
         max_length=7,
         validators=[
@@ -68,6 +69,7 @@ class School(models.Model):
         verbose_name_plural = 'školy'
 
     def __str__(self):
+        # Warnign! Forms.py rely exactly on this pattern.
         return "{}, {}, {} {}".format(
             self.name,
             self.street,
