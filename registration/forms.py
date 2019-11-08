@@ -9,12 +9,15 @@ from tournament.models import Team
 
 class SchoolForm(OverwriteOnlyModelFormMixin, BetterModelForm):
 
-    choose_school = forms.ModelChoiceField(
-        queryset=School.objects.all(),
-        empty_label="(Vytvoriť novú školu)",
+    choose_school = forms.CharField(
         label='Registrovaná škola',
-        help_text='Ak nevidíte vašu školu v zozname, vytvorte novú, \
-        nabudúce ju tu už uvidíte.'
+        help_text='Ak nevidíte vašu školu v zozname, vytvorte novú, nabudúce ju tu už uvidíte.',
+        widget=forms.TextInput(
+            attrs={
+                'autocomplete': 'off',
+                'class': 'typeahead'
+            }
+        )
     )
 
     def __init__(self, *args, **kwargs):

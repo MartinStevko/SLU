@@ -33,6 +33,17 @@ class SchoolRegistrationView(FormView):
     form_class = SchoolForm
     model = School
 
+    def get_context_data(self, **kwargs):
+        context = super(SchoolRegistrationView, self).get_context_data(**kwargs)
+
+        schools = School.objects.all()
+
+        context.update({
+            'schools': schools
+        })
+
+        return context
+
     def form_valid(self, form):
         school = form.cleaned_data.get('choose_school', None)
         if not school:

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
 {% load form_utils %}
 {% load bootstrap4 %}
 
@@ -44,4 +45,40 @@
         <hr class="featurette-divider">
 
     </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/typeahead.min.js' %}"></script>
+    <script>
+        var substringMatcher = function(strs) {
+            return function findMatches(q, cb) {
+                var matches, substringRegex;
+
+                matches = [];
+                substrRegex = new RegExp(q, 'i');
+
+                $.each(strs, function(i, str) {
+                    if (substrRegex.test(str)) {
+                        matches.push(str);
+                    }
+                });
+
+                cb(matches);
+            };
+        };
+
+        var schools = [
+        {% for school in schools %}
+            "{{ school }}",
+        {% endfor %}
+        ];
+
+        $('#id_choose_school.typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1,
+            name: 'schools',
+            source: substringMatcher(schools)
+        });
+    </script>
 {% endblock %}
