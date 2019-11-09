@@ -196,7 +196,8 @@ class Tournament(models.Model):
 
     cap = models.BooleanField(
         default=False,
-        help_text='Budú zápasy s capom?')
+        help_text='Budú zápasy s capom?'
+    )
     game_duration = models.DurationField(
         blank=True,
         null=True,

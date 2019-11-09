@@ -4,6 +4,8 @@ from django.core.validators import RegexValidator
 
 from datetime import datetime
 
+from tournament.models import Season
+
 CATEGORIES = (
     ('rules', 'Pravidlá'),
     ('ultimate', 'O ultimate'),
@@ -19,6 +21,10 @@ class News(models.Model):
     expiration = models.DateTimeField(
         verbose_name='dátum expirácie'
     )
+    published = models.BooleanField(
+        default=True,     
+        verbose_name='publikované'
+    )
 
     description = models.TextField(
         verbose_name='popis'
@@ -32,14 +38,22 @@ class News(models.Model):
         verbose_name = 'novinka'
         verbose_name_plural = 'novinky'
 
+    def __str__(self):
+        return '{}'.format(self.title)
+
     def expired(self):
         if self.expiration.replace(tzinfo=None) > datetime.now():
             return False
         else:
             return True
 
-    def __str__(self):
-        return '{}'.format(self.title)
+    def expire_now(self):
+        self.expiration = timezone.now()
+        self.save()
+
+    def publish(self):
+        self.published = True
+        self.save()
 
 
 class Section(models.Model):
@@ -52,6 +66,10 @@ class Section(models.Model):
         default='other',
         choices=CATEGORIES,
         verbose_name='kategória'
+    )
+    published = models.BooleanField(
+        default=True,     
+        verbose_name='publikované'
     )
 
     description = models.TextField(
@@ -74,6 +92,10 @@ class Section(models.Model):
     def __str__(self):
         return '{}'.format(self.title)
 
+    def publish(self):
+        self.published = True
+        self.save()
+
 
 class Message(models.Model):
     from_email = models.EmailField(
@@ -82,6 +104,10 @@ class Message(models.Model):
     send_time = models.DateTimeField(
         default=timezone.now,
         verbose_name='čas poslania'
+    )
+    archived = models.BooleanField(
+        default=False,     
+        verbose_name='archivované'
     )
 
     subject = models.CharField(
@@ -100,6 +126,10 @@ class Message(models.Model):
 
     def __str__(self):
         return '{} - {}'.format(self.subject, self.text)
+
+    def archive(self):
+        self.archived = True
+        self.save()
 
 
 class OrganizerProfile(models.Model):
@@ -143,3 +173,14 @@ class OrganizerProfile(models.Model):
 
     def __str__(self):
         return '{}'.format(self.full_name)
+
+    def end_now(self):
+        s = Season.objects.all()
+        s = s[len(s)-1]
+        year1, year2 = s.school_year.split('/')
+        if s.season == 'outdoor':
+            self.end_season = 'leto, ' + year2
+        elif s.season == 'indoor':
+            self.end_season = 'zima, 0' + year1
+        
+        self.save()

@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}E-maily organizátorov | SLU{% endblock %}
+
+{% block content %}
+    <h1>Kontakty na organizátorov</h1>
+    <p style="padding: 5px;">
+        {% for org in orgs %}
+            {{ org.full_name }}
+            &lt;<a href="mailto:{{ org.full_name }}">{{ org.email }}</a>&gt;<br>
+        {% endfor %}
+    </p>
+{% endblock %}
