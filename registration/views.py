@@ -33,20 +33,32 @@ class SchoolRegistrationView(FormView):
     form_class = SchoolForm
     model = School
 
+    def get_context_data(self, **kwargs):
+        context = super(SchoolRegistrationView, self).get_context_data(**kwargs)
+
+        schools = School.objects.all()
+
+        context.update({
+            'schools': schools
+        })
+
+        return context
+
     def form_valid(self, form):
         school = form.cleaned_data.get('choose_school', None)
         if not school:
             school = form.save()
+            school = str(school.pk)
 
         data = self.request.session.get('registration_data', None)
         if not data:
             raise PermissionDenied('Registrácia neplatná, chcete nás hacknúť?!')
         else:
             key = get_key()
-            data = decode(key, data) + '-' + str(school.pk)
+            data = decode(key, data) + '-' + school
             self.request.session['registration_data'] = encode(key, data)
 
-        messages.success(self.request, 'Škola bola úspešne vytvorená. \
+        messages.success(self.request, 'Škola bola úspešne pridaná. \
         Pre dokončenie registrácie pokračujte vyplnením údajov o učiteľovi a tíme.')
         return super(SchoolRegistrationView, self).form_valid(form)
 
@@ -78,7 +90,7 @@ class TeacherRegistrationView(FormView):
             temp += '-' + str(pk)
         self.request.session['registration_data'] = encode(key, temp[1:])
 
-        messages.success(self.request, 'Učiteľ bol úspešne vytvorený. \
+        messages.success(self.request, 'Učiteľ bol úspešne pridaný. \
         Pre dokončenie registrácie pokračujte vyplnením údajov o tíme.')
         return super(TeacherRegistrationView, self).form_valid(form)
 

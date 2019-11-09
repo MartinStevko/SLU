@@ -57,6 +57,14 @@
                 content: ' *';
                 color: red;
             }
+
+            .dropdown-toggle::after {
+                transition: transform 0.15s linear; 
+            }
+            
+            .show.dropdown .dropdown-toggle::after {
+                transform: translateY(3px);
+            }
         </style>
         {% block css %}
         {% endblock %}
@@ -79,7 +87,7 @@
                     <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="navbar-collapse collapse" id="navbarCollapse" style="">
+                    <div class="navbar-collapse collapse" id="navbarCollapse">
                         <ul class="navbar-nav mr-auto">
                             <li class="nav-item {% if 'rules' in request.build_absolute_uri %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'content:rules' %}">Pravidlá</a>
@@ -90,25 +98,20 @@
                             <li class="nav-item {% if 'tournament' in request.build_absolute_uri %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'tournament:list' %}">Turnaje</a>
                             </li>
+                            <li class="nav-item dropdown">
+                                {% if user.is_authenticated and my_tournaments %}
+                                    <a class="nav-link dropdown-toggle" href="#" id="my_tournaments" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Moje turnaje</a>
+                                    <div class="dropdown-menu" aria-labelledby="my_tournaments">
+                                        {% for tournament in my_tournaments %}
+                                            <a class="dropdown-item" href="{% url 'tournament:detail' tournament.id %}">{{ tournament }}</a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </li>
                             <li class="nav-item {% if 'contact' in request.build_absolute_uri %}active{% endif %}">
                                 <a class="nav-link" href="{% url 'content:contact' %}">Kontakt</a>
                             </li>
                         </ul>
-                        <!--Right side navbar:
-                        <ul class="navbar-nav">
-                            {% if not user.is_authenticated %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin:login' %}">Prihlásiť sa</a>
-                                </li>
-                            {% else %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin:index' %}">Administrátor</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{% url 'admin:logout' %}">Odhlásiť sa</a>
-                                </li>
-                            {% endif %}
-                        </ul>-->
                     </div>
                 </div>
             </nav>
@@ -117,6 +120,24 @@
         <main role="main">
             {% block content %}
             {% endblock %}
+
+            <!-- MODAL -->
+            <div class="modal fade" id="cookieModal" tabindex="-1" role="dialog" aria-labelledby="cookieModalLabel" aria-hidden="false">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cookieModalLabel">SLU súbory cookie</h5>
+                        </div>
+                        <div class="modal-body">
+                            Táto stránka používa súbory cookie na zjednodušenie ovládania stránky.
+                            Pokračovaním v používaní stránky s tým súhlasíte.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close" onclick="$.cookie('cAgree', true, { expires : 100 });">Súhlasím</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- FOOTER -->
             <footer class="container">
@@ -141,6 +162,36 @@
                     $(':input[required]').parent().parent().children().filter('label').addClass('required');
                 }
                 catch {}
+            });
+
+            if (typeof $.cookie('cAgree') === 'undefined') {
+                $('#cookieModal').modal('show');
+            };
+
+            const $dropdown = $(".dropdown");
+            const $dropdownToggle = $(".dropdown-toggle");
+            const $dropdownMenu = $(".dropdown-menu");
+            const showClass = "show";
+            
+            $(window).on("load resize", function() {
+            if (this.matchMedia("(min-width: 768px)").matches) {
+                $dropdown.hover(
+                function() {
+                    const $this = $(this);
+                    $this.addClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "true");
+                    $this.find($dropdownMenu).addClass(showClass);
+                },
+                function() {
+                    const $this = $(this);
+                    $this.removeClass(showClass);
+                    $this.find($dropdownToggle).attr("aria-expanded", "false");
+                    $this.find($dropdownMenu).removeClass(showClass);
+                }
+                );
+            } else {
+                $dropdown.off("mouseenter mouseleave");
+            }
             });
         </script>
         {% block js %}

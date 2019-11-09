@@ -9,12 +9,15 @@ from tournament.models import Team
 
 class SchoolForm(OverwriteOnlyModelFormMixin, BetterModelForm):
 
-    choose_school = forms.ModelChoiceField(
-        queryset=School.objects.all(),
-        empty_label="(Vytvoriť novú školu)",
+    choose_school = forms.CharField(
         label='Registrovaná škola',
-        help_text='Ak nevidíte vašu školu v zozname, vytvorte novú, \
-        nabudúce ju tu už uvidíte.'
+        help_text='Ak nevidíte vašu školu v zozname, vytvorte novú, nabudúce ju tu už uvidíte.',
+        widget=forms.TextInput(
+            attrs={
+                'autocomplete': 'off',
+                'class': 'typeahead'
+            }
+        )
     )
 
     def __init__(self, *args, **kwargs):
@@ -38,6 +41,18 @@ class SchoolForm(OverwriteOnlyModelFormMixin, BetterModelForm):
                 if not field:
                     raise forms.ValidationError('Školu musíš buď \
                     vybrať z existujúcich, alebo vytvoriť novú.')
+        
+        else:
+            try:
+                name, street, city = choose_school.split(', ')
+                cleaned_data['choose_school'] = School.objects.get(
+                    name=name,
+                    street=street,
+                    city=city[7:]
+                ).pk
+            except(School.DoesNotExist, ValueError):
+                raise forms.ValidationError('Takáto škola v zozname nie je. Vyber \
+                buď presný názov školy zo zoznamu, alebo školu vytvor.')
 
     def fieldsets(self):
         self._fieldsets = [
@@ -52,7 +67,7 @@ class SchoolForm(OverwriteOnlyModelFormMixin, BetterModelForm):
             (
                 'Vytvoriť školu',
                 {'fields': ('name', 'web', 'street', 'postcode', 'city', 'region'),
-                 'description': 'Vyberte školu zo zoznamu nižšie, alebo \
+                 'description': 'Vyberte školu zo zoznamu vyššie, alebo \
                  vytvorte novú školu. Všetci hráči musia byť žiakmi tejto \
                  školy a pod jej menom zároveň budú súťažiť.',
                 }

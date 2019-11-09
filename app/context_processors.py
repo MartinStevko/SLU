@@ -1,5 +1,5 @@
 from datetime import datetime
-from tournament.models import Season
+from tournament.models import Season, Tournament
 
 
 def variables_processor(request):
@@ -16,5 +16,10 @@ def variables_processor(request):
 
     else:
         r.update({'outdoor': True})
+
+    user = request.user
+    if user.is_authenticated:
+        t = user.tournament_set.filter(date__gte=datetime.now())
+        r.update({'my_tournaments': t})
 
     return r

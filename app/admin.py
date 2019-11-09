@@ -20,12 +20,12 @@ class OrderedAdminSite(admin.AdminSite):
             'profily organizátorov': 3,
             'správy': 4,
         }, {
-            'sezóny': 1,
-            'turnaje': 2,
-            'tímy': 3,
-            'zápasy': 4,
-            'body': 5,
-            'výsledky': 6,
+            'sezóny': 2,
+            'turnaje': 3,
+            'tímy': 1,
+            'zápasy': 5,
+            'body': 6,
+            'výsledky': 4,
             'fotky': 7,
         }, {
             'školy': 1,
