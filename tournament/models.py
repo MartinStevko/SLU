@@ -61,7 +61,8 @@ class Season(models.Model):
             'specialpermission__email_verified': True
         },
         blank=True,
-        verbose_name='organizátori'
+        verbose_name='organizátori',
+        help_text='Centrálni organizátori sezóny.'
     )
 
     school_year = models.CharField(
@@ -72,7 +73,8 @@ class Season(models.Model):
                 message='Školský rok musí byť vo formáte YYYY/YYYY.',
             ),
         ],
-        verbose_name='školský rok'
+        verbose_name='školský rok',
+        help_text='Školský rok vo formáte YYYY/YYYY.'
     )
 
     season = models.CharField(
@@ -140,7 +142,8 @@ class Tournament(models.Model):
             'specialpermission__email_verified': True
         },
         blank=True,
-        verbose_name='organizátori'
+        verbose_name='organizátori',
+        help_text='Lokálni organizátori turnaja.'
     )
 
     delegate = models.CharField(
@@ -474,7 +477,8 @@ class Point(models.Model):
     )
     time = models.TimeField(
         default=datetime.datetime.now().time(),
-        verbose_name='čas'
+        verbose_name='čas',
+        help_text='Čas v ktorom bod padol.'
     )
 
     score = models.ForeignKey(
@@ -483,7 +487,8 @@ class Point(models.Model):
         related_name='score',
         blank=True,
         null=True,
-        verbose_name='skórujúci'
+        verbose_name='skórujúci',
+        help_text='Hráč, ktorý dal bod.'
     )
     assist = models.ForeignKey(
         Player,
@@ -491,7 +496,8 @@ class Point(models.Model):
         related_name='assist',
         blank=True,
         null=True,
-        verbose_name='asistujúci'
+        verbose_name='asistujúci',
+        help_text='Hráč, ktorý prihral na bod.'
     )
 
     class Meta:

@@ -25,7 +25,8 @@ class School(models.Model):
     )
     web = models.URLField(
         max_length=255,
-        verbose_name='webová stránka'
+        verbose_name='webová stránka',
+        help_text='Webové sídlo školy.'
     )
 
     street = models.CharField(
@@ -36,7 +37,9 @@ class School(models.Model):
                 message='Ulica musí byť vo formáte Hlavná pri Rieke 14.',
             )
         ],
-        verbose_name='ulica'
+        verbose_name='ulica',
+        help_text='Názov ulice bez čiarok, pomlčiek a iných \
+        špeciálnych znakov spolu s popisným číslom.'
     )
     # Warnign! Forms.py rely exactly on this Regex pattern.
     postcode = models.CharField(
@@ -47,7 +50,8 @@ class School(models.Model):
                 message='PSČ musí byť vo formáte 123 45.',
             )
         ],
-        verbose_name='PSČ'
+        verbose_name='PSČ',
+        help_text='Poštové smerové číslo v tvare "123 45".'
     )
     city = models.CharField(
         max_length=255,
@@ -104,7 +108,9 @@ class Teacher(models.Model):
                 message='Telefónne číslo musí byť vo formáte +421 123 456 789.',
             ),
         ],
-        verbose_name='telefónne číslo'
+        verbose_name='telefónne číslo',
+        help_text='Telefonné číslo oddelené medzerami po trojčísliach \
+        na začiatku s predvoľbou.'
     )
 
     class Meta:

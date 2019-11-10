@@ -27,11 +27,13 @@ class News(models.Model):
     )
 
     description = models.TextField(
-        verbose_name='popis'
+        verbose_name='popis',
+        help_text='Text, ktorý sa zobrazí v tele novinky.'
     )
     image = models.ImageField(
         upload_to='news',
-        verbose_name='obrázok'
+        verbose_name='obrázok',
+        help_text='Obrázok, ktorý sa zobrazí pri novinke.'
     )
 
     class Meta:
@@ -65,7 +67,8 @@ class Section(models.Model):
         max_length=15,
         default='other',
         choices=CATEGORIES,
-        verbose_name='kategória'
+        verbose_name='kategória',
+        help_text='Kategória v menu, pod ktorou bude sekcia uvedená.'
     )
     published = models.BooleanField(
         default=True,     
@@ -73,16 +76,19 @@ class Section(models.Model):
     )
 
     description = models.TextField(
-        verbose_name='popis'
+        verbose_name='popis',
+        help_text='Text, ktorý sa v sekcii zobrazí.'
     )
     image = models.ImageField(
         upload_to='sections',
-        verbose_name='obrázok'
+        verbose_name='obrázok',
+        help_text='Obrázok, ktorý sa v sekcii zobrazí.'
     )
 
     order = models.SmallIntegerField(
         default=0,
-        verbose_name='poradie'
+        verbose_name='poradie',
+        help_text='Poradové číslo sekcie. Stránka ich zoradí od najmenšieho po najväčšie.'
     )
 
     class Meta:
@@ -153,7 +159,8 @@ class OrganizerProfile(models.Model):
                 message='Začiatok aj koniec sezóny musia byť vo formáte leto/zima, YYYY.',
             ),
         ],
-        verbose_name='začiatok organizácie'
+        verbose_name='začiatok organizácie',
+        help_text='Vo formáte "leto/zima, YYYY".'
     )
     end_season = models.CharField(
         max_length=15,
@@ -164,7 +171,8 @@ class OrganizerProfile(models.Model):
                 message='Začiatok aj koniec sezóny musia byť vo formáte leto/zima, YYYY.',
             ),
         ],
-        verbose_name='koniec organizácie'
+        verbose_name='koniec organizácie',
+        help_text='Vo formáte "leto/zima, YYYY".'
     )
 
     class Meta:
