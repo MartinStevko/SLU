@@ -49,16 +49,24 @@ class SendMail:
     def user_creation(self, user):
         plaintext = get_template('emails/user_creation.txt')
 
-        password = ''.join(random.SystemRandom().choice(
-            string.ascii_uppercase + string.digits
-        ) for _ in range(16))
-        user.set_password(password)
-        user.save()
+        password = ''
 
         context = {
             'name': user.get_full_name(),
-            'username': user.username,
+            'username': user.email,
             'password': password,
+        }
+
+        self.send_rendered_email(context, plaintext)
+
+    def user_login(self, pk, key, url_next, host):
+        plaintext = get_template('emails/user_login.txt')
+
+        context = {
+            'pk': pk,
+            'key': key,
+            'host': host,
+            'next': url_next,
         }
 
         self.send_rendered_email(context, plaintext)

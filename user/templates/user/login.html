@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load form_utils %}
+{% load bootstrap4 %}
+
+{% block title %}Prihlásenie{% endblock %}
+
+{% block content %}
+    <div class="container marketing">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="featurette">
+            <h3>Prihlásenie</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {% bootstrap_form form layout='horizontal' %}
+
+                <small><span style="color: red">*</span>Toto pole je povinné</small>
+                <button class="btn btn-primary btn-block" type="submit">Prihlásiť</button>
+            </form>
+        </div>
+        <hr class="featurette-divider">
+
+    </div>
+{% endblock %}

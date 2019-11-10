@@ -1,0 +1,5 @@
+Prihlásiť sa môžete pomocou následujceho linku:
+
+{{ host }}{% url 'user:authenticate' pk key %}?next={{ next }}
+
+S pozdravom, Váš tím SLU!

@@ -142,11 +142,11 @@
             <!-- FOOTER -->
             <footer class="container">
                 {% if not user.is_authenticated %}
-                    <p class="float-right"><a href="{% url 'admin:login' %}">Prihlásiť sa</a></p>
+                    <p class="float-right"><a href="{% url 'user:login' %}?next={{ request.path }}">Prihlásiť sa</a></p>
                 {% else %}
                     <p class="float-right">
                         <a href="{% url 'admin:index' %}" style="margin-right: 20px;">Administrátor</a>
-                        <a href="{% url 'admin:logout' %}">Odhlásiť sa</a>
+                        <a href="{% url 'user:logout' %}?next={{ request.path }}">Odhlásiť sa</a>
                     </p>
                 {% endif %}
                 <p>© <a href="https://szf.sk/">Slovenská asociácia Frisbee</a></p>

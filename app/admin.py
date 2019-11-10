@@ -5,15 +5,18 @@ class OrderedAdminSite(admin.AdminSite):
 
     def get_app_list(self, request):
         app_ordering = {
+            'používateľ': 0,
             'autentifikácia a autorizácia': 1,
-            'obsah': 3,
-            'turnajový správca': 4,
-            'registrácia': 5
+            'obsah': 2,
+            'turnajový správca': 3,
+            'registrácia': 4
         }
 
         model_ordering = [{
-            'používatelia': 1,
-            'skupiny': 2,
+            'používatelia': 1
+        }, {
+            'oprávnenia':1,
+            'skupiny':2,
         }, {
             'novinky': 1,
             'sekcie': 2,

@@ -12,7 +12,7 @@ import os
 from uuid import uuid4
 import datetime
 
-from django.contrib.auth.models import User
+from user.models import User
 from registration.models import School, Teacher, Player
 
 SEASONS = (
@@ -56,10 +56,7 @@ STATES = (
 class Season(models.Model):
     orgs = models.ManyToManyField(
         User,
-        limit_choices_to={
-            'is_staff': True,
-            'specialpermission__email_verified': True
-        },
+        limit_choices_to={'is_staff': True},
         blank=True,
         verbose_name='organizátori',
         help_text='Centrálni organizátori sezóny.'
@@ -137,10 +134,7 @@ class Tournament(models.Model):
 
     orgs = models.ManyToManyField(
         User,
-        limit_choices_to={
-            'is_staff': True,
-            'specialpermission__email_verified': True
-        },
+        limit_choices_to={'is_staff': True},
         blank=True,
         verbose_name='organizátori',
         help_text='Lokálni organizátori turnaja.'
@@ -476,7 +470,7 @@ class Point(models.Model):
         verbose_name='zápas'
     )
     time = models.TimeField(
-        default=datetime.datetime.now().time(),
+        auto_now_add=True,
         verbose_name='čas',
         help_text='Čas v ktorom bod padol.'
     )

@@ -14,7 +14,6 @@ class SeasonAdmin(admin.ModelAdmin):
     list_per_page = 100
 
     search_fields = [
-        'orgs__username',
         'orgs__first_name',
         'orgs__last_name',
     ]

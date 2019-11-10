@@ -7,7 +7,6 @@ class TeacherInline(admin.TabularInline):
     model = Teacher
     extra = 0
 
-    exclude = ['email_verified']
     can_delete = False
 
 

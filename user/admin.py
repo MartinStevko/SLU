@@ -1,68 +1,41 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth.models import User
+from .models import User
 
-from .models import SpecialPermission
-
-
-class EmailRequiredMixin(object):
-    def __init__(self, *args, **kwargs):
-        super(EmailRequiredMixin, self).__init__(*args, **kwargs)
-        # make user email field required
-        self.fields['email'].required = True
+# admin.site.unregister(Group)
 
 
-class OrganizerCreationForm(EmailRequiredMixin, UserCreationForm):
-    pass
-
-
-class OrganizerChangeForm(EmailRequiredMixin, UserChangeForm):
-    pass
-
-
-class SpecialPermissionInline(admin.StackedInline):
-    model = SpecialPermission
-
-
-class OrganizerUserAdmin(UserAdmin):
-    form = OrganizerChangeForm
-    add_form = OrganizerCreationForm
-    add_fieldsets = ((None, {
-        'fields': ('username', 'email', 'password1', 'password2'), 
-        'classes': ('wide',)
-    }),)
-
-    list_filter = UserAdmin.list_filter + (
-        'specialpermission__email_verified',
-    )
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('email', 'first_name', 'last_name')
+    list_filter = ('is_staff', 'is_superuser', 'groups')
     list_per_page = 100
 
-    inlines = UserAdmin.inlines + [SpecialPermissionInline]
-
     search_fields = [
-        'username',
         'first_name',
         'last_name',
         'email',
     ]
     ordering = ('-pk',)
 
+    filter_horizontal = ['groups', 'user_permissions']
 
-class SpecialPermissionAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'email_verified')
-    list_filter = ('user__is_superuser', 'email_verified')
-    list_per_page = 100
+    readonly_fields = ('password_expiration', 'last_login')
 
-    search_fields = [
-        'user__username',
-        'user__first_name',
-        'user__last_name',
-    ]
-    ordering = ('-pk',)
+    fieldsets = (
+        ('Prihlásenie', {
+            'classes': ('wide',),
+            'fields': ('email', 'password_expiration', 'last_login'),
+        }),
+        ('Osoba', {
+            'classes': ('wide',),
+            'fields': ('first_name', 'last_name'),
+        }),
+        ('Oprávnenia', {
+            'classes': ('wide',),
+            'fields': ('is_staff', 'is_superuser', 'user_permissions', 'groups'),
+        }),
+    )
 
-admin.site.unregister(User)
-admin.site.register(User, OrganizerUserAdmin)
-
-# It isn't necessary to have SpecialPermissions shown
-# admin.site.register(SpecialPermission, SpecialPermissionAdmin)
+admin.site.register(User, UserAdmin)
+admin.site.register(Permission)
