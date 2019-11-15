@@ -15,6 +15,7 @@ from app.utils import encode, decode, get_key
 from app.emails import SendMail, org_list
 from registration.models import *
 from tournament.models import Tournament, Team
+from user.models import User
 from .forms import *
 
 
@@ -122,6 +123,25 @@ class TeamRegistrationView(FormView):
         except(Tournament.DoesNotExist, School.DoesNotExist, Teacher.DoesNotExist):
             raise PermissionDenied('Registrácia neplatná, chcete nás hacknúť?!')
 
+        try:
+            User.objects.get(email=team.teacher.email)
+        except(User.DoesNotExist):
+            User.objects.create(
+                email=team.teacher.email,
+                first_name=team.teacher.first_name,
+                last_name=team.teacher.last_name
+            )
+
+        if team.extra_email:
+            try:
+                User.objects.get(email=team.extra_email)
+            except(User.DoesNotExist):
+                User.objects.create(
+                    email=team.extra_email,
+                    first_name=team.name,
+                    last_name=team.school.name
+                )
+
         message = form.cleaned_data.get('message', '')
 
         SendMail(
@@ -193,7 +213,7 @@ def confirmation_redirect(request, identifier):
 
     key = get_key()
     registered = request.session.get('team_list', None)
-    if not registered or type(registered) != list:
+    if not registered:
         registered = []
 
     registered.append(encode(key, identifier))
@@ -212,7 +232,12 @@ class ChangeTeamView(FormMixin, DetailView):
         authorizied = self.request.session.get('team_list', None)
         key = get_key()
 
-        if encode(key, str(team.identifier)) in authorizied:
+        if self.request.user.is_authenticated and (
+            self.request.user.email in [team.extra_email, team.teacher.email]
+        ):
+                return True
+
+        if authorizied and encode(key, str(team.identifier.hex)) in authorizied:
             return True
         else:
             time.sleep(3)
