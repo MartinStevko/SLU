@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Školy | SLU{% endblock %}
+
+{% block content %}
+    <h1>Základné informácie o školách</h1>
+    <p style="padding: 5px;">
+        {% for s in schools %}
+            {{ s }} - <a href="{{ s.web }}">{{ s.web }}</a><br>
+        {% endfor %}
+    </p>
+{% endblock %}

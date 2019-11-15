@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}{% if email %}E-maily{% else %}Telefónne čísla{% endif %} učiteľov | SLU{% endblock %}
+
+{% block content %}
+    <h1>{% if email %}E-maily{% else %}Telefónne čísla{% endif %} na učiteľov</h1>
+    <p style="padding: 5px;">
+        {% for t in teachers %}
+            {% if email %}
+                {{ t }}
+                &lt;<a href="mailto:{{ org.full_name }}">{{ t.email }}</a>&gt;<br>
+            {% else %}
+                {{ t.phone_number }}
+                ({{ t }})<br>
+            {% endif %}
+        {% endfor %}
+    </p>
+{% endblock %}

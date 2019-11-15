@@ -94,44 +94,40 @@ def get_tabs(request, t):
                     tabs.append(tab)
 
     if request.user.is_authenticated:
-        try:
-            teacher = Teacher.objects.get(email=request.user.email)
-        except(Teacher.DoesNotExist):
-            pass
-        else:
-            for team in Team.objects.filter(teacher=teacher):
-                if team.tournament.date < datetime.datetime.now().date():
-                    continue
+        teachers = Teacher.objects.filter(email=request.user.email)
+        for team in Team.objects.filter(teacher__in=teachers):
+            if team.tournament.date < datetime.datetime.now().date():
+                continue
+            else:
+                if len(team.get_name()) > 20:
+                    name_str = team.get_name()[:17] + '...'
                 else:
-                    if len(team.get_name()) > 20:
-                        name_str = team.get_name()[:17] + '...'
-                    else:
-                        name_str = team.get_name()
+                    name_str = team.get_name()
 
-                    tab = (
-                        name_str,
-                        reverse('registration:change', kwargs={'pk': team.pk}),
-                        False
-                    )
-                    if tab not in tabs:
-                        tabs.append(tab)
+                tab = (
+                    name_str,
+                    reverse('registration:change', kwargs={'pk': team.pk}),
+                    False
+                )
+                if tab not in tabs:
+                    tabs.append(tab)
 
-            for team in Team.objects.filter(extra_email=request.user.email):
-                if team.tournament.date < datetime.datetime.now().date():
-                    continue
+        for team in Team.objects.filter(extra_email=request.user.email):
+            if team.tournament.date < datetime.datetime.now().date():
+                continue
+            else:
+                if len(team.get_name()) > 20:
+                    name_str = team.get_name()[:17] + '...'
                 else:
-                    if len(team.get_name()) > 20:
-                        name_str = team.get_name()[:17] + '...'
-                    else:
-                        name_str = team.get_name()
+                    name_str = team.get_name()
 
-                    tab = (
-                        name_str,
-                        reverse('registration:change', kwargs={'pk': team.pk}),
-                        False
-                    )
-                    if tab not in tabs:
-                        tabs.append(tab)
+                tab = (
+                    name_str,
+                    reverse('registration:change', kwargs={'pk': team.pk}),
+                    False
+                )
+                if tab not in tabs:
+                    tabs.append(tab)
 
     return tabs
 
