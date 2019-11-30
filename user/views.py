@@ -6,7 +6,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from random import choice
 import string
 
@@ -33,7 +33,7 @@ class LoginView(FormView):
 
         SendMail(
             [email],
-            'Odkaz na prihlásenie'
+            'Prihlásenie '+datetime.now().strftime("%Y-%m-%d %H:%M")
         ).user_login(
             user.pk,
             key,
@@ -66,11 +66,3 @@ class LoginKeyView(RedirectView):
         else:
             messages.error(self.request, 'Odkaz na prihlásenie už vypršal!')
             return reverse('user:login')
-
-
-class LogoutView(RedirectView):
-    permanent = True
-
-    def get_redirect_url(self, *args, **kwargs):
-        logout(self.request)
-        return self.request.GET.get('next', '/')

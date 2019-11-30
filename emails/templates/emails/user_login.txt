@@ -1,4 +1,4 @@
-Prihlásiť sa môžete pomocou následujceho linku:
+Pre dokončenie prihlásenia na stránku SLU prejdite na následujúci odkaz:
 
 {{ host }}{% url 'user:authenticate' pk key %}?next={{ next }}
 

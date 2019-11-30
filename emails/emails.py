@@ -7,6 +7,8 @@ from django.template import Template, Context
 import random
 import string
 
+from emails.models import Template as T_model
+
 '''
 SendMail(
     ['contact1', 'contact2'],
@@ -60,6 +62,7 @@ class SendMail:
 
     def user_login(self, pk, key, url_next, host):
         plaintext = get_template('emails/user_login.txt')
+        template = get_template('emails/user_login.html')
 
         context = {
             'pk': pk,
@@ -68,7 +71,7 @@ class SendMail:
             'next': url_next,
         }
 
-        self.send_rendered_email(context, plaintext)
+        self.send_rendered_email(context, plaintext, html_template=template)
 
     def contact_form(self, message):
         email = EmailMessage(
@@ -82,30 +85,77 @@ class SendMail:
 
     def registration_email(self, team):
         # pre tim ked sa zaregistruju - link na potvrdenie a upravu
+        t = T_model.objects.get(tag='registration_email')
+        plaintext = Template(t.text)
+        template = Template(t.html)
 
-        # priklad pouzitia:
-        # plaintext = get_template('email.txt')
-        # htmly = get_template('email.html')
-        # d = { 'username': username }
+        context = Context({
+            'team': team,
+            'tournament': team.tournament,
+            'school': team.school,
+        })
 
-        # self.send_rendered_email(d, plaintext, htmly)
-        pass
+        self.send_rendered_email(context, plaintext, html_template=template)
 
     def registration_notification(self, team, message=None):
         # info pre orgov, ze sa registroval tim
-        pass
+        t = T_model.objects.get(tag='registration_notification')
+        plaintext = Template(t.text)
+        template = Template(t.html)
+
+        context = Context({
+            'team': team,
+            'message': message,
+            'tournament': team.tournament,
+        })
+
+        self.send_rendered_email(context, plaintext, html_template=template)
 
     def tournament_full(self, team):
         # pre tim, turnaj je plny a su waitlisted
-        pass
+        t = T_model.objects.get(tag='tournament_full')
+        plaintext = Template(t.text)
+        template = Template(t.html)
+
+        context = Context({
+            'team': team,
+            'tournament': team.tournament,
+        })
+
+        self.send_rendered_email(context, plaintext, html_template=template)
 
     def team_confirmation(self, team):
         # pre orgov, ze tim potvrdil registraciu
-        pass
+        t = T_model.objects.get(tag='team_confirmation')
+        plaintext = Template(t.text)
+        template = Template(t.html)
+
+        context = Context({
+            'team': team,
+            'tournament': team.tournament,
+        })
+
+        self.send_rendered_email(context, plaintext, html_template=template)
 
     def team_invitation(self, team):
         # pre tim, ze ich pozyvame aj info o turnaji a tak
-        pass
+        t = T_model.objects.get(tag='team_invitation')
+        plaintext = Template(t.text)
+        template = Template(t.html)
+
+        context = Context({
+            'team': team,
+            'tournament': team.tournament,
+        })
+
+        self.send_rendered_email(context, plaintext, html_template=template)
+
+    def test_mail(self, html):
+        self.send_rendered_email(
+            Context({'test': 'testovacia sprava 001'}),
+            Template(html.text),
+            html_template=Template(html.html),
+        )
 
     def send_rendered_email(self, context, text_template, html_template=None):
         if html_template is not None:
@@ -132,10 +182,3 @@ class SendMail:
                 reply_to=['slu.central.org@gmail.com'],
             )
             email.send(fail_silently=False)
-
-    def test_mail(self, html):
-        self.send_rendered_email(
-            Context({'test': 'testovacia sprava 001'}),
-            Template(html.text),
-            html_template=Template(html.html),
-        )

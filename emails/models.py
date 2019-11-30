@@ -3,7 +3,11 @@ from django.db import models
 from froala_editor.fields import FroalaField
 
 TAGS = (
-    ('email_name', 'Meno emailu'),
+    ('registration_email', 'Registračný e-mail'),
+    ('registration_notification', 'Upozornenie o registrácii'),
+    ('tournament_full', 'Info o zaradení na čakaciu listinu'),
+    ('team_confirmation', 'Info o potvrdení registrácie'),
+    ('team_invitation', 'Pozvánka na turnaj'),
 )
 
 

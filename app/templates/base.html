@@ -146,7 +146,7 @@
                 {% else %}
                     <p class="float-right">
                         <a href="{% url 'admin:index' %}" style="margin-right: 20px;">Administrátor</a>
-                        <a href="{% url 'user:logout' %}?next={{ request.path }}">Odhlásiť sa</a>
+                        <a href="{% url 'user:logout' %}{% ifequal request.path '/' %}{% else %}?next={{ request.path }}{% endifequal %}">Odhlásiť sa</a>
                     </p>
                 {% endif %}
                 <p>© <a href="https://szf.sk/">Slovenská asociácia Frisbee</a></p>
