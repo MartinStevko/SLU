@@ -484,10 +484,17 @@ class MatchDetailView(FormView):
 
         point.save()
 
-        messages.success(
-            self.request,
-            'Bol pridaný bod pre tím {}.'.format(point.score.team.name)
-        )
+        if 'add_to_home_team' in self.request.POST:
+            messages.success(
+                self.request,
+                'Bol pridaný bod pre tím {}.'.format(point.match.home_team.name)
+            )
+        elif 'add_to+host_team' in self.request.POST:
+            messages.success(
+                self.request,
+                'Bol pridaný bod pre tím {}.'.format(point.match.host_team.name)
+            )
+
         return super(MatchDetailView, self).form_valid(form)
 
     def get_success_url(self):

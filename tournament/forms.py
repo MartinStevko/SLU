@@ -4,6 +4,8 @@ from form_utils.forms import BetterModelForm
 from app.mixins import OverwriteOnlyModelFormMixin
 from tournament.models import Point
 
+from django.utils import timezone
+
 
 class ScoringForm(OverwriteOnlyModelFormMixin, BetterModelForm):
 

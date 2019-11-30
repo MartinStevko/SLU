@@ -82,8 +82,8 @@ class MatchInline(admin.TabularInline):
 
 
 class TournamentAdmin(admin.ModelAdmin):
-    list_display = ('season', 'date', 'place')
-    list_display_links = ('season',)
+    list_display = ('__str__', 'season', 'date', 'place')
+    list_display_links = ('__str__',)
     list_filter = ('state', 'season__season', 'region', 'player_stats')
     list_per_page = 100
 
@@ -223,6 +223,8 @@ class ResultAdmin(admin.ModelAdmin):
         '-pk'
     )
 
+    date_hierarchy = 'tournament__date'
+
     fieldsets = (
         ('Turnaj', {
             'classes': ('collapse',),
@@ -320,6 +322,8 @@ class PointAdmin(admin.ModelAdmin):
 
     search_fields = ['score', 'assist']
     ordering = ('-pk',)
+
+    date_hierarchy = 'match__tournament__date'
 
     fieldsets = (
         ('Zápas', {

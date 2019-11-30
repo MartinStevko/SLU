@@ -470,7 +470,6 @@ class Point(models.Model):
         verbose_name='zápas'
     )
     time = models.TimeField(
-        auto_now_add=True,
         verbose_name='čas',
         help_text='Čas v ktorom bod padol.'
     )
@@ -503,6 +502,12 @@ class Point(models.Model):
             str(self.time),
             self.match
         )
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.time = timezone.now()
+
+        super(Point, self).save(*args, **kwargs)
 
 
 @deconstructible
