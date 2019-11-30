@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import get_template
-from django.template import Context
+from django.template import Template, Context
 
 import random
 import string
@@ -28,7 +28,7 @@ def org_list(tournament):
 
 class SendMail:
 
-    def __init__(self, recipients, subject):
+    def __init__(self, recipients, subject=''):
         if type(recipients) == list:
             self.recipients = recipients
         elif recipients == 'contact':
@@ -48,16 +48,15 @@ class SendMail:
 
     def user_creation(self, user):
         plaintext = get_template('emails/user_creation.txt')
+        template = get_template('emails/user_creation.html')
 
         password = ''
 
         context = {
-            'name': user.get_full_name(),
-            'username': user.email,
-            'password': password,
+            'email': user.email,
         }
 
-        self.send_rendered_email(context, plaintext)
+        self.send_rendered_email(context, plaintext, html_template=template)
 
     def user_login(self, pk, key, url_next, host):
         plaintext = get_template('emails/user_login.txt')
@@ -87,7 +86,7 @@ class SendMail:
         # priklad pouzitia:
         # plaintext = get_template('email.txt')
         # htmly = get_template('email.html')
-        # d = Context({ 'username': username })
+        # d = { 'username': username }
 
         # self.send_rendered_email(d, plaintext, htmly)
         pass
@@ -109,10 +108,10 @@ class SendMail:
         pass
 
     def send_rendered_email(self, context, text_template, html_template=None):
-        if html_template:
+        if html_template is not None:
             text_content = text_template.render(context)
             html_content = html_template.render(context)
-            '''
+
             email = EmailMultiAlternatives(
                 self.subject,
                 text_content,
@@ -120,17 +119,6 @@ class SendMail:
                 self.recipients,
             )
             email.attach_alternative(html_content, 'text/html')
-
-            # or
-
-            email = EmailMultiAlternatives(
-                self.subject,
-                html_content,
-                getattr(settings, 'FROM_EMAIL_NAME', 'SLU'),
-                self.recipients,
-            )
-            email.content_subtype = 'html'
-            '''
             email.send(fail_silently=False)
 
         else:
@@ -144,3 +132,10 @@ class SendMail:
                 reply_to=['slu.central.org@gmail.com'],
             )
             email.send(fail_silently=False)
+
+    def test_mail(self, html):
+        self.send_rendered_email(
+            Context({'test': 'testovacia sprava 001'}),
+            Template(html.text),
+            html_template=Template(html.html),
+        )

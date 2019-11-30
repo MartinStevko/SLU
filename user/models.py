@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from datetime import timedelta
 
 from django.contrib.auth.models import Group
-from app.emails import SendMail
+from emails.emails import SendMail
 
 
 class UserManager(BaseUserManager):

@@ -10,7 +10,7 @@ from datetime import timedelta
 from random import choice
 import string
 
-from app.emails import SendMail
+from emails.emails import SendMail
 from .models import *
 from .forms import *
 

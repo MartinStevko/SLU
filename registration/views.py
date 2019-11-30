@@ -12,7 +12,7 @@ from django.views.generic.edit import FormMixin
 import time
 
 from app.utils import encode, decode, get_key
-from app.emails import SendMail, org_list
+from emails.emails import SendMail, org_list
 from registration.models import *
 from tournament.models import Tournament, Team
 from user.models import User

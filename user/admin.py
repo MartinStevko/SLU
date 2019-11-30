@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+from emails.emails import SendMail
 from .models import User
 
 # admin.site.unregister(Group)
@@ -36,6 +38,20 @@ class UserAdmin(admin.ModelAdmin):
             'fields': ('is_staff', 'is_superuser', 'user_permissions', 'groups'),
         }),
     )
+
+    actions = [
+        'send_creation_email',
+    ]
+
+    def send_creation_email(self, request, queryset):
+        for q in queryset:
+            SendMail(
+                [q.email],
+                'Vytvorenie konta'
+            ).user_creation(q)
+
+    send_creation_email.short_description = 'Poslať e-mail o vytvorení účtu'
+
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Permission)

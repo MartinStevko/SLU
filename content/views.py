@@ -6,7 +6,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from content.models import Section, News, Message, OrganizerProfile
 from content.forms import ContactForm
-from app.emails import SendMail
+from emails.emails import SendMail
 
 
 class ContentView(TemplateView):

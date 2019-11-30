@@ -24,8 +24,10 @@ INSTALLED_APPS = [
     'content.apps.ContentConfig',
     'registration.apps.RegistrationConfig',
     'tournament.apps.TournamentConfig',
+    'emails.apps.EmailsConfig',
     'form_utils',
     'bootstrap4',
+    'froala_editor',
 ]
 
 MIDDLEWARE = [

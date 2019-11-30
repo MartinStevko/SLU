@@ -9,7 +9,8 @@ class OrderedAdminSite(admin.AdminSite):
             'autentifikácia a autorizácia': 1,
             'obsah': 2,
             'turnajový správca': 3,
-            'registrácia': 4
+            'registrácia': 4,
+            'emaily': 5,
         }
 
         model_ordering = [{
@@ -34,6 +35,8 @@ class OrderedAdminSite(admin.AdminSite):
             'školy': 1,
             'hráči': 2,
             'učitelia': 3,
+        }, {
+            'šablóny': 1,
         }]
 
         app_dict = self._build_app_dict(request)
