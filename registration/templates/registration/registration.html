@@ -39,7 +39,7 @@
                 {% endfor %}
 
                 <small><span style="color: red">*</span>Toto pole je povinné</small>
-                <button class="btn btn-primary btn-block" type="submit">Odoslať</button>
+                <button class="btn btn-primary btn-block" type="submit" title="GDPR" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Odoslaním súhlasíte so spracovaním osobných údajov v rozsahu vyššie uvedenom.">Odoslať</button>
             </form>
         </div>
         <hr class="featurette-divider">
@@ -50,6 +50,10 @@
 {% block js %}
     <script src="{% static 'js/typeahead.min.js' %}"></script>
     <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();
+        });
+
         var substringMatcher = function(strs) {
             return function findMatches(q, cb) {
                 var matches, substringRegex;

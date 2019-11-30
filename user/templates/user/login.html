@@ -24,10 +24,18 @@
                 {% bootstrap_form form layout='horizontal' %}
 
                 <small><span style="color: red">*</span>Toto pole je povinné</small>
-                <button class="btn btn-primary btn-block" type="submit">Prihlásiť</button>
+                <button class="btn btn-primary btn-block" type="submit" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Bude vám zaslaný odkaz na prihlásenie.">Prihlásiť</button>
             </form>
         </div>
         <hr class="featurette-divider">
 
     </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
 {% endblock %}
