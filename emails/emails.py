@@ -8,6 +8,7 @@ import random
 import string
 
 from emails.models import Template as T_model
+from emails.tests import CustomTeam
 
 '''
 SendMail(
@@ -150,12 +151,25 @@ class SendMail:
 
         self.send_rendered_email(context, plaintext, html_template=template)
 
-    def test_mail(self, html):
-        self.send_rendered_email(
-            Context({'test': 'testovacia sprava 001'}),
-            Template(html.text),
-            html_template=Template(html.html),
-        )
+    def test_mail(self, tag):
+        team = CustomTeam()
+
+        if tag == 'registration_email':
+            self.registration_email(team)
+        elif tag == 'registration_notification':
+            self.registration_notification(team, message='Skúšobná správa.')
+        elif tag == 'tournament_full':
+            self.tournament_full(team)
+        elif tag == 'team_confirmation':
+            self.team_confirmation(team)
+        elif tag == 'team_invitation':
+            self.team_invitation(team)
+        else:
+            self.send_rendered_email(
+                {'tag': tag},
+                Template('Nepodarilo sa posla5 email s tagom: {{ tag }}.\
+                    Pre vyriešenie problému kontaktujte správcu.'),
+            )
 
     def send_rendered_email(self, context, text_template, html_template=None):
         if html_template is not None:

@@ -31,8 +31,8 @@ class TemplateAdmin(admin.ModelAdmin):
         for q in queryset:
             SendMail(
                 [request.user.email],
-                'Skuska'
-            ).test_mail(q)
+                'Test - '+q.subject,
+            ).test_mail(q.tag)
     
     test_send.short_description = 'Poslať skúšobný e-mail'
 

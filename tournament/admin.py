@@ -145,7 +145,10 @@ class TournamentAdmin(admin.ModelAdmin):
     )
 
     def response_change(self, request, tournament):
-        return redirect('tournament:detail', pk=tournament.pk)
+        if '_save' in request.POST:
+            return redirect('tournament:detail', pk=tournament.pk)
+        else:
+            return super().response_change(request, tournament)
 
 
 class TeamAdmin(admin.ModelAdmin):
@@ -309,6 +312,12 @@ class MatchAdmin(admin.ModelAdmin):
         }),
     )
 
+    def response_change(self, request, match):
+        if '_save' in request.POST:
+            return redirect('tournament:match_detail', pk=match.pk)
+        else:
+            return super().response_change(request, match)
+
 
 class PointAdmin(admin.ModelAdmin):
     list_display = ('time', 'match')
@@ -337,6 +346,12 @@ class PointAdmin(admin.ModelAdmin):
             # 'description': 'optional description',
         }),
     )
+
+    def response_change(self, request, point):
+        if '_save' in request.POST:
+            return redirect('tournament:match_detail', pk=point.match.pk)
+        else:
+            return super().response_change(request, point)
 
 
 class PhotoAdmin(admin.ModelAdmin):
