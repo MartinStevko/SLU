@@ -8,7 +8,7 @@
         {% for t in teachers %}
             {% if email %}
                 {{ t }}
-                &lt;<a href="mailto:{{ org.full_name }}">{{ t.email }}</a>&gt;<br>
+                &lt;<a href="mailto:{{ t.email }}">{{ t.email }}</a>&gt;<br>
             {% else %}
                 {{ t.phone_number }}
                 ({{ t }})<br>

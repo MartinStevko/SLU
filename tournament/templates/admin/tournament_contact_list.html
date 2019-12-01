@@ -1,0 +1,12 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Tímové kontakty | SLU{% endblock %}
+
+{% block content %}
+    {% for tournament,teams in tournaments %}
+    <div style="margin-bottom: 30px;">
+        <h1><b>{{ tournament }}</b></h1>
+        {% include 'admin/include/team_contacts.html' %}
+    </div>
+    {% endfor %}
+{% endblock %}

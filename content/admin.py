@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils import timezone
 from django.shortcuts import render
 from django.urls import path
@@ -58,12 +58,24 @@ class NewsAdmin(admin.ModelAdmin):
     def expire(self, request, queryset):
         for q in queryset:
             q.expire_now()
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Zvolené novinky boli označené ako expirované.'
+        )
     
     expire.short_description = 'Expiruj teraz'
 
     def publish(self, request, queryset):
         for q in queryset:
             q.publish()
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Zvolené novinky boli publikované.'
+        )
     
     publish.short_description = 'Publikuj'
 
@@ -96,6 +108,12 @@ class SectionAdmin(admin.ModelAdmin):
     def publish(self, request, queryset):
         for q in queryset:
             q.publish()
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Zvolené sekcie boli označené ako publikované.'
+        )
     
     publish.short_description = 'Publikuj'
 
@@ -135,6 +153,12 @@ class MessageAdmin(admin.ModelAdmin):
     def make_archived(self, request, queryset):
         for q in queryset:
             q.archive()
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Zvolené správy boli archivované.'
+        )
     
     make_archived.short_description = 'Archivuj'
 
@@ -177,6 +201,12 @@ class OrganizerProfileAdmin(admin.ModelAdmin):
     def end_organizing(self, request, queryset):
         for q in queryset:
             q.end_now()
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                f'Organizátorovi {q.name} bola ukončená aktívna organizácia.'
+            )
 
     end_organizing.short_description = 'Ukonči organizáciu'
 

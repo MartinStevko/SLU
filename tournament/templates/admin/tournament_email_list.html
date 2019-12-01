@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Zoznam e-mailov | SLU{% endblock %}
+
+{% block content %}
+    {% for tournament,emails in contact_list %}
+        <div style="margin: 20px 5px;">
+            <h1 style="margin: 10px 0px;">{{ tournament }}</h1>
+            <p style="padding: 0px 10px;">
+                <b>E-maily:</b>
+                &lt;{{ emails|join:"&gt;, &lt;" }}&gt;
+            </p>
+        </div>
+        <hr>
+    {% endfor %}
+{% endblock %}

@@ -31,7 +31,7 @@ def org_list(tournament):
 
 class SendMail:
 
-    def __init__(self, recipients, subject=''):
+    def __init__(self, recipients, subject):
         if type(recipients) == list:
             self.recipients = recipients
         elif recipients == 'contact':

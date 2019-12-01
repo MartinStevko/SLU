@@ -1,7 +1,7 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django import forms
 from django.urls import resolve
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from .models import *
 from registration.models import Player
@@ -144,11 +144,124 @@ class TournamentAdmin(admin.ModelAdmin):
         }),
     )
 
+    actions = [
+        'get_contacts',
+        'get_contacts_registered',
+        'get_contacts_invited',
+        'get_contacts_waitlisted',
+        'get_email_list',
+        'get_invited_email_list',
+        'get_registered_email_list',
+    ]
+
     def response_change(self, request, tournament):
         if '_save' in request.POST:
             return redirect('tournament:detail', pk=tournament.pk)
         else:
             return super().response_change(request, tournament)
+
+    def get_contacts(self, request, queryset, condition=None):
+        template = 'admin/tournament_contact_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        query_list = []
+        for tournament in queryset:
+            if condition is not None:
+                team_queryset = Team.objects.filter(
+                    status__in=condition,
+                    tournament=tournament,
+                )
+            else:
+                team_queryset = Team.objects.filter(
+                    tournament=tournament,
+                )
+            teams = []
+            for team in team_queryset:
+                for item in STATUSES:
+                    if item[0] == team.status:
+                        status = item[1]
+                if len(team.players.all()) > 0:
+                    teams.append((team, True, status))
+                else:
+                    teams.append((team, False, status))
+            query_list.append((tournament, teams))
+
+        context['tournaments'] = query_list
+
+        return render(request, template, context)
+
+    get_contacts.short_description = 'Zobraziť všetky tímy'
+
+    def get_contacts_registered(self, request, queryset):
+        return self.get_contacts(
+            request,
+            queryset,
+            condition=['registered', 'invited', 'waitlisted']
+        )
+
+    get_contacts_registered.short_description = 'Zobraziť registrované tímy'
+
+    def get_contacts_invited(self, request, queryset):
+        return self.get_contacts(
+            request,
+            queryset,
+            condition=['invited']
+        )
+
+    get_contacts_invited.short_description = 'Zobraziť pozvané tímy'
+
+    def get_contacts_waitlisted(self, request, queryset):
+        return self.get_contacts(
+            request,
+            queryset,
+            condition=['waitlisted']
+        )
+
+    get_contacts_waitlisted.short_description = 'Zobraziť tímy na čakacej listine'
+
+    def get_email_list(self, request, queryset, condition=None):
+        template = 'admin/tournament_email_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        contact_list = []
+        for tournament in queryset:
+            emails = []
+            if condition is not None:
+                teams = Team.objects.filter(
+                    tournament=tournament,
+                    status__in=condition,
+                )
+            else:
+                teams = Team.objects.filter(
+                    tournament=tournament,
+                )
+            for team in teams:
+                for e in team.get_emails():
+                    emails.append(e)
+            contact_list.append((tournament, emails))
+        context['contact_list'] = contact_list
+
+        return render(request, template, context)
+
+    get_email_list.short_description = 'E-maily na všetky tímy'
+
+    def get_invited_email_list(self, request, queryset):
+        return self.get_email_list(
+            request,
+            queryset,
+            condition=['invited'],
+        )
+
+    get_invited_email_list.short_description = 'E-maily na pozvané tímy'
+
+    def get_registered_email_list(self, request, queryset):
+        return self.get_email_list(
+            request,
+            queryset,
+            condition=['registered'],
+        )
+
+    get_registered_email_list.short_description = 'E-maily na tímy s nepotvrdenou registráciou'
 
 
 class TeamAdmin(admin.ModelAdmin):
@@ -201,6 +314,61 @@ class TeamAdmin(admin.ModelAdmin):
             # 'description': 'optional description',
         }),
     )
+
+    actions = [
+        'get_contacts',
+        'invite',
+        'make_attended',
+        'cancel_registration',
+        'make_not_attended',
+    ]
+
+    def make_attended(self, request, queryset):
+        for q in queryset:
+            msg, tag = q.attend()
+            messages.add_message(request, tag, msg)
+
+    make_attended.short_description = 'Označiť ako zúčastnený'
+
+    def make_not_attended(self, request, queryset):
+        for q in queryset:
+            msg, tag = q.not_attend()
+            messages.add_message(request, tag, msg)
+
+    make_not_attended.short_description = 'Označiť ako nezúčastnený'
+    
+    def invite(self, request, queryset):
+        for q in queryset:
+            msg, tag = q.invite()
+            messages.add_message(request, tag, msg)
+
+    invite.short_description = 'Pozvať na turnaj'
+
+    def cancel_registration(self, request, queryset):
+        for q in queryset:
+            msg, tag = q.cancel()
+            messages.add_message(request, tag, msg)
+
+    cancel_registration.short_description = 'Odmietnuť vybrané tímy'
+
+    def get_contacts(self, request, queryset):
+        template = 'admin/team_contact_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        teams = []
+        for team in queryset:
+            for item in STATUSES:
+                if item[0] == team.status:
+                    status = item[1]
+            if len(team.players.all()) > 0:
+                teams.append((team, True, status))
+            else:
+                teams.append((team, False, status))
+        context['teams'] = teams
+
+        return render(request, template, context)
+
+    get_contacts.short_description = 'Zobraziť kontakty'
 
 
 class ResultAdmin(admin.ModelAdmin):

@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 
 from emails.models import *
 from emails.emails import SendMail
@@ -28,19 +28,47 @@ class TemplateAdmin(admin.ModelAdmin):
     ]
 
     def test_send(self, request, queryset):
-        for q in queryset:
-            SendMail(
-                [request.user.email],
-                'Test - '+q.subject,
-            ).test_mail(q.tag)
-    
+        if request.user.email:
+            for q in queryset:
+                SendMail(
+                    [request.user.email],
+                    'Test - '+q.subject,
+                ).test_mail(q.tag)
+
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    f'Testovací e-mail "{q.subject}", bol odoslaný na váš e-mail.'
+                )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                f'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
+                    'vo vašom účte a akciu opakujte.'
+            )
+
     test_send.short_description = 'Poslať skúšobný e-mail'
 
     def test_creation(self, request, queryset):
-        SendMail(
-            [request.user.email],
-            'Vytvorenie konta'
-        ).user_creation(request.user)
+        if request.user.email:
+            SendMail(
+                [request.user.email],
+                'Vytvorenie konta'
+            ).user_creation(request.user)
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                f'Testovací e-mail bol odoslaný na váš e-mail.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                f'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
+                    'vo vašom účte a akciu opakujte.'
+            )
     
     test_creation.short_description = 'Poslať skúšobný e-mail o vytvorení konta'
 

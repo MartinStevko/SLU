@@ -1,0 +1,44 @@
+{% for team,players,status in teams %}
+    <div style="margin: 20px 5px;">
+        <h1 style="margin: 10px 0px;">{{ team }}</h1>
+        <p style="padding: 0px 10px;">
+            <b>Turnaj:</b> {{ team.tournament }}
+        </p>
+        <p style="padding: 0px 30px;">
+            Stav: {{ status }}
+        </p>
+
+        <p style="padding: 0px 10px;">
+            <b>Škola:</b> {{ team.school }}
+        </p>
+        <p style="padding: 0px 30px;">
+            Webstránka: <a href="mailto:{{ team.school.web }}">{{ team.school.web }}</a>
+        </p>
+        <p style="padding: 0px 30px;">
+            Má disk: 
+            {% if team.school.have_disc %}
+                Áno
+            {% else %}
+                Nie
+            {% endif %}
+        </p>
+
+        <p style="padding: 0px 10px;">
+            <b>Učiteľ:</b> {{ team.teacher }}
+            &lt;<a href="mailto:{{ team.teacher.email }}">{{ team.teacher.email }}</a>&gt;
+        </p>
+        <p style="padding: 0px 30px;">
+            Tel. č.: {{ team.teacher.phone_number }}
+        </p>
+        <p style="padding: 0px 30px;">
+            E-mail: &lt;<a href="mailto:{{ team.teacher.email }}">{{ team.teacher.email }}</a>&gt;{% if team.extra_email %}, &lt;<a href="mailto:{{ team.teacher.email }}">{{ team.teacher.email }}</a>&gt;{% endif %}
+        </p>
+
+        {% if players %}
+            <p style="padding: 0px 10px;">
+                <b>Hráči:</b> {{ team.players.all|join:", " }}
+            </p>
+        {% endif %}
+    </div>
+    <hr>
+{% endfor %}

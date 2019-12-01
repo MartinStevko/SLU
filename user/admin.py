@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
@@ -49,6 +49,8 @@ class UserAdmin(admin.ModelAdmin):
                 [q.email],
                 'Vytvorenie konta'
             ).user_creation(q)
+        
+        messages.add_message(request, messages.SUCCESS, 'E-maily boli úspešne odoslané.')
 
     send_creation_email.short_description = 'Poslať e-mail o vytvorení účtu'
 
