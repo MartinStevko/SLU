@@ -5,6 +5,9 @@ media/
 */migrations/*
 !*/migrations/__init__.py
 
+data.json
+database.json
+
 # Editors
 .vs/
 .vscode/
