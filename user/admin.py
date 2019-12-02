@@ -33,7 +33,7 @@ class UserAdmin(admin.ModelAdmin):
         }),
         ('Oprávnenia', {
             'classes': ('wide',),
-            'fields': ('is_staff', 'is_central_org', 'is_superuser', 'groups'),
+            'fields': ('is_staff', 'is_superuser', 'groups'),
         }), 
         ('Extra oprávnenia', {
             'classes': ('collapse',), 

@@ -84,7 +84,7 @@ class SchoolAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             for t in request.user.tournament:
@@ -151,7 +151,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             for t in request.user.tournament:
@@ -196,7 +196,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             for t in request.user.tournament:
@@ -209,7 +209,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             for t in request.user.tournament:

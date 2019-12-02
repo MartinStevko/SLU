@@ -97,6 +97,7 @@ class TournamentAdmin(admin.ModelAdmin):
         'director',
         'institute'
     ]
+    readonly_fields = ['state']
     ordering = ('-season__school_year', '-date', '-pk')
 
     # Autocomplete is other possibility, but I think filtering is better
@@ -265,7 +266,7 @@ class TournamentAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.orgs.all():
@@ -275,7 +276,7 @@ class TournamentAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.orgs.all():
@@ -345,29 +346,73 @@ class TeamAdmin(admin.ModelAdmin):
 
     def make_attended(self, request, queryset):
         for q in queryset:
-            msg, tag = q.attend()
-            messages.add_message(request, tag, msg)
+            if request.user.is_superuser or \
+                request.user.has_perm('team.change_team') or \
+                    (q in Team.objects.filter(
+                        tournament__in=request.user.tournament_set.all()
+                    )):
+                msg, tag = q.attend()
+                messages.add_message(request, tag, msg)
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Na túto akciu nemáte dostatočné oprávnenia.'
+                )
 
     make_attended.short_description = 'Označiť ako zúčastnený'
 
     def make_not_attended(self, request, queryset):
         for q in queryset:
-            msg, tag = q.not_attend()
-            messages.add_message(request, tag, msg)
+            if request.user.is_superuser or \
+                request.user.has_perm('team.change_team') or \
+                    (q in Team.objects.filter(
+                        tournament__in=request.user.tournament_set.all()
+                    )):
+                msg, tag = q.not_attend()
+                messages.add_message(request, tag, msg)
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Na túto akciu nemáte dostatočné oprávnenia.'
+                )
 
     make_not_attended.short_description = 'Označiť ako nezúčastnený'
     
     def invite(self, request, queryset):
         for q in queryset:
-            msg, tag = q.invite()
-            messages.add_message(request, tag, msg)
+            if request.user.is_superuser or \
+                request.user.has_perm('team.change_team') or \
+                    (q in Team.objects.filter(
+                        tournament__in=request.user.tournament_set.all()
+                    )):
+                msg, tag = q.invite()
+                messages.add_message(request, tag, msg)
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Na túto akciu nemáte dostatočné oprávnenia.'
+                )
 
     invite.short_description = 'Pozvať na turnaj'
 
     def cancel_registration(self, request, queryset):
         for q in queryset:
-            msg, tag = q.cancel()
-            messages.add_message(request, tag, msg)
+            if request.user.is_superuser or \
+                request.user.has_perm('team.change_team') or \
+                    (q in Team.objects.filter(
+                        tournament__in=request.user.tournament_set.all()
+                    )):
+                msg, tag = q.cancel()
+                messages.add_message(request, tag, msg)
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Na túto akciu nemáte dostatočné oprávnenia.'
+                )
 
     cancel_registration.short_description = 'Odmietnuť vybrané tímy'
 
@@ -392,7 +437,7 @@ class TeamAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -402,7 +447,7 @@ class TeamAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -451,7 +496,7 @@ class ResultAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -461,7 +506,7 @@ class ResultAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -548,7 +593,7 @@ class MatchAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -561,7 +606,7 @@ class MatchAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -606,7 +651,7 @@ class PointAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.match.tournament.orgs.all():
@@ -619,7 +664,7 @@ class PointAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.match.tournament.orgs.all():
@@ -646,7 +691,7 @@ class PhotoAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():
@@ -656,7 +701,7 @@ class PhotoAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         if obj is not None:
-            if request.user.is_central_org or request.user.is_superuser:
+            if request.user.is_superuser:
                 return True
 
             if request.user in obj.tournament.orgs.all():

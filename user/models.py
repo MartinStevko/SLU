@@ -79,10 +79,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         verbose_name='správcovský prístup'
     )
-    is_central_org = models.BooleanField(
-        default=False,
-        verbose_name='Je centrálny organizátor'
-    )
 
     objects = UserManager()
 

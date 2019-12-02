@@ -128,10 +128,11 @@ class Tournament(models.Model):
     state = models.CharField(
         max_length=63,
         choices=STATES,
-        default='registration',
+        default='public',
         verbose_name='stav',
         help_text='Odvíjajú sa od neho akcie, ktoré môžu \
-        návštevníci pri turnaji vykonávať.'
+        návštevníci pri turnaji vykonávať. Mení sa prostredníctvom \
+        funkcií pri zozname turnajov.'
     )
 
     orgs = models.ManyToManyField(
@@ -319,6 +320,55 @@ class Tournament(models.Model):
     def __str__(self):
         return "{}".format(self.get_name())
 
+    def change_state(self, new):
+        if new == 'not_public': # zosukromnit
+            self.state = new
+        elif new == 'public': # zverejnit
+            self.state = new
+        elif new == 'registration': # otvorit registraciu
+            self.state = new
+            self.registration_open_notification()
+        elif new == 'active': # zacat turnaj
+            self.state = new
+            recipients = []
+            for org in self.orgs.all():
+                recipients.append(org.email)
+            for org in self.season.orgs.all():
+                recipients.append(erg.email)
+            SendMail(
+                recipients,
+                'Turnaj '+str(self)+' začal'
+            ).tournament_activation(self)
+        elif new == 'results': # zverejnit vysledky
+            if self.state in ['active', 'public'] and \
+                len(Result.objects.filter(Tournament=self)) > 0:
+                self.state = new
+                self.send_certificate()
+            else:
+                return 'Výsledky buď neexistujú, alebo stav turnaja '+\
+                    'nepovoľuje ich zverejnenie.'
+        else:
+            return 'Stav neexistuje.'
+
+        self.save()
+        return None
+
+    def send_certificate(self):
+        # funkcia, ktora odosle email zucastnenym timom, ze dakujeme,
+        # ze ste prisli, fotky najdete tu a tu, tesime sa na vas 
+        # nabuduce a vygeneruje im diplom s ich umiestnenim (aj SOTG)
+        pass
+
+    def registration_open_notification(self):
+        # email vsetkym timom z daneho regionu, ze registracia je otvorena
+        # pozor! nie pri finale, tam nic
+        pass
+
+('not_public', 'nezverejnený'),
+('public', 'čakajúci na otvorenie registrácie'),
+('registration', 'registrácia tímov'),
+('active', 'turnaj prebieha'),
+('results', 'výsledky verejné'),
 
 class Team(models.Model):
     tournament = models.ForeignKey(
