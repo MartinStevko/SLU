@@ -101,7 +101,7 @@ class TournamentAdmin(admin.ModelAdmin):
 
     # Autocomplete is other possibility, but I think filtering is better
     # autocomplete_fields = ['orgs']
-    filter_horizontal = ['orgs']
+    filter_horizontal = ['orgs', 'scorekeepers']
 
     date_hierarchy = 'date'
 
@@ -134,7 +134,7 @@ class TournamentAdmin(admin.ModelAdmin):
         }),
         ('Lokálna organizácia', {
             'classes': ('wide',),
-            'fields': ('director', 'institute', 'delegate', 'orgs',),
+            'fields': ('director', 'institute', 'delegate', 'orgs', 'scorekeepers'),
             # 'description': 'optional description',
         }),
         ('Prílohy', {
@@ -263,6 +263,26 @@ class TournamentAdmin(admin.ModelAdmin):
 
     get_registered_email_list.short_description = 'E-maily na tímy s nepotvrdenou registráciou'
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.change_tournament')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_tournament')
+
 
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('tournament', 'school', 'teacher', 'status')
@@ -370,6 +390,26 @@ class TeamAdmin(admin.ModelAdmin):
 
     get_contacts.short_description = 'Zobraziť kontakty'
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.change_team')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_team')
+
 
 class ResultAdmin(admin.ModelAdmin):
     list_filter = (
@@ -408,6 +448,26 @@ class ResultAdmin(admin.ModelAdmin):
             # 'description': 'optional description',
         }),
     )
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.change_result')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_result')
 
 
 class PointInline(admin.TabularInline):
@@ -486,6 +546,29 @@ class MatchAdmin(admin.ModelAdmin):
         else:
             return super().response_change(request, match)
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+            
+            if request.user in obj.tournament.scorekeepers.all():
+                return True
+
+        return request.user.has_perm('tournament.change_match')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_match')
+
 
 class PointAdmin(admin.ModelAdmin):
     list_display = ('time', 'match')
@@ -521,6 +604,32 @@ class PointAdmin(admin.ModelAdmin):
         else:
             return super().response_change(request, point)
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.match.tournament.orgs.all():
+                return True
+            
+            if request.user in obj.match.tournament.scorekeepers.all():
+                return True
+
+        return request.user.has_perm('tournament.change_point')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.match.tournament.orgs.all():
+                return True
+
+            if request.user in obj.match.tournament.scorekeepers.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_point')
+
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('pk', 'tournament')
@@ -534,6 +643,27 @@ class PhotoAdmin(admin.ModelAdmin):
 
     search_fields = ['pk',]
     ordering = ('-pk',)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.change_photo')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_photo')
+
 
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Tournament, TournamentAdmin)

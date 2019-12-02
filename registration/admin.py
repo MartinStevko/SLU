@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.shortcuts import render
 
 from .models import *
+from tournament.models import Team
 
 
 class TeacherInline(admin.TabularInline):
@@ -81,6 +82,19 @@ class SchoolAdmin(admin.ModelAdmin):
 
     get_players.short_description = 'Zobraz hráčov'
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj in team.school:
+                        return True
+
+        return request.user.has_perm('registration.change_school')
+
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
@@ -135,6 +149,19 @@ class TeacherAdmin(admin.ModelAdmin):
 
         return render(request, template, context)
 
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj == team.teacher:
+                        return True
+
+        return request.user.has_perm('registration.change_teacher')
+
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
@@ -166,6 +193,33 @@ class PlayerAdmin(admin.ModelAdmin):
             # generovanie štatistík a rebríčku hráčov',
         }),
     )
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj in team.players:
+                        return True
+
+        return request.user.has_perm('registration.change_player')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_central_org or request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj in team.players:
+                        return True
+
+        return request.user.has_perm('registration.delete_player')
+
 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Teacher, TeacherAdmin)

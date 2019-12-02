@@ -5,8 +5,6 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from emails.emails import SendMail
 from .models import User
 
-# admin.site.unregister(Group)
-
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'first_name', 'last_name')
@@ -35,8 +33,15 @@ class UserAdmin(admin.ModelAdmin):
         }),
         ('Oprávnenia', {
             'classes': ('wide',),
-            'fields': ('is_staff', 'is_superuser', 'user_permissions', 'groups'),
-        }),
+            'fields': ('is_staff', 'is_central_org', 'is_superuser', 'groups'),
+        }), 
+        ('Extra oprávnenia', {
+            'classes': ('collapse',), 
+            'fields': ('user_permissions',), 
+            'description': 'Za normálnych okolností sa neudeľujú a mali by vystačiť '+\
+                'skupiny oprávnení, avšak pre nejaké špeciálne potreby môžu byť '+\
+                    'využité. Priraďujú oprávnenia nad rámec skupín. '
+        }), 
     )
 
     actions = [
@@ -44,13 +49,16 @@ class UserAdmin(admin.ModelAdmin):
     ]
 
     def send_creation_email(self, request, queryset):
-        for q in queryset:
-            SendMail(
-                [q.email],
-                'Vytvorenie konta'
-            ).user_creation(q)
-        
-        messages.add_message(request, messages.SUCCESS, 'E-maily boli úspešne odoslané.')
+        if request.user.has_perm('user.send_creation_email'):
+            for q in queryset:
+                SendMail(
+                    [q.email],
+                    'Vytvorenie konta'
+                ).user_creation(q)
+            
+            messages.add_message(request, messages.SUCCESS, 'E-maily boli úspešne odoslané.')
+        else:
+            messages.add_message(request, messages.WARNING, 'Na túto akciu nemáte oprávnenie.')
 
     send_creation_email.short_description = 'Poslať e-mail o vytvorení účtu'
 

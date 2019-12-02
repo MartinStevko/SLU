@@ -5,46 +5,54 @@ class OrderedAdminSite(admin.AdminSite):
 
     def get_app_list(self, request):
         app_ordering = {
-            'používateľ': 0,
-            'autentifikácia a autorizácia': 1,
-            'obsah': 2,
-            'turnajový správca': 3,
-            'registrácia': 4,
-            'emaily': 5,
+            'user': 0,
+            'auth': 1,
+            'content': 2,
+            'tournament': 3,
+            'registration': 4,
+            'emails': 5,
         }
 
-        model_ordering = [{
-            'používatelia': 1
-        }, {
-            'oprávnenia':1,
-            'skupiny':2,
-        }, {
-            'novinky': 1,
-            'sekcie': 2,
-            'profily organizátorov': 3,
-            'správy': 4,
-        }, {
-            'sezóny': 2,
-            'turnaje': 3,
-            'tímy': 1,
-            'zápasy': 5,
-            'body': 6,
-            'výsledky': 4,
-            'fotky': 7,
-        }, {
-            'školy': 1,
-            'hráči': 2,
-            'učitelia': 3,
-        }, {
-            'šablóny': 1,
-        }]
+        model_ordering = {
+            'user': {
+                'user': 1
+            }, 
+            'auth': {
+                'permission':1,
+                'group':2,
+            }, 
+            'content': {
+                'news': 1,
+                'section': 2,
+                'organizerprofile': 3,
+                'message': 4,
+            }, 
+            'tournament': {
+                'team': 1,
+                'season': 2,
+                'tournament': 3,
+                'result': 4,
+                'match': 5,
+                'point': 6,
+                'photo': 7,
+            }, 
+            'registration': {
+                'school': 1,
+                'teacher': 2,
+                'player': 3,
+            }, 
+            'emails': {
+                'template': 1,
+            }
+        }
 
         app_dict = self._build_app_dict(request)
-        app_list = sorted(app_dict.values(), key=lambda x: app_ordering[x['name'].lower()])
+        app_list = sorted(app_dict.values(), key=lambda x: app_ordering[x['app_label'].lower()])
 
         for i in range(len(app_list)):
+            key = app_list[i]['app_label']
             app_list[i]['models'].sort(
-                key=lambda x: model_ordering[i][x['name'].lower()]
+                key=lambda x: model_ordering[key][x['object_name'].lower()]
             )
 
         return app_list

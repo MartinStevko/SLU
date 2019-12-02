@@ -40,6 +40,11 @@ class News(models.Model):
         verbose_name = 'novinka'
         verbose_name_plural = 'novinky'
 
+        permissions = [
+            ('expire_news', 'Can expire news'),
+            ('publish_news', 'Can publish news'),
+        ]
+
     def __str__(self):
         return '{}'.format(self.title)
 
@@ -95,6 +100,10 @@ class Section(models.Model):
         verbose_name = 'sekcia'
         verbose_name_plural = 'sekcie'
 
+        permissions = [
+            ('publish_section', 'Can publish '+verbose_name),
+        ]
+
     def __str__(self):
         return '{}'.format(self.title)
 
@@ -129,6 +138,10 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'správa'
         verbose_name_plural = 'správy'
+
+        permissions = [
+            ('archivate_message', 'Can archivate '+verbose_name),
+        ]
 
     def __str__(self):
         return '{} - {}'.format(self.subject, self.text)
@@ -178,6 +191,10 @@ class OrganizerProfile(models.Model):
     class Meta:
         verbose_name = 'profil organizátora'
         verbose_name_plural = 'profily organizátorov'
+
+        permissions = [
+            ('end_organizing', 'Can end organizing period'),
+        ]
 
     def __str__(self):
         return '{}'.format(self.full_name)

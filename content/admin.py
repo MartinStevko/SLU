@@ -56,26 +56,40 @@ class NewsAdmin(admin.ModelAdmin):
     ]
 
     def expire(self, request, queryset):
-        for q in queryset:
-            q.expire_now()
+        if request.user.has_perm('content.expire_news'):
+            for q in queryset:
+                q.expire_now()
 
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            'Zvolené novinky boli označené ako expirované.'
-        )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Zvolené novinky boli označené ako expirované.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'Na túto akciu nemáte oprávnenie.'
+            )
     
     expire.short_description = 'Expiruj teraz'
 
     def publish(self, request, queryset):
-        for q in queryset:
-            q.publish()
+        if request.user.has_perm('content.publish_news'):
+            for q in queryset:
+                q.publish()
 
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            'Zvolené novinky boli publikované.'
-        )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Zvolené novinky boli publikované.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'Na túto akciu nemáte oprávnenie.'
+            )
     
     publish.short_description = 'Publikuj'
 
@@ -106,14 +120,21 @@ class SectionAdmin(admin.ModelAdmin):
     ]
 
     def publish(self, request, queryset):
-        for q in queryset:
-            q.publish()
+        if request.user.has_perm('content.publish_section'):
+            for q in queryset:
+                q.publish()
 
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            'Zvolené sekcie boli označené ako publikované.'
-        )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Zvolené sekcie boli označené ako publikované.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'Na túto akciu nemáte oprávnenie.'
+            )
     
     publish.short_description = 'Publikuj'
 
@@ -151,14 +172,21 @@ class MessageAdmin(admin.ModelAdmin):
     ]
 
     def make_archived(self, request, queryset):
-        for q in queryset:
-            q.archive()
+        if request.user.has_perm('content.archivate_message'):
+            for q in queryset:
+                q.archive()
 
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            'Zvolené správy boli archivované.'
-        )
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Zvolené správy boli archivované.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'Na túto akciu nemáte oprávnenie.'
+            )
     
     make_archived.short_description = 'Archivuj'
 
@@ -199,13 +227,20 @@ class OrganizerProfileAdmin(admin.ModelAdmin):
     ]
 
     def end_organizing(self, request, queryset):
-        for q in queryset:
-            q.end_now()
+        if request.user.has_perm('content.end_organizing'):
+            for q in queryset:
+                q.end_now()
 
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    f'Organizátorovi {q.name} bola ukončená aktívna organizácia.'
+                )
+        else:
             messages.add_message(
                 request,
-                messages.SUCCESS,
-                f'Organizátorovi {q.name} bola ukončená aktívna organizácia.'
+                messages.WARNING,
+                'Na túto akciu nemáte oprávnenie.'
             )
 
     end_organizing.short_description = 'Ukonči organizáciu'

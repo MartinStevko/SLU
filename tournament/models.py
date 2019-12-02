@@ -141,6 +141,14 @@ class Tournament(models.Model):
         verbose_name='organizátori',
         help_text='Lokálni organizátori turnaja.'
     )
+    scorekeepers = models.ManyToManyField(
+        User,
+        limit_choices_to={'is_staff': True},
+        blank=True,
+        verbose_name='zapisovatelia skóre',
+        help_text='Používatelia s povoleným zapisovaním skóre.',
+        related_name='tournament_scoring',
+    )
 
     delegate = models.CharField(
         max_length=255,

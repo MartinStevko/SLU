@@ -79,6 +79,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=False,
         verbose_name='správcovský prístup'
     )
+    is_central_org = models.BooleanField(
+        default=False,
+        verbose_name='Je centrálny organizátor'
+    )
 
     objects = UserManager()
 
@@ -88,11 +92,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'používateľ'
         verbose_name_plural = 'používatelia'
 
+        permissions = [
+            ('send_creation_email', 'Can send user creation e-mail'),
+        ]
+
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
     def get_full_name(self):
         return str(self)
+
 
 @receiver(post_save, sender=User)
 def send_user_creation_email(sender, instance, created, **kwargs):
