@@ -84,6 +84,15 @@ class SendMail:
         )
         email.send(fail_silently=False)
 
+    def tournament_activation(self, tournament):
+        plaintext = get_template('emails/tournament_activation.txt')
+
+        context = {
+            'name': str(tournament),
+        }
+
+        self.send_rendered_email(context, plaintext)
+
     def registration_email(self, team):
         # pre tim ked sa zaregistruju - link na potvrdenie a upravu
         t = T_model.objects.get(tag='registration_email')

@@ -153,6 +153,11 @@ class TournamentAdmin(admin.ModelAdmin):
         'get_email_list',
         'get_invited_email_list',
         'get_registered_email_list',
+        'change_state_to_notpublic',
+        'change_state_to_public',
+        'change_state_to_registration',
+        'change_state_to_active',
+        'change_state_to_results',
     ]
 
     def response_change(self, request, tournament):
@@ -263,6 +268,120 @@ class TournamentAdmin(admin.ModelAdmin):
         )
 
     get_registered_email_list.short_description = 'E-maily na tímy s nepotvrdenou registráciou'
+
+    def change_state_to_notpublic(self, request, queryset):
+        for q in queryset:
+            if self.has_change_permission(request, q):
+                q.change_state('not_public')
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    f'Stav turnaja {str(q)} bol zmenený na neverejný.'
+                )
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                )
+
+    change_state_to_notpublic.short_description = 'Spraviť turnaj neverejným'
+
+    def change_state_to_public(self, request, queryset):
+        for q in queryset:
+            if self.has_change_permission(request, q):
+                q.change_state('public')
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    f'Stav turnaja {str(q)} bol zmenený na verejný. Turnaj '+\
+                        'čaká na otvorenie registrácie.'
+                )
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                )
+
+    change_state_to_public.short_description = 'Spraviť turnaj verejným (registrácia neotvorená)'
+
+    def change_state_to_registration(self, request, queryset):
+        for q in queryset:
+            if self.has_change_permission(request, q):
+                q.change_state('registration')
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    f'Registrácia turnaja {str(q)} bola otvorená.'
+                )
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                )
+
+    change_state_to_registration.short_description = 'Otvoriť registráciu turnaja'
+
+    def change_state_to_active(self, request, queryset):
+        for q in queryset:
+            if self.has_change_permission(request, q):
+                if q.date - 1 <= datetime.date.today():
+                    q.change_state('active')
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        f'Turnaj {str(q)} bol otvorený.'
+                    )
+                else:
+                    messages.add_message(
+                        request,
+                        messages.WARNING,
+                        f'Turnaj {str(q)} nie je možné otvoriť, pretože dátum konania je '+\
+                            'priveľmi vzdialený.'
+                    )
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                )
+
+    change_state_to_active.short_description = 'Začať turnaj'
+
+    def change_state_to_results(self, request, queryset):
+        for q in queryset:
+            if self.has_change_permission(request, q):
+                if q.date <= datetime.date.today():
+                    msg = q.change_state('results')
+                    if msg is not None:
+                        messages.add_message(
+                            request,
+                            messages.WARNING,
+                            msg
+                        )
+                    else:
+                        messages.add_message(
+                            request,
+                            messages.SUCCESS,
+                            f'Výsledky turnaja {str(q)} boli zverejnené a odoslané tímom.'
+                        )
+                else:
+                    messages.add_message(
+                        request,
+                        messages.WARNING,
+                        f'Výsledky turnaja {str(q)} nie je možné zverejniť, '+\
+                            'pretože dátum konania ešte nenastal.'
+                    )
+            else:
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                )
+
+    change_state_to_results.short_description = 'Zverejniť výsledky turnaja'
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:

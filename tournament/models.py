@@ -341,7 +341,7 @@ class Tournament(models.Model):
             ).tournament_activation(self)
         elif new == 'results': # zverejnit vysledky
             if self.state in ['active', 'public'] and \
-                len(Result.objects.filter(Tournament=self)) > 0:
+                len(Result.objects.filter(tournament=self)) > 0:
                 self.state = new
                 self.send_certificate()
             else:
@@ -364,11 +364,6 @@ class Tournament(models.Model):
         # pozor! nie pri finale, tam nic
         pass
 
-('not_public', 'nezverejnený'),
-('public', 'čakajúci na otvorenie registrácie'),
-('registration', 'registrácia tímov'),
-('active', 'turnaj prebieha'),
-('results', 'výsledky verejné'),
 
 class Team(models.Model):
     tournament = models.ForeignKey(

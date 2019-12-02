@@ -1,0 +1,3 @@
+Stav turnaja {{ name }} bol práve zmenený na aktívny.
+
+S pozdravom, Váš tím SLU!
