@@ -655,7 +655,7 @@ class Photo(models.Model):
         source='image',
         processors=[ResizeToFill(300, 225)],
         format='JPEG',
-        options={'quality': 120}
+        options={'quality': 60}
     )
 
     class Meta:

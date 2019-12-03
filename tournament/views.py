@@ -621,8 +621,8 @@ class TournamentGalleryView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
         context = super(TournamentGalleryView, self).get_context_data(**kwargs)
         t = self.get_object()
 
-        # if t.state != 'results':
-        #     raise Http404('Galéria pre tento turnaj ešte neexistuje.')
+        if t.state != 'results':
+            raise Http404('Galéria pre tento turnaj ešte neexistuje.')
 
         context.update({
             'photos': Photo.objects.filter(tournament=t),
