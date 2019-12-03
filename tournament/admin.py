@@ -3,6 +3,11 @@ from django import forms
 from django.urls import resolve
 from django.shortcuts import redirect, render
 
+from imagekit.admin import AdminThumbnail
+from imagekit import ImageSpec
+from imagekit.processors import ResizeToFill
+from imagekit.cachefiles import ImageCacheFile
+
 from .models import *
 from registration.models import Player
 
@@ -158,6 +163,7 @@ class TournamentAdmin(admin.ModelAdmin):
         'change_state_to_registration',
         'change_state_to_active',
         'change_state_to_results',
+        'add_photos',
     ]
 
     def response_change(self, request, tournament):
@@ -382,6 +388,11 @@ class TournamentAdmin(admin.ModelAdmin):
                 )
 
     change_state_to_results.short_description = 'Zverejniť výsledky turnaja'
+
+    def add_photos(self, request, queryset):
+        return redirect('admin:tournament_abstractgallery_add')
+    
+    add_photos.short_description = 'Pridať fotky'
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
@@ -795,8 +806,21 @@ class PointAdmin(admin.ModelAdmin):
         return request.user.has_perm('tournament.delete_point')
 
 
+class AdminThumbnailSpec(ImageSpec):
+    processors = [ResizeToFill(100, 75)]
+    format = 'JPEG'
+    options = {'quality': 60 }
+
+
+def cached_admin_thumb(instance):
+    cached = ImageCacheFile(AdminThumbnailSpec(instance.image))
+    cached.generate()
+    return cached
+
+
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'tournament')
+    list_display = ('pk', 'tournament', 'admin_thumbnail')
+    admin_thumbnail = AdminThumbnail(image_field=cached_admin_thumb)
     list_display_links = ('pk',)
     list_filter = (
         'tournament__season__season',
@@ -829,6 +853,34 @@ class PhotoAdmin(admin.ModelAdmin):
         return request.user.has_perm('tournament.delete_photo')
 
 
+class AbstractGalleryAdmin(admin.ModelAdmin):
+    list_filter = (
+        'tournament__season__season',
+        'tournament__region',
+        'tournament__season__school_year'
+    )
+    list_per_page = 100
+
+    ordering = ('-pk',)
+
+    date_hierarchy = 'tournament__date'
+
+    fieldsets = (
+        ('Galéria', {
+            'classes': ('wide',),
+            'fields': ('tournament', 'zip_file'),
+        }),
+    )
+
+    def response_add(self, request, obj):
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Fotky zo súboru ZIP boli úspešne importované.'
+        )
+        return redirect('admin:tournament_tournament_changelist')
+
+
 admin.site.register(Season, SeasonAdmin)
 admin.site.register(Tournament, TournamentAdmin)
 admin.site.register(Team, TeamAdmin)
@@ -836,3 +888,4 @@ admin.site.register(Result, ResultAdmin)
 admin.site.register(Match, MatchAdmin)
 admin.site.register(Point, PointAdmin)
 admin.site.register(Photo, PhotoAdmin)
+admin.site.register(AbstractGallery, AbstractGalleryAdmin)

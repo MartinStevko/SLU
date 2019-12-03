@@ -8,10 +8,19 @@ from django.core.validators import (
     MinValueValidator
 )
 from django.contrib import messages
+from django.shortcuts import redirect
 
 import os
 from uuid import uuid4
 import datetime
+
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+from PIL import Image
+from zipfile import ZipFile
+from io import BytesIO
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from emails.emails import SendMail
 from user.models import User
@@ -642,9 +651,70 @@ class Photo(models.Model):
         verbose_name='fotka'
     )
 
+    image_thumbnail = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(300, 225)],
+        format='JPEG',
+        options={'quality': 120}
+    )
+
     class Meta:
         verbose_name = 'fotka'
         verbose_name_plural = 'fotky'
 
     def __str__(self):
-        return "Image {} - {}".format(self.pk, self.tournament.get_name())
+        return "Fotka {} - {}".format(self.pk, self.tournament.get_name())
+
+
+class AbstractGallery(models.Model):
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        verbose_name='turnaj'
+    )
+    zip_file = models.FileField(
+        blank=True,
+        upload_to='galleries',
+        verbose_name='súbor ZIP'
+    )
+
+    class Meta:
+        verbose_name = 'fotky zo súboru ZIP'
+        verbose_name_plural = 'fotky zo súborov ZIP'
+
+    def __str__(self):
+        return "Galéria {} - {}".format(self.pk, self.tournament.get_name())
+
+    def save(self, delete_zip_file=True, *args, **kwargs):
+        super(AbstractGallery, self).save(*args, **kwargs)
+        if self.zip_file:
+            zf = ZipFile(self.zip_file)
+            for name in zf.namelist():
+                data = zf.read(name)
+                try:
+                    image = Image.open(BytesIO(data))
+                    image.load()
+                    image = Image.open(BytesIO(data))
+                    image.verify()
+                except ImportError:
+                    print('import error')
+                '''
+                except:
+                    print('iny error')
+                    continue
+                '''
+                name = os.path.split(name)[1]
+                path = os.path.join(
+                    settings.MEDIA_ROOT,
+                    'tournaments',
+                    str(name)
+                )
+                saved_path = default_storage.save(path, ContentFile(data))
+                p = Photo.objects.create(
+                    tournament=self.tournament,
+                    image=saved_path
+                )
+                p.save()
+            if delete_zip_file:
+                zf.close()
+                self.zip_file.delete(save=True)

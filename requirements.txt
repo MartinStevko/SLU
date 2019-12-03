@@ -1,7 +1,6 @@
 Django>=2.2.7
-pytz>=2019.3
-sqlparse>=0.3.0
 Pillow>=6.2.1
 django-form-utils==1.0.3
 django-bootstrap4==0.0.7
 django-froala-editor==3.0.6
+django-imagekit==4.0.2

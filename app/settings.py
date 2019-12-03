@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'form_utils',
     'bootstrap4',
     'froala_editor',
+    'imagekit',
 ]
 
 MIDDLEWARE = [

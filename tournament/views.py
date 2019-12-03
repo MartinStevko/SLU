@@ -67,6 +67,15 @@ def get_tabs(request, t):
             False
         ))
 
+    # Gallery
+    if t.state == 'results':
+        if len(Photo.objects.filter(tournament=1)) > 1:
+            tabs.append((
+                'Galéria',
+                reverse('tournament:gallery', kwargs={'pk': t.pk}),
+                False
+            ))
+
     # My team
     team_cookies = request.session.get('team_list', False)
     if team_cookies:
@@ -597,6 +606,26 @@ class TournamentResultsView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
             'next': t.is_next(),
             'detail': True,
             'results': Result.objects.filter(tournament=t).order_by('place'),
+        })
+
+        return context
+
+
+class TournamentGalleryView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/gallery.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(TournamentGalleryView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        # if t.state != 'results':
+        #     raise Http404('Galéria pre tento turnaj ešte neexistuje.')
+
+        context.update({
+            'photos': Photo.objects.filter(tournament=t),
         })
 
         return context

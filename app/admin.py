@@ -35,6 +35,7 @@ class OrderedAdminSite(admin.AdminSite):
                 'match': 5,
                 'point': 6,
                 'photo': 7,
+                'abstractgallery': 8
             }, 
             'registration': {
                 'school': 1,
@@ -54,5 +55,12 @@ class OrderedAdminSite(admin.AdminSite):
             app_list[i]['models'].sort(
                 key=lambda x: model_ordering[key][x['object_name'].lower()]
             )
+        for d in app_list:
+            if d['app_label'] == 'tournament':
+                for m in d['models']:
+                    if m['object_name'].lower() == 'abstractgallery':
+                        i = d['models'].index(m)
+                        d['models'] = d['models'][:-1]
+                        break
 
         return app_list
