@@ -1,5 +1,5 @@
 from django.contrib.admin.apps import AdminConfig
 
 
-class AdminSiteConfig(AdminConfig):
+class OrderedAdminSiteConfig(AdminConfig):
     default_site = 'app.admin.OrderedAdminSite'

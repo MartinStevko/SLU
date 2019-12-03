@@ -14,7 +14,7 @@ SECURE_SSL_REDIRECT = (DEBUG == False)
 # Application definition
 
 INSTALLED_APPS = [
-    'app.apps.AdminSiteConfig',
+    'app.apps.OrderedAdminSiteConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

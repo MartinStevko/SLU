@@ -1,66 +1,97 @@
 from django.contrib import admin
+from django.apps import apps
+from django.template.response import TemplateResponse
+from django.utils.translation import gettext as _
+
+APP_ORDERING = {
+    'user': 0,
+    'auth': 1,
+    'content': 2,
+    'tournament': 3,
+    'registration': 4,
+    'emails': 5,
+}
+
+MODEL_ORDERING = {
+    'user': {
+        'user': 1
+    }, 
+    'auth': {
+        'permission':1,
+        'group':2,
+    }, 
+    'content': {
+        'news': 1,
+        'section': 2,
+        'organizerprofile': 3,
+        'message': 4,
+    }, 
+    'tournament': {
+        'team': 1,
+        'season': 2,
+        'tournament': 3,
+        'result': 4,
+        'match': 5,
+        'point': 6,
+        'photo': 7,
+        'abstractgallery': 8
+    }, 
+    'registration': {
+        'school': 1,
+        'teacher': 2,
+        'player': 3,
+    }, 
+    'emails': {
+        'template': 1,
+    }
+}
 
 
 class OrderedAdminSite(admin.AdminSite):
 
     def get_app_list(self, request):
-        app_ordering = {
-            'user': 0,
-            'auth': 1,
-            'content': 2,
-            'tournament': 3,
-            'registration': 4,
-            'emails': 5,
-        }
-
-        model_ordering = {
-            'user': {
-                'user': 1
-            }, 
-            'auth': {
-                'permission':1,
-                'group':2,
-            }, 
-            'content': {
-                'news': 1,
-                'section': 2,
-                'organizerprofile': 3,
-                'message': 4,
-            }, 
-            'tournament': {
-                'team': 1,
-                'season': 2,
-                'tournament': 3,
-                'result': 4,
-                'match': 5,
-                'point': 6,
-                'photo': 7,
-                'abstractgallery': 8
-            }, 
-            'registration': {
-                'school': 1,
-                'teacher': 2,
-                'player': 3,
-            }, 
-            'emails': {
-                'template': 1,
-            }
-        }
-
         app_dict = self._build_app_dict(request)
-        app_list = sorted(app_dict.values(), key=lambda x: app_ordering[x['app_label'].lower()])
+        app_list = sorted(app_dict.values(), key=lambda x: APP_ORDERING[x['app_label'].lower()])
 
-        for i in range(len(app_list)):
-            key = app_list[i]['app_label']
-            app_list[i]['models'].sort(
-                key=lambda x: model_ordering[key][x['object_name'].lower()]
+        for app in app_list:
+            key = app['app_label']
+            app['models'].sort(
+                key=lambda x: MODEL_ORDERING[key][x['object_name'].lower()]
             )
-        for d in app_list:
-            if d['app_label'] == 'tournament':
-                for m in d['models']:
-                    if m['object_name'].lower() == 'abstractgallery':
-                        i = d['models'].index(m)
-                        d['models'] = d['models'][:-1]
-                        break
+
+            if key == 'tournament':
+                for model in app['models']:
+                    if model['object_name'].lower() == 'abstractgallery':
+                        app['models'] = app['models'][:-1]
 
         return app_list
+
+    def app_index(self, request, app_label, extra_context=None):
+        app_dict = self._build_app_dict(request, app_label)
+        if not app_dict:
+            raise Http404('The requested admin page does not exist.')
+
+        app_dict['models'].sort(
+            key=lambda x: MODEL_ORDERING[app_label][x['object_name'].lower()]
+        )
+
+        if app_label == 'tournament':
+            for model in app_dict['models']:
+                if model['object_name'].lower() == 'abstractgallery':
+                    app_dict['models'] = app_dict['models'][:-1]
+
+        app_name = apps.get_app_config(app_label).verbose_name
+        context = {
+            **self.each_context(request),
+            'title': _('%(app)s administration') % {'app': app_name},
+            'app_list': [app_dict],
+            'app_label': app_label,
+            **(extra_context or {}),
+        }
+
+        request.current_app = self.name
+
+        return TemplateResponse(request, self.app_index_template or [
+            'admin/%s/app_index.html' % app_label,
+            'admin/app_index.html'
+        ], context)
