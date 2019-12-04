@@ -462,11 +462,13 @@ class Team(models.Model):
         if self.status == 'invited':
             self.status = 'attended'
             self.save()
-            return f'Stav tímu {self.name} bol zmenený na zúčastnený.', messages.SUCCESS
+            return 'Stav tímu {} bol zmenený na zúčastnený.'.format(self.name), messages.SUCCESS
         else:
-            return f'Tím {self.name} nebol pozvaný na turnaj {self.tournament}, '+\
-                'preto sa ho nemôže zúčastniť.', messages.WARNING
-    
+            return 'Tím {} nebol pozvaný na turnaj {}, preto sa ho nemôže zúčastniť.'.format(
+                self.name,
+                self.tournament
+            ), messages.WARNING
+
     def invite(self):
         if self.status == 'waitlisted':
             self.status = 'invited'
@@ -474,31 +476,29 @@ class Team(models.Model):
 
             SendMail(
                 self.get_emails(),
-                f'Pozvánka na {self.tournament}'
+                'Pozvánka na {}'.format(self.tournament)
             ).team_invitation(self)
 
-            return f'Tím {self.name} bol pozvaný na {self.tournament}.', messages.SUCCESS
+            return 'Tím {} bol pozvaný na {}.'.format(self.name, self.tournament), messages.SUCCESS
         elif self.status == 'invited':
-            return f'Tím {self.name} už bol pozvaný.', messages.WARNING
+            return 'Tím {} už bol pozvaný.'.format(self.name), messages.WARNING
         else:
-            return f'Tím {self.name} nemá potvrdenú registráciu '+\
-                'a preto nemôže byť pozvaný.', messages.WARNING
+            return 'Tím {} nemá potvrdenú registráciu a preto nemôže byť pozvaný.'.format(self.name), messages.WARNING
 
     def cancel(self):
         self.status = 'canceled'
         self.save()
 
-        return f'Tím {self.name} bol odmietnutý.'
+        return 'Tím {} bol odmietnutý.'.format(self.name)
 
     def not_attend(self):
         if self.status == 'invited':
             self.status = 'not_attended'
             self.save()
 
-            return f'Stav tím {self.name} bol zmenený na nezúčastnený.'
+            return 'Stav tím {} bol zmenený na nezúčastnený.'.format(self.name)
         else:
-            return f'Tím {self.name} nemôže byť označený za nezúčastnený, '+\
-                'pretože sa turnaja zúčastniť nemal.'
+            return 'Tím {} nemôže byť označený za nezúčastnený, pretože sa turnaja zúčastniť nemal.'.format(self.name)
 
 
 class Result(models.Model):

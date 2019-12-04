@@ -38,13 +38,13 @@ class TemplateAdmin(admin.ModelAdmin):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    f'Testovací e-mail "{q.subject}", bol odoslaný na váš e-mail.'
+                    'Testovací e-mail "{}", bol odoslaný na váš e-mail.'.format(q.subject)
                 )
         else:
             messages.add_message(
                 request,
                 messages.WARNING,
-                f'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
+                'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
                     'vo vašom účte a akciu opakujte.'
             )
 
@@ -60,13 +60,13 @@ class TemplateAdmin(admin.ModelAdmin):
             messages.add_message(
                 request,
                 messages.SUCCESS,
-                f'Testovací e-mail bol odoslaný na váš e-mail.'
+                'Testovací e-mail bol odoslaný na váš e-mail.'
             )
         else:
             messages.add_message(
                 request,
                 messages.WARNING,
-                f'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
+                'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
                     'vo vašom účte a akciu opakujte.'
             )
     

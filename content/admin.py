@@ -234,7 +234,7 @@ class OrganizerProfileAdmin(admin.ModelAdmin):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    f'Organizátorovi {q.name} bola ukončená aktívna organizácia.'
+                    'Organizátorovi {} bola ukončená aktívna organizácia.'.format(q.name)
                 )
         else:
             messages.add_message(

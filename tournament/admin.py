@@ -282,13 +282,13 @@ class TournamentAdmin(admin.ModelAdmin):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    f'Stav turnaja {str(q)} bol zmenený na neverejný.'
+                    'Stav turnaja {} bol zmenený na neverejný.'.format(str(q))
                 )
             else:
                 messages.add_message(
                     request,
                     messages.WARNING,
-                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                    '{} - Na túto akciu nemáte dostatočné oprávnenia.'.format(str(q))
                 )
 
     change_state_to_notpublic.short_description = 'Spraviť turnaj neverejným'
@@ -300,14 +300,13 @@ class TournamentAdmin(admin.ModelAdmin):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    f'Stav turnaja {str(q)} bol zmenený na verejný. Turnaj '+\
-                        'čaká na otvorenie registrácie.'
+                    'Stav turnaja {} bol zmenený na verejný. Turnaj čaká na otvorenie registrácie.'.format(str(q))
                 )
             else:
                 messages.add_message(
                     request,
                     messages.WARNING,
-                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                    '{} - Na túto akciu nemáte dostatočné oprávnenia.'.format(str(q))
                 )
 
     change_state_to_public.short_description = 'Spraviť turnaj verejným (registrácia neotvorená)'
@@ -319,13 +318,13 @@ class TournamentAdmin(admin.ModelAdmin):
                 messages.add_message(
                     request,
                     messages.SUCCESS,
-                    f'Registrácia turnaja {str(q)} bola otvorená.'
+                    'Registrácia turnaja {} bola otvorená.'.format(str(q))
                 )
             else:
                 messages.add_message(
                     request,
                     messages.WARNING,
-                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                    '{} - Na túto akciu nemáte dostatočné oprávnenia.'.format(str(q))
                 )
 
     change_state_to_registration.short_description = 'Otvoriť registráciu turnaja'
@@ -338,20 +337,19 @@ class TournamentAdmin(admin.ModelAdmin):
                     messages.add_message(
                         request,
                         messages.SUCCESS,
-                        f'Turnaj {str(q)} bol otvorený.'
+                        'Turnaj {} bol otvorený.'.format(str(q))
                     )
                 else:
                     messages.add_message(
                         request,
                         messages.WARNING,
-                        f'Turnaj {str(q)} nie je možné otvoriť, pretože dátum konania je '+\
-                            'priveľmi vzdialený.'
+                        'Turnaj {} nie je možné otvoriť, pretože dátum konania je priveľmi vzdialený.'.format(str(q))
                     )
             else:
                 messages.add_message(
                     request,
                     messages.WARNING,
-                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                    '{} - Na túto akciu nemáte dostatočné oprávnenia.'.format(str(q))
                 )
 
     change_state_to_active.short_description = 'Začať turnaj'
@@ -371,20 +369,19 @@ class TournamentAdmin(admin.ModelAdmin):
                         messages.add_message(
                             request,
                             messages.SUCCESS,
-                            f'Výsledky turnaja {str(q)} boli zverejnené a odoslané tímom.'
+                            'Výsledky turnaja {} boli zverejnené a odoslané tímom.'.format(str(q))
                         )
                 else:
                     messages.add_message(
                         request,
                         messages.WARNING,
-                        f'Výsledky turnaja {str(q)} nie je možné zverejniť, '+\
-                            'pretože dátum konania ešte nenastal.'
+                        'Výsledky turnaja {} nie je možné zverejniť, pretože dátum konania ešte nenastal.'.format(str(q))
                     )
             else:
                 messages.add_message(
                     request,
                     messages.WARNING,
-                    f'{str(q)} - Na túto akciu nemáte dostatočné oprávnenia.'
+                    '{} - Na túto akciu nemáte dostatočné oprávnenia.'.format(str(q))
                 )
 
     change_state_to_results.short_description = 'Zverejniť výsledky turnaja'
