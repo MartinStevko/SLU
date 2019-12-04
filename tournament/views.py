@@ -147,25 +147,24 @@ def get_toolbox(user, obj):
 
         # Basic toolgroup
         toolgroups.append([])
-        if user.has_perm('tournament.change_tournament'):
 
+        if user.has_perm('tournament.change_tournament'):
             # Tournament administration site
             toolgroups[-1].append((
                 'Spravovať turnaj',
                 reverse('admin:tournament_tournament_change', args=(obj.id,))
             ))
-        '''if user in obj.orgs and Todo.objects.filter(tournament=obj):
 
+        if user in obj.orgs.all():
             # Organizers checklist
             toolgroups[-1].append((
                 'Zoznam úloh',
-                reverse('todoes:tournament_todoes', kwargs=({
+                reverse('checklist:todo', kwargs=({
                     'pk': obj.pk,
                 }))
-            ))'''
+            ))
 
         toolgroups.append([])
-        # team management - add
 
         toolbox = []
         for group in toolgroups:

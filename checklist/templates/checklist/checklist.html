@@ -1,0 +1,137 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% block title %}Zoznam úloh{% endblock %}
+
+{% block css %}
+    <style>
+        label, input {
+            cursor: pointer;
+        };
+
+        .progress.active .progress-bar {
+            -webkit-transition: none !important;
+            transition: none !important;
+        };
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="featurete mb-3">
+        <div id="progressbar" class="row featurete">
+            {% include "checklist/checklist_progress.html" with phases=phases %}
+        </div>
+        <div class="row featurete">
+            <div class="col-md-6">
+                {% for phase,todoes,_ in checklist %}
+                    {% if todoes %}
+                        <div id="todo-{{ phase.1 }}" class="list-group mt-3">
+                            {% for todo in todoes %}
+                                <a href="#" class="list-group-item list-group-item-action" data-pk="{{ todo.pk }}" title="{{ todo.task.name }}" data-toggle="popover" data-trigger="hover" data-content="{{ todo.task.description }}">
+                                    <div class="form-check">
+                                        <input readonly type="checkbox" class="form-check-input" id="{{ todo.pk }}">
+                                        <label class="form-check-label">
+                                            <span>{{ todo.task.name }}</span><span class="badge badge-{{ phase.1 }} ml-2">{{ phase.0|capfirst }}</span>
+                                        </label>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div id="todo-{{ phase.1 }}" class="list-group"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                {% for phase,_,dones in checklist %}
+                    {% if dones %}
+                        <div id="done-{{ phase.1 }}" class="list-group mt-3">
+                            {% for done in dones %}
+                                <a href="#" class="list-group-item list-group-item-action" data-pk="{{ done.pk }}" title="{{ done.task.name }}" data-toggle="popover" data-trigger="hover" data-content="{{ done.task.description }}">
+                                    <div class="form-check">
+                                        <input readonly checked type="checkbox" class="form-check-input" id="{{ done.pk }}">
+                                        <label class="form-check-label">
+                                            <span style="text-decoration: line-through;">{{ done.task.name }}</span><span class="badge badge-{{ phase.1 }} ml-2">{{ phase.0|capfirst }}</span>
+                                        </label>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div id="done-{{ phase.1 }}" class="list-group"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        jQuery(document).ready(function($) {
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            });
+
+            $(".list-group-item").click(function () {
+                var pk = parseInt($(this).data("pk"));
+
+                $.ajax({
+                    url: "{% url 'checklist:ajax_edit_task' tournament.pk %}",
+                    data: {
+                        'task': pk,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var objs = $("#progressbar").children();
+                        for (i = 0; i < objs.children().length; i++) {
+                            $(objs.children()[i]).attr("aria-valuenow", data[0][i][0]);
+
+                            if (data[0][i][1] == 0) {
+                                $(objs.children()[i]).html("");
+                            } else {
+                                $(objs.children()[i]).html(data[0][i][1]+"%");
+                            };
+
+                            $(objs.children()[i]).animate({
+                                width: data[0][i][0]+"%"
+                            }, 500);
+                        };
+                    }
+                });
+
+                $(this).slideUp("normal", function() {
+                    var pref = $(this).parent().attr('id').slice(0, 4);
+                    var subf = $(this).parent().attr('id').slice(5);
+
+                    if (pref == "todo") {
+                        var destination = "#done-"+subf;
+                        $(this).children().children("input").attr("checked", true);
+                        $($(this).children().children("label").children()[0]).css(
+                            "text-decoration", "line-through"
+                        );
+                    } else {
+                        var destination = "#todo-"+subf;
+                        $(this).children().children("input").attr("checked", false);
+                        $($(this).children().children("label").children()[0]).css(
+                            "text-decoration", "none"
+                        );
+                    };
+
+                    if ($(this).siblings().length == 0) {
+                        $(this).parent().removeClass("mt-3");
+                    };
+
+                    if ($(destination).length) {
+                        $(this).prependTo(destination);
+                    };
+
+                    if ($(destination).children().length == 1) {
+                        $(destination).addClass("mt-3");
+                    };
+
+                    $(this).slideDown();
+                });
+            });
+        });
+    </script>
+{% endblock %}

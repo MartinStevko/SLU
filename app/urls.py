@@ -11,6 +11,7 @@ admin.site.login = login_required(admin.site.login)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')),
+    path('checklist/', include('checklist.urls')),
     path('tournament/', include('tournament.urls')),
     path('registration/', include('registration.urls')),
     path('', include('content.urls')),

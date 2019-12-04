@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'registration.apps.RegistrationConfig',
     'tournament.apps.TournamentConfig',
     'emails.apps.EmailsConfig',
+    'checklist.apps.ChecklistConfig',
     'form_utils',
     'bootstrap4',
     'froala_editor',

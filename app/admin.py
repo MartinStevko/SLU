@@ -4,12 +4,13 @@ from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
 
 APP_ORDERING = {
-    'user': 0,
-    'auth': 1,
-    'content': 2,
-    'tournament': 3,
-    'registration': 4,
-    'emails': 5,
+    'user': 1,
+    'auth': 2,
+    'content': 3,
+    'checklist': 4,
+    'tournament': 5,
+    'registration': 6,
+    'emails': 7,
 }
 
 MODEL_ORDERING = {
@@ -26,6 +27,10 @@ MODEL_ORDERING = {
         'organizerprofile': 3,
         'message': 4,
     }, 
+    'checklist': {
+        'task': 1,
+        'checklist': 2,
+    },
     'tournament': {
         'team': 1,
         'season': 2,
