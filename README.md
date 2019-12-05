@@ -149,3 +149,13 @@ python manage.py runserver 0.0.0.0:PORT_NUMBER
 ## Application access
 
 After all that you can access to admin site by typing `localhost:PORT_NUMBER/admin` and to app by typing `localhost:PORT_NUMBER` (`localhost` can be substituted by an IP address of server e.g. `192.168.1.47`).
+
+## Init database
+
+For fully usage you should consider these steps:
+
+1. Create user permission groups (for local orgs, central orgs and scorekeepers) [optional]
+2. Add init sections [optional]
+3. Add tasks for tournament managemnet
+4. Add checklist templates [optional]
+5. Create e-mail templates for each tag [important]

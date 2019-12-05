@@ -364,10 +364,22 @@ class Tournament(models.Model):
         return None
 
     def send_certificate(self):
-        # funkcia, ktora odosle email zucastnenym timom, ze dakujeme,
-        # ze ste prisli, fotky najdete tu a tu, tesime sa na vas 
-        # nabuduce a vygeneruje im diplom s ich umiestnenim (aj SOTG)
-        pass
+        teams = Team.objects.filter(
+            tournament=self,
+            status='attended',
+        )
+
+        for team in teams:
+            result = Result.objects.get(
+                tournament=self,
+                team=team,
+            ).place
+
+            # ak SOTG, tak v parametroch mailu sotg=True
+            SendMail(
+                team.get_emails(),
+                str(self) + ' - výsledky',
+            ).result_email(team, result)
 
     def registration_open_notification(self):
         if self.region != 'F':

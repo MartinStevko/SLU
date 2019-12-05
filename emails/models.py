@@ -9,6 +9,7 @@ TAGS = (
     ('team_confirmation', 'Info o potvrdení registrácie'),
     ('team_invitation', 'Pozvánka na turnaj'),
     ('attendee_email', 'Potvrdenie účasti'),
+    ('result_email', 'Zaslanie diplomu'),
 )
 
 
@@ -21,7 +22,7 @@ class Template(models.Model):
     )
     subject = models.CharField(
         max_length=127,
-        verbose_name='predmet',
+        verbose_name='názov',
     )
     text = models.TextField()
     html = FroalaField(

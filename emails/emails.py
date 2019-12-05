@@ -109,7 +109,7 @@ class SendMail:
         self.send_rendered_email(context, plaintext)
 
     def registration_email(self, team):
-        # pre tim ked sa zaregistruju - link na potvrdenie a upravu
+        # pre tim ked sa zaregistruju - link na potvrdenie + ze nech upravuju cez ucet
         t = T_model.objects.get(tag='registration_email')
         plaintext = Template(t.text)
         template = Template(t.html)
@@ -164,6 +164,8 @@ class SendMail:
 
     def team_invitation(self, team):
         # pre tim, ze ich pozyvame aj info o turnaji a tak
+        # priloha pdf pozvanka (path to list), pdf propozicie (path to list)
+        # ako priloha mozno aj nieco o spirite?
         t = T_model.objects.get(tag='team_invitation')
         plaintext = Template(t.text)
         template = Template(t.html)
@@ -184,9 +186,24 @@ class SendMail:
             'tournament': team.tournament,
         })
 
-        # generate attendee confirmation and pass it as attachment path
+        # priloha pdf potvrdenka (path to list)
 
         self.send_rendered_email(context, plaintext)
+
+    def result_email(self, team, place, sotg=False):
+        t = T_model.objects.get(tag='result_email')
+        plaintext = Template(t.text)
+        template = Template(t.html)
+
+        context = Context({
+            'team': team,
+            'place': place,
+        })
+
+        # priloha pdf diplom (path to list)
+        # ak SOTG, tak aj za vyhru toho
+
+        self.send_rendered_email(context, plaintext, template)
 
     def test_mail(self, tag):
         team = CustomTeam()
@@ -237,6 +254,7 @@ class SendMail:
             )
 
         if attachment is not None:
-            email.attach_file('path')
+            for att in attachement:
+                email.attach_file(att)
 
         email.send(fail_silently=False)
