@@ -21,6 +21,7 @@ from zipfile import ZipFile
 from io import BytesIO
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.exceptions import PermissionDenied
 
 from emails.emails import SendMail
 from user.models import User
@@ -343,7 +344,7 @@ class Tournament(models.Model):
             for org in self.orgs.all():
                 recipients.append(org.email)
             for org in self.season.orgs.all():
-                recipients.append(erg.email)
+                recipients.append(org.email)
             SendMail(
                 recipients,
                 'Turnaj '+str(self)+' začal'
@@ -369,9 +370,23 @@ class Tournament(models.Model):
         pass
 
     def registration_open_notification(self):
-        # email vsetkym timom z daneho regionu, ze registracia je otvorena
-        # pozor! nie pri finale, tam nic
-        pass
+        if self.region != 'F':
+            tournaments = Tournament.objects.filter(
+                region=self.region,
+            )
+            teams = Team.objects.filter(
+                tournament__in=tournaments,
+            )
+
+            recipients = []
+            for team in teams:
+                recipients += team.get_emails()
+
+            SendMail(
+                recipients,
+                '{}'.format(str(self)),
+                bcc=True
+            ).registration_open_notification(self.pk)
 
 
 class Team(models.Model):
@@ -499,6 +514,51 @@ class Team(models.Model):
             return 'Stav tím {} bol zmenený na nezúčastnený.'.format(self.name)
         else:
             return 'Tím {} nemôže byť označený za nezúčastnený, pretože sa turnaja zúčastniť nemal.'.format(self.name)
+
+    def checkin(self, tournament):
+        if self.tournament == tournament:
+            if self.status == 'invited':
+                self.status = 'attended'
+                self.save()
+
+                Checkin.objects.create(
+                    team=self,
+                    time_created=timezone.now(),
+                ).save()
+
+                SendMail(
+                    self.get_emails(),
+                    '{} - potvrdenie účasti'.format(str(tournament)),
+                ).attendee_email(self)
+
+                return None
+            else:
+                return 'Tento tím na turnaj nebol pozvaný'
+        else:
+            return 'Turnaj sa nezhoduje s tímom'
+
+
+class Checkin(models.Model):
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        verbose_name='tím'
+    )
+    time_created = models.DateTimeField(
+        verbose_name='čas vytvorenia',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'kontrola'
+        verbose_name_plural = 'kontroly'
+
+    def __str__(self):
+        return '{} - {}'.format(
+            str(self.time_created),
+            self.team.get_name()
+        )
 
 
 class Result(models.Model):

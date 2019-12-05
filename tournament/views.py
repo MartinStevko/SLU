@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import Http404
 from django.core import serializers
@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import ListView, DetailView, TemplateView, FormView
+from django.views.generic import ListView, DetailView, TemplateView, FormView, RedirectView
 from django.views.generic.list import BaseListView
 from django.views.generic.edit import DeleteView
 
@@ -15,7 +15,6 @@ import datetime
 from app.utils import decode, get_key
 from tournament.models import *
 from .forms import *
-# from todoes.models import Todo
 
 
 def get_tabs(request, t):
@@ -148,23 +147,38 @@ def get_toolbox(user, obj):
         # Basic toolgroup
         toolgroups.append([])
 
-        if user.has_perm('tournament.change_tournament'):
-            # Tournament administration site
-            toolgroups[-1].append((
-                'Spravovať turnaj',
-                reverse('admin:tournament_tournament_change', args=(obj.id,))
-            ))
-
         if user in obj.orgs.all():
             # Organizers checklist
-            toolgroups[-1].append((
+            toolgroups[0].append((
                 'Zoznam úloh',
                 reverse('checklist:todo', kwargs=({
                     'pk': obj.pk,
                 }))
             ))
 
-        toolgroups.append([])
+        if user.has_perm('tournament.change_tournament'):
+            # Tournament administration site
+            toolgroups[0].append((
+                'Spravovať turnaj',
+                reverse('admin:tournament_tournament_change', args=(obj.id,))
+            ))
+
+        if user in obj.orgs.all() and obj.state == 'active':
+            # Check-in team
+            toolgroups[0].append((
+                'Manuálna kontrola',
+                reverse('tournament:checkin_list', kwargs=({
+                    'pk': obj.pk,
+                }))
+            ))
+            toolgroups[0].append((
+                'QR kontrola',
+                reverse('tournament:checkin_scanner', kwargs=({
+                    'pk': obj.pk,
+                }))
+            ))
+
+        # toolgroups.append([])
 
         toolbox = []
         for group in toolgroups:
@@ -204,6 +218,23 @@ class TournamentIsPublicMixin(object):
             raise Http404('Hľadaný turnaj nebol zverejnený')
         else:
             return context
+
+
+class TournamentIsActiveMixin(object):
+
+    def get_context_data(self, **kwargs):
+        context = super(TournamentIsActiveMixin, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state == 'active' and self.request.user.is_staff:
+            if self.request.user in t.orgs.all() or \
+                self.request.user in t.season.orgs.all() or \
+                    self.request.user.is_superuser:
+                        return context
+            else:
+                Http404('Nemáte oprávnenie na kontrolu tímov tohto turnaja')
+        else:
+            raise Http404('Hľadaný turnaj nebol zahájený, ešte nemôže začať kontrola tímov')
 
 
 class HavePlayerStatsMixin(object):
@@ -628,3 +659,102 @@ class TournamentGalleryView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
         })
 
         return context
+
+
+class CheckinListView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/checkin_list.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(CheckinListView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        context.update({
+            'teams': Team.objects.filter(
+                tournament=t,
+                status='invited',
+            ),
+        })
+
+        return context
+
+
+class QRCheckinView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/checkin_scanner.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+
+class TeamCheckinView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/team_checkin.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(TeamCheckinView, self).get_context_data(**kwargs)
+        t = self.get_object()
+        team_pk = self.kwargs.get('team', None)
+
+        try:
+            team = Team.objects.get(pk=team_pk)
+        except(Team.DoesNotExist):
+            messages.error(
+                self.request,
+                'Zvolený tím neexistuje'
+            )
+
+            return reverse('tournament:detail', kwargs={'pk': t.pk})
+
+        context.update({
+            'team': team,
+        })
+
+        self.request.session['checkin'] = True
+
+        return context
+
+
+class ConfirmCheckinView(RedirectView):
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.request.session['checkin'] = False
+
+        tour_pk = self.kwargs.get('pk', None)
+        team_pk = self.kwargs.get('team', None)
+
+        try:
+            tournament = Tournament.objects.get(pk=tour_pk)
+            team = Team.objects.get(pk=team_pk)
+        except(Tournament.DoesNotExist, Team.DoesNotExist):
+            msg = 'Tím alebo turnaj neexistujú'
+        else:
+            msg = team.checkin(tournament)
+
+        if msg is not None:
+            messages.error(self.request, msg)
+        else:
+            messages.success(self.request, msg)
+
+        return reverse('tournament:detail', kwargs={'pk': tour_pk})
+
+
+class QRCheckinRedirectView(RedirectView):
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.request.session['checkin'] = False
+
+        tour_pk = self.kwargs.get('pk', None)
+        key = self.kwargs.get('key', None)
+
+        team = get_object_or_404(Team, identifier=key)
+
+        return reverse(
+            'tournament:confirm_checkin',
+            kwargs={'pk': tour_pk, 'team': team.pk}
+        )

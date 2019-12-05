@@ -31,15 +31,20 @@ def org_list(tournament):
 
 class SendMail:
 
-    def __init__(self, recipients, subject):
-        if type(recipients) == list:
+    def __init__(self, recipients, subject, bcc=False):
+        if not bcc and type(recipients) == list:
             self.recipients = recipients
+            self.bcc_recipients = []
+        elif bcc and type(recipients) == list:
+            self.recipients = ['slu.central.org@gmail.com']
+            self.bcc_recipients = recipients
         elif recipients == 'contact':
             self.recipients = getattr(
                 settings,
                 'CONTACT_EMAILS',
                 ['slu.central.org@gmail.com']
             )
+            self.bcc_recipients = []
         else:
             raise SuspiciousOperation('Príjmateľ správy sa nezhoduje!')
 
@@ -83,6 +88,16 @@ class SendMail:
             reply_to=[message.from_email],
         )
         email.send(fail_silently=False)
+
+    def registration_open_notification(self, pk):
+        plaintext = get_template('emails/registration_open_notification.txt')
+        template = get_template('emails/registration_open_notification.html')
+
+        context = {
+            'pk': pk,
+        }
+
+        self.send_rendered_email(context, plaintext)
 
     def tournament_activation(self, tournament):
         plaintext = get_template('emails/tournament_activation.txt')
@@ -160,6 +175,19 @@ class SendMail:
 
         self.send_rendered_email(context, plaintext, html_template=template)
 
+    def attendee_email(self, team):
+        t = T_model.objects.get(tag='attendee_email')
+        plaintext = Template(t.text)
+
+        context = Context({
+            'team': team,
+            'tournament': team.tournament,
+        })
+
+        # generate attendee confirmation and pass it as attachment path
+
+        self.send_rendered_email(context, plaintext)
+
     def test_mail(self, tag):
         team = CustomTeam()
 
@@ -173,14 +201,16 @@ class SendMail:
             self.team_confirmation(team)
         elif tag == 'team_invitation':
             self.team_invitation(team)
+        elif tag == 'attendee_email':
+            self.attendee_email(team)
         else:
             self.send_rendered_email(
-                {'tag': tag},
-                Template('Nepodarilo sa posla5 email s tagom: {{ tag }}.\
-                    Pre vyriešenie problému kontaktujte správcu.'),
+                Context({'tag': tag}),
+                Template('Nepodarilo sa poslať email s tagom: {{ tag }}.'+\
+                    'Pre vyriešenie problému kontaktujte správcu.'),
             )
 
-    def send_rendered_email(self, context, text_template, html_template=None):
+    def send_rendered_email(self, context, text_template, html_template=None, attachment=None):
         if html_template is not None:
             text_content = text_template.render(context)
             html_content = html_template.render(context)
@@ -190,9 +220,9 @@ class SendMail:
                 text_content,
                 getattr(settings, 'FROM_EMAIL_NAME', 'SLU'),
                 self.recipients,
+                bcc=self.bcc_recipients,
             )
             email.attach_alternative(html_content, 'text/html')
-            email.send(fail_silently=False)
 
         else:
             text_content = text_template.render(context)
@@ -202,6 +232,11 @@ class SendMail:
                 text_content,
                 getattr(settings, 'FROM_EMAIL_NAME', 'SLU'),
                 self.recipients,
+                bcc=self.bcc_recipients,
                 reply_to=['slu.central.org@gmail.com'],
             )
-            email.send(fail_silently=False)
+
+        if attachment is not None:
+            email.attach_file('path')
+
+        email.send(fail_silently=False)

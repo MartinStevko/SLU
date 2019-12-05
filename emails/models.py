@@ -8,6 +8,7 @@ TAGS = (
     ('tournament_full', 'Info o zaradení na čakaciu listinu'),
     ('team_confirmation', 'Info o potvrdení registrácie'),
     ('team_invitation', 'Pozvánka na turnaj'),
+    ('attendee_email', 'Potvrdenie účasti'),
 )
 
 

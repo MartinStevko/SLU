@@ -25,6 +25,7 @@ class TemplateAdmin(admin.ModelAdmin):
     actions = [
         'test_send',
         'test_creation',
+        'test_registration_open',
     ]
 
     def test_send(self, request, queryset):
@@ -70,7 +71,29 @@ class TemplateAdmin(admin.ModelAdmin):
                     'vo vašom účte a akciu opakujte.'
             )
     
-    test_creation.short_description = 'Poslať skúšobný e-mail o vytvorení konta'
+    test_creation.short_description = 'Poslať skúšobný e-mail - vytvorenie konta'
+
+    def test_registration_open(self, request, queryset):
+        if request.user.email:
+            SendMail(
+                [request.user.email],
+                'Skúška - Meno turnaja'
+            ).registration_open_notification(1)
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Testovací e-mail bol odoslaný na váš e-mail.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
+                    'vo vašom účte a akciu opakujte.'
+            )
+    
+    test_registration_open.short_description = 'Poslať skúšobný e-mail - otvorenie registrácie'
 
 
 admin.site.register(Template, TemplateAdmin)

@@ -332,7 +332,7 @@ class TournamentAdmin(admin.ModelAdmin):
     def change_state_to_active(self, request, queryset):
         for q in queryset:
             if self.has_change_permission(request, q):
-                if q.date - 1 <= datetime.date.today():
+                if q.date - datetime.timedelta(days=1) <= datetime.date.today():
                     q.change_state('active')
                     messages.add_message(
                         request,
@@ -470,6 +470,12 @@ class TeamAdmin(admin.ModelAdmin):
         'cancel_registration',
         'make_not_attended',
     ]
+
+    def response_change(self, request, team):
+        if '_save' in request.POST and request.session.get('checkin', False):
+            return redirect('tournament:team_checkin', pk=team.tournament.pk, team=team.pk)
+        else:
+            return super().response_change(request, team)
 
     def make_attended(self, request, queryset):
         for q in queryset:

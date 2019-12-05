@@ -7,6 +7,11 @@ app_name = 'tournament'
 
 urlpatterns = [
     path('<int:pk>/detail/', TournamentDetailView.as_view(), name='detail'),
+    path('<int:pk>/checkin/list/', CheckinListView.as_view(), name='checkin_list'),
+    path('<int:pk>/checkin/scanner/key/<str:key>/', QRCheckinRedirectView.as_view(), name='checkin_scanner_redirect'),
+    path('<int:pk>/checkin/scanner/', QRCheckinView.as_view(), name='checkin_scanner'),
+    path('<int:pk>/checkin/<int:team>/team/', TeamCheckinView.as_view(), name='team_checkin'),
+    path('<int:pk>/checkin/<int:team>/confirm/', ConfirmCheckinView.as_view(), name='confirm_checkin'),
     path('<int:pk>/match/list/ajax/', JSONPointListView.as_view(), name='ajax_match_points'),
     path('<int:pk>/match/list/', TournamentMatchesView.as_view(), name='match_list'),
     path('match/<int:pk>/', MatchDetailView.as_view(), name='match_detail'),
