@@ -688,6 +688,130 @@ class Point(models.Model):
         super(Point, self).save(*args, **kwargs)
 
 
+class SpiritScore(models.Model):
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        verbose_name='turnaj',
+    )
+    from_team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name='spirit_from',
+        verbose_name='od tímu',
+    )
+    to_team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name='spirit_to',
+        verbose_name='pre tím',
+    )
+
+    rules = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='znalosť a použitie pravidiel',
+        default=2,
+    )
+    fouls = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='fouly a telesný kontakt',
+        default=2,
+    )
+    fair = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='férové zmýšľanie',
+        default=2,
+    )
+    selfcontrol = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='pozitívny prístup a sebaovládanie',
+        default=2,
+    )
+    communication = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='komunikácia',
+        default=2,
+    )
+    note = models.TextField(
+        blank=True,
+        verbose_name='poznámka'
+    )
+
+    class Meta:
+        verbose_name = 'SOTG'
+        verbose_name_plural = 'SOTG'
+
+    def __str__(self):
+        return "{} bodov od {} pre {}".format(
+            str(self.rules+self.fouls+self.fair+self.selfcontrol+self.communication),
+            self.from_team,
+            self.to_team,
+        )
+
+    @classmethod
+    def sum_score(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += sum([
+                spirit.rules,
+                spirit.fouls,
+                spirit.fair,
+                spirit.selfcontrol,
+                spirit.communication
+            ])
+        return s
+
+    @classmethod
+    def sum_rules(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.rules
+        return s
+
+    @classmethod
+    def sum_fouls(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.fouls
+        return s
+
+    @classmethod
+    def sum_fair(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.fair
+        return s
+
+    @classmethod
+    def sum_selfcontrol(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.selfcontrol
+        return s
+
+    @classmethod
+    def sum_communication(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.communication
+        return s
+
+
 @deconstructible
 class PathAndRename(object):
 

@@ -14,7 +14,7 @@ import datetime
 
 from app.utils import decode, get_key
 from tournament.models import *
-from .forms import *
+from tournament.forms import *
 
 
 def get_tabs(request, t):
@@ -50,8 +50,22 @@ def get_tabs(request, t):
             False
         ))
 
+    # Spirit of the Game
+    if t.state == 'active':
+        tabs.append((
+            'SOTG',
+            reverse('tournament:spirit', kwargs={'pk': t.pk}),
+            False
+        ))
+    if t.state == 'results':
+        tabs.append((
+            'SOTG',
+            reverse('tournament:spirit_results', kwargs={'pk': t.pk}),
+            False
+        ))
+
     # Player stats
-    if t.player_stats and (t.state == 'active' or t.state == 'results'):
+    if t.player_stats and t.state in ['active', 'results']:
         tabs.append((
             'Štatistiky hráčov',
             reverse('tournament:player_stats', kwargs={'pk': t.pk}),
@@ -231,6 +245,20 @@ class TournamentIsActiveMixin(object):
 
     def get_context_data(self, **kwargs):
         context = super(TournamentIsActiveMixin, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state == 'active' and self.request.user.is_authenticated:
+            return context
+        elif t.state == 'active':
+            raise PermissionDenied('Musíte sa najprv prihlásiť')
+        else:
+            raise Http404('Hľadaný turnaj nebol zahájený, ešte nemôžete spravovať SOTG.')
+
+
+class TournamentIsActiveOrgMixin(object):
+
+    def get_context_data(self, **kwargs):
+        context = super(TournamentIsActiveOrgMixin, self).get_context_data(**kwargs)
         t = self.get_object()
 
         if t.state == 'active' and self.request.user.is_staff:
@@ -648,6 +676,176 @@ class TournamentResultsView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
         return context
 
 
+class SpiritScoreView(TournamentIsActiveMixin, TabsViewMixin, FormView):
+    template_name = 'tournament/spirit_score.html'
+
+    model = Tournament
+    form_class = SpiritForm
+    context_object_name = 'tournament'
+
+    def form_valid(self, form):
+        pk = self.kwargs.get('pk', None)
+        tournament = Tournament.objects.get(pk=pk)
+
+        to_team = Team.objects.get(pk=form.cleaned_data.get('to_team', None).pk)
+        from_team = Team.objects.get(pk=form.cleaned_data.get('from_team', None).pk)
+
+        teachers = Teacher.objects.filter(email=self.request.user.email)
+        if (from_team in Team.objects.filter(teacher__in=teachers) and 
+            from_team.tournament == to_team.tournament and 
+            to_team.tournament == tournament):
+
+            spirit = form.save(commit=False)
+            spirit.tournament = tournament
+            spirit.save()
+
+            s = spirit.sum_score([spirit])
+            messages.success(
+                self.request,
+                'Spirit skóre bolo úspešne pridané. '+\
+                'Tímu {} ste dali {} bodov.'.format(spirit.to_team, s)
+            )
+
+        elif from_team in Team.objects.filter(teacher__in=teachers):
+            messages.error(
+                self.request,
+                'Turnaje tímov sa nezhodujú, spiritové skóre nemôže byť pridané.'
+            )
+        else:
+            messages.error(
+                self.request,
+                'Nemáte oprávnenie pridávať spiritové skóre tomuto tímu.'
+            )
+
+        return super(SpiritScoreView, self).form_valid(form)
+
+    def get_success_url(self):
+        pk = self.kwargs.get('pk', None)
+        return reverse('tournament:spirit', args=(pk,))
+
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs.get('pk', None)
+        context = super(SpiritScoreView, self).get_context_data(**kwargs)
+
+        try:
+            t = Tournament.objects.get(pk=pk)
+        except(Tournament.DoesNotExist):
+            raise Http404('Hľadaný turnaj neexistuje, nemôžete pridať spirit')
+
+        related_teams = Team.objects.filter(tournament=t)
+        f_fields = context['form'].fields
+        f_fields['to_team'].queryset = related_teams
+
+        no_spirit = []
+        if self.request.user.is_staff:
+            f_fields['from_team'].queryset = related_teams
+            if self.request.user in t.orgs.all():
+                related_from_teams = related_teams
+            else:
+                related_from_teams = None
+        else:
+            teachers = Teacher.objects.filter(email=self.request.user.email)
+            related_from_teams = related_teams.filter(teacher__in=teachers)
+            f_fields['from_team'].queryset = related_from_teams
+
+        if related_from_teams is not None:
+            hm = Match.objects.filter(
+                tournament=t,
+                home_team__in=related_from_teams,
+            )
+            am = Match.objects.filter(
+                tournament=t,
+                host_team__in=related_from_teams,
+            )
+
+            for m in hm:
+                if len(SpiritScore.objects.filter(
+                    tournament=t,
+                    from_team=m.home_team,
+                    to_team=m.host_team,
+                    ))+no_spirit.count(str(m.home_team)+' vs. '+str(m.host_team))\
+                    < len(hm.filter(host_team=m.host_team)):
+
+                    no_spirit.append(str(m.home_team)+' vs. '+str(m.host_team))
+            for m in am:
+                if len(SpiritScore.objects.filter(
+                    tournament=t,
+                    from_team=m.host_team,
+                    to_team=m.home_team,
+                    ))+no_spirit.count(str(m.host_team)+' vs. '+str(m.home_team))\
+                    < len(am.filter(host_team=m.home_team)):
+
+                    no_spirit.append(str(m.host_team)+' vs. '+str(m.home_team))
+
+        context.update({
+            'tournament': t,
+            'no_spirit': no_spirit,
+        })
+
+        return context
+
+    def get_object(self):
+        pk = self.kwargs.get('pk', None)
+        try:
+            tournament = Tournament.objects.get(pk=pk)
+        except(Tournament.DoesNotExist):
+            return None
+        else:
+            return tournament
+
+
+class SpiritResultView(TabsViewMixin, DetailView):
+    template_name = 'tournament/spirit_results.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(SpiritResultView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state != 'results':
+            raise Http404('Výsledky spiritu pre tento turnaj ešte neexistujú.')
+
+        results = []
+        teams = Team.objects.filter(
+            tournament=t,
+            status='attended',
+        )
+        i = 0
+        for team in teams:
+            i += 1
+            spirits = SpiritScore.objects.filter(
+                tournament=t,
+                to_team=team,
+            )
+            if len(spirits) != 0:
+                results.append({
+                    'place': i,
+                    'name': team.get_name(),
+                    'sum': round(SpiritScore.sum_score(spirits)/len(spirits), 2),
+                    'rules': round(SpiritScore.sum_rules(spirits)/len(spirits), 2),
+                    'fouls': round(SpiritScore.sum_fouls(spirits)/len(spirits), 2),
+                    'fair': round(SpiritScore.sum_fair(spirits)/len(spirits), 2),
+                    'selfcontrol': round(SpiritScore.sum_selfcontrol(spirits)/len(spirits), 2),
+                    'communication': round(SpiritScore.sum_communication(spirits)/len(spirits), 2),
+                })
+
+        results.sort(key=lambda x: -x['sum'])
+
+        for i in range(1, len(results)):
+            if results[i-1]['sum'] == results[i]['sum']:
+                results[i]['place'] = results[i-1]['place']
+            else:
+                results[i]['place'] = results[i-1]['place']+1
+
+        context.update({
+            'results': results,
+        })
+
+        return context
+
+
 class TournamentGalleryView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
     template_name = 'tournament/gallery.html'
 
@@ -668,7 +866,7 @@ class TournamentGalleryView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
         return context
 
 
-class CheckinListView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
+class CheckinListView(TournamentIsActiveOrgMixin, TabsViewMixin, DetailView):
     template_name = 'tournament/checkin_list.html'
 
     model = Tournament
@@ -688,14 +886,14 @@ class CheckinListView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
         return context
 
 
-class QRCheckinView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
+class QRCheckinView(TournamentIsActiveOrgMixin, TabsViewMixin, DetailView):
     template_name = 'tournament/checkin_scanner.html'
 
     model = Tournament
     context_object_name = 'tournament'
 
 
-class TeamCheckinView(TournamentIsActiveMixin, TabsViewMixin, DetailView):
+class TeamCheckinView(TournamentIsActiveOrgMixin, TabsViewMixin, DetailView):
     template_name = 'tournament/team_checkin.html'
 
     model = Tournament

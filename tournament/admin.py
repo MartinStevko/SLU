@@ -672,6 +672,56 @@ class ResultAdmin(admin.ModelAdmin):
         return request.user.has_perm('tournament.delete_result')
 
 
+class SpiritScoreAdmin(admin.ModelAdmin):
+    list_per_page = 100
+
+    search_fields = [
+        'tournament',
+        'from_team__name',
+        'from_team__school__name',
+        'to_team__name',
+        'to_team__school__name',
+    ]
+    ordering = ('-pk',)
+
+    date_hierarchy = 'tournament__date'
+
+    fieldsets = (
+        ('Zápas', {
+            'classes': ('wide',),
+            'fields': ('tournament', ('from_team', 'to_team')),
+        }),
+        ('Body', {
+            'classes': ('wide',),
+            'fields': (('rules', 'fouls', 'fair'), ('selfcontrol', 'communication')),
+        }),
+        ('Poznámka', {
+            'classes': ('wide',),
+            'fields': ('note',),
+        }),
+    )
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.change_result')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_superuser:
+                return True
+
+            if request.user in obj.tournament.orgs.all():
+                return True
+
+        return request.user.has_perm('tournament.delete_result')
+
+
 class PointInline(admin.TabularInline):
     model = Point
     extra = 0
@@ -913,6 +963,7 @@ admin.site.register(Tournament, TournamentAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Result, ResultAdmin)
 admin.site.register(Match, MatchAdmin)
+admin.site.register(SpiritScore, SpiritScoreAdmin)
 admin.site.register(Point, PointAdmin)
 admin.site.register(Photo, PhotoAdmin)
 admin.site.register(AbstractGallery, AbstractGalleryAdmin)

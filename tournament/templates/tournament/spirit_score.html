@@ -1,0 +1,123 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% load staticfiles %}
+{% load form_utils %}
+{% load bootstrap4 %}
+
+{% block title %}Spirit of the Game{% endblock %}
+
+{% block css %}
+    <style>
+        .css-number {
+            counter-reset: serial-number;
+        }
+
+        .css-number td:first-child:before {
+            counter-increment: serial-number;
+            content: counter(serial-number);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="featurette">
+        {% if no_spirit %}
+            <h5 class="mt-0 mb-3">Chýbajúce hodnotenia Spirit of the Game</h5>
+            <div class="table-responsive">
+                <table class="table table-hover css-number">
+                    <tr>
+                        <th scope="row">#</th>
+                        <th class="text-left">Zápas</th>
+                        <th class="text-left"></th>
+                    </tr>
+                    {% for s in no_spirit %}
+                        <tr class="add-spirit">
+                            <td scope="row"></td>
+                            <td class="text-left">{{ s }}</td>
+                            <td class="text-left"><a href="#{{ s }}" style="text-decoration: none;">Pridať</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <hr class="featurette-divider">
+        {% endif %}
+        <h5 id="add-spirit" class="mt-0 mb-3">Pridať hodnotenie</h5>
+        <form method="POST">
+            {% csrf_token %}
+            {% bootstrap_form_errors form %}
+            {% for fieldset in form.fieldsets %}
+                <fieldset>
+                    {% if fieldset.description %}
+                        <p>
+                            {{ fieldset.description }}
+                        </p>
+                    {% endif %}
+                    <div class="row">
+                        {% for field in fieldset %}
+                            {% if field.name == 'from_team' or field.name == 'to_team' %}
+                                <div class="col-md-6">
+                                    {% bootstrap_field field layout='horizontal' %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="row mt-3">
+                        {% for field in fieldset %}
+                            {% if field.name != 'from_team' and field.name != 'to_team' and field.name != 'note' %}
+                                <div class="col-md-3"></div>
+                                <div class="col-md-6">
+                                    {% bootstrap_field field layout='horizontal' horizontal_label_class='col-md-9' horizontal_field_class='col-md-3' %}
+                                </div>
+                                <div class="col-md-3"></div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="row mt-3">
+                        {% for field in fieldset %}
+                            {% if field.name == 'note' %}
+                                <div class="col-md-12">
+                                    {% bootstrap_field field layout='horizontal' %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endfor %}
+
+            <small><span style="color: red">*</span>Toto pole je povinné</small>
+            <button class="btn btn-primary btn-block" type="submit">Odoslať</button>
+        </form>
+    </div>
+    <hr class="featurette-divider">
+{% endblock %}
+
+{% block js %}
+    <script>
+        jQuery(document).ready(function($) {
+            $(".add-spirit").click(function () {
+                var match = $($(this).children("td")[1]).html();
+                match = match.split(" vs. ");
+
+                $("#id_from_team").children("option").filter(function() {
+                    return $(this).text() == match[0];
+                }).prop('selected', true);
+                $("#id_to_team").children("option").filter(function() {
+                    return $(this).text() == match[1];
+                }).prop('selected', true);
+
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: $("#add-spirit").offset().top-70
+                }, 1000);
+            });
+        });
+    </script>
+{% endblock %}

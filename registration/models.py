@@ -1,5 +1,9 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import (
+    RegexValidator,
+    MaxValueValidator,
+    MinValueValidator
+)
 
 GENDERS = (
     ('male', 'muž'),
@@ -145,6 +149,10 @@ class Player(models.Model):
         verbose_name='pohlavie'
     )
     number = models.SmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(99),
+        ],
         verbose_name='číslo',
     )
 

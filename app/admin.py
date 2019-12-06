@@ -38,9 +38,10 @@ MODEL_ORDERING = {
         'tournament': 3,
         'result': 4,
         'match': 5,
-        'point': 6,
-        'photo': 7,
-        'abstractgallery': 8
+        'spiritscore': 6,
+        'point': 7,
+        'photo': 8,
+        'abstractgallery': 9,
     }, 
     'registration': {
         'school': 1,
