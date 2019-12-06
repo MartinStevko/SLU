@@ -163,6 +163,7 @@ class TournamentAdmin(admin.ModelAdmin):
         'change_state_to_registration',
         'change_state_to_active',
         'change_state_to_results',
+        'send_last_info',
         'add_photos',
     ]
 
@@ -385,6 +386,29 @@ class TournamentAdmin(admin.ModelAdmin):
                 )
 
     change_state_to_results.short_description = 'Zverejniť výsledky turnaja'
+
+    def send_last_info(self, request, queryset):
+        for q in queryset:
+            teams = Team.objects.filter(
+                tournament=t,
+                status='invited',
+            )
+
+            for team in teams:
+                matches = []
+                for m in Match.objects.filter(tournament=q):
+                    if m.home_team == team or m.host_team == team:
+                        matches.append(m)
+
+                SendMail(
+                    team.get_emails(),
+                    str(q),
+                ).last_info_email(
+                    team,
+                    matches,
+                )
+    
+    send_last_info.short_description = 'Polať pozvaným tímom posledné informácie'
 
     def add_photos(self, request, queryset):
         return redirect('admin:tournament_abstractgallery_add')

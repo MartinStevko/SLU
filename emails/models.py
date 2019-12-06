@@ -15,7 +15,7 @@ TAGS = (
 
 class Template(models.Model):
     tag = models.CharField(
-        max_length=15,
+        max_length=31,
         unique=True,
         choices=TAGS,
         help_text='Pri zavolaní tohto tagu sa mail odošle.'

@@ -3,6 +3,8 @@ from django.contrib import admin, messages
 from emails.models import *
 from emails.emails import SendMail
 
+from emails.tests import CustomTeam, CustomMatch
+
 
 class TemplateAdmin(admin.ModelAdmin):
     list_display = ('subject', 'text')
@@ -26,6 +28,7 @@ class TemplateAdmin(admin.ModelAdmin):
         'test_send',
         'test_creation',
         'test_registration_open',
+        'test_last_info_email',
     ]
 
     def test_send(self, request, queryset):
@@ -94,6 +97,31 @@ class TemplateAdmin(admin.ModelAdmin):
             )
     
     test_registration_open.short_description = 'Poslať skúšobný e-mail - otvorenie registrácie'
+
+    def test_last_info_email(self, request, queryset):
+        if request.user.email:
+            SendMail(
+                [request.user.email],
+                'Skúška - Meno turnaja'
+            ).last_info_email(
+                CustomTeam(),
+                [CustomMatch, CustomMatch],
+            )
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Testovací e-mail bol odoslaný na váš e-mail.'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'E-mail sa nepodarilo odoslať. Vyplňte mailovú adresu '+\
+                    'vo vašom účte a akciu opakujte.'
+            )
+    
+    test_last_info_email.short_description = 'Poslať skúšobný e-mail - tímový checkin'
 
 
 admin.site.register(Template, TemplateAdmin)

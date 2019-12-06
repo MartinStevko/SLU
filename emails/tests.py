@@ -10,6 +10,9 @@ class CustomSeason:
     season = 'outdoor'
     game_format = 'loose_mix'
 
+    def __str__(self):
+        return "{}, {}".format(self.season, self.school_year)
+
 
 class CustomTournament:
     pk = 1
@@ -36,6 +39,29 @@ class CustomTournament:
     game_time = datetime.time(10, 0)
     end_time = datetime.time(16, 0)
 
+    def get_name(self):
+        if self.region == 'F':
+            temp = 'finále'
+        elif self.region == 'W':
+            temp = 'západoslovenské regionálne kolo'
+        elif self.region == 'M':
+            temp = 'stredoslovenské regionálne kolo'
+        elif self.region == 'E':
+            temp = 'východoslovenské regionálne kolo'
+        else:
+            temp = 'None'
+
+        if self.season.season == 'indoor':
+            name = 'Halové ' + temp
+        else:
+            name = '' + temp[0].upper() + temp[1:]
+
+        name += ' SLU ' + self.season.school_year
+        return name
+
+    def __str__(self):
+        return "{}".format(self.get_name())
+
 
 class CustomSchool:
     pk = 1
@@ -47,6 +73,14 @@ class CustomSchool:
     region = 'E'
     have_disc = True
 
+    def __str__(self):
+        return "{}, {}, {} {}".format(
+            self.name,
+            self.street,
+            self.postcode,
+            self.city
+        )
+
 
 class CustomTeacher:
     pk = 1
@@ -55,6 +89,12 @@ class CustomTeacher:
     last_name = 'Doe'
     email = 'john.doe@slu.sk'
     phone_number = '+421 123 456 789'
+
+    def __str__(self):
+        return "{} {}".format(
+            self.first_name,
+            self.last_name
+        )
 
 
 class CustomTeam:
@@ -69,3 +109,25 @@ class CustomTeam:
     extra_email = ''
     identifier = 'vf1brf4vfsdb5v4'
     accept_gdpr = True
+
+    def __str__(self):
+        return "{}".format(self.get_name())
+
+    def get_name(self):
+        if self.name:
+            return self.name
+        else:
+            return self.school
+
+
+class CustomMatch:
+    pk = 1
+    home_team = CustomTeam()
+    host_team = CustomTeam()
+    begining_time = datetime.time(10, 15)
+
+    def __str__(self):
+        return "{} vs. {}".format(
+            self.home_team,
+            self.host_team
+        )

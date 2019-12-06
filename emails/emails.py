@@ -8,7 +8,7 @@ import random
 import string
 
 from emails.models import Template as T_model
-from emails.tests import CustomTeam
+from emails.tests import CustomTeam, CustomMatch
 
 '''
 SendMail(
@@ -177,6 +177,17 @@ class SendMail:
 
         self.send_rendered_email(context, plaintext, html_template=template)
 
+    def last_info_email(self, team, matches):
+        plaintext = get_template('emails/last_information.txt')
+        template = get_template('emails/last_information.html')
+
+        context = {
+            'team': team,
+            'matches': matches,
+        }
+
+        self.send_rendered_email(context, plaintext, html_template=template)
+
     def attendee_email(self, team):
         t = T_model.objects.get(tag='attendee_email')
         plaintext = Template(t.text)
@@ -207,6 +218,7 @@ class SendMail:
 
     def test_mail(self, tag):
         team = CustomTeam()
+        match = CustomMatch()
 
         if tag == 'registration_email':
             self.registration_email(team)
@@ -220,6 +232,8 @@ class SendMail:
             self.team_invitation(team)
         elif tag == 'attendee_email':
             self.attendee_email(team)
+        elif tag == 'result_email':
+            self.result_email(team, 47)
         else:
             self.send_rendered_email(
                 Context({'tag': tag}),
