@@ -212,7 +212,7 @@ class SendMail:
         })
 
         # priloha pdf diplom (path to list)
-        # ak SOTG, tak aj za vyhru toho
+        # ak SOTG, tak diplom za vyhru toho
 
         self.send_rendered_email(context, plaintext, template)
 

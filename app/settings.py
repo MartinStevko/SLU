@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'froala_editor',
     'imagekit',
+    'django_tex',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,11 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine',
+        'APP_DIRS': True,
+    }
 ]
 
 STATICFILES_DIRS = [
@@ -172,3 +178,7 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+# LaTeX
+
+LATEX_INTERPRETER = 'pdflatex'

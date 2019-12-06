@@ -57,12 +57,6 @@ def get_tabs(request, t):
             reverse('tournament:spirit', kwargs={'pk': t.pk}),
             False
         ))
-    if t.state == 'results':
-        tabs.append((
-            'SOTG',
-            reverse('tournament:spirit_results', kwargs={'pk': t.pk}),
-            False
-        ))
 
     # Player stats
     if t.player_stats and t.state in ['active', 'results']:
@@ -77,6 +71,14 @@ def get_tabs(request, t):
         tabs.append((
             'Výsledky',
             reverse('tournament:results', kwargs={'pk': t.pk}),
+            False
+        ))
+
+    # Spirit of the Game results
+    if t.state == 'results':
+        tabs.append((
+            'SOTG',
+            reverse('tournament:spirit_results', kwargs={'pk': t.pk}),
             False
         ))
 

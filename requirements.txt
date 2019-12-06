@@ -4,3 +4,4 @@ django-form-utils==1.0.3
 django-bootstrap4==0.0.7
 django-froala-editor==3.0.6
 django-imagekit==4.0.2
+django_tex==1.1.7

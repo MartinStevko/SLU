@@ -369,17 +369,33 @@ class Tournament(models.Model):
             status='attended',
         )
 
+        max_spirit = 0
+        sotg_winner = None
         for team in teams:
             result = Result.objects.get(
                 tournament=self,
                 team=team,
             ).place
 
-            # ak SOTG, tak v parametroch mailu sotg=True
             SendMail(
                 team.get_emails(),
                 str(self) + ' - výsledky',
             ).result_email(team, result)
+
+            scores = SpiritScore.objects.filter(
+                tournament=self,
+                to_team=team,
+            )
+            s = SpiritScore.sum_score(scores)
+            if s > max_spirit:
+                max_spirit = s
+                sotg_winner = team
+        
+        if sotg_winner is not None:
+            SendMail(
+                sotg_winner.get_emails(),
+                str(self) + ' - výsledky',
+            ).result_email(team, result, sotg=True)
 
     def registration_open_notification(self):
         if self.region != 'F':
