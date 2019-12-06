@@ -366,7 +366,7 @@ class JSONPointListView(JSONResponseMixin, BaseListView):
                     'assist__last_name',
                 )'''
                 p_dict = {}
-                p_dict['time'] = p.time
+                p_dict['time'] = p.time.strftime("%H:%M")
                 if p.score:
                     p_dict['score__first_name'] = p.score.first_name
                     p_dict['score__last_name'] = p.score.last_name

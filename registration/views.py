@@ -259,14 +259,15 @@ class ChangeTeamView(FormMixin, DetailView):
                 request.POST[field+'first_name'],
                 request.POST[field+'last_name'],
                 request.POST[field+'sex'],
+                request.POST[field+'number'],
                 request.POST[field+'id']
             ])
 
         changes = []
         errors = []
         for p in players:
-            if p[3]:
-                player = Player.objects.get(pk=int(p[3]))
+            if p[4]:
+                player = Player.objects.get(pk=int(p[4]))
             else:
                 player = Player(
                     school=team.school,
@@ -274,11 +275,13 @@ class ChangeTeamView(FormMixin, DetailView):
             
             if (p[0] and len(p[0]) > 2 and len(p[0]) < 255 and
                 p[1] and len(p[1]) > 2 and len(p[1]) < 255 and
-                p[2] and p[2] in ['male', 'female']):
+                p[2] and (p[2] in ['male', 'female']) and
+                p[3] and p[3].isdigit() and int(p[3]) < 100):
 
                 player.first_name = p[0]
                 player.last_name = p[1]
                 player.sex = p[2]
+                player.number = int(p[3])
 
                 player.save()
                 team.players.add(player)
@@ -286,14 +289,14 @@ class ChangeTeamView(FormMixin, DetailView):
                 changes.append(str(player))
             
             else:
-                if not p[0] and not p[1] and not p[2]:
+                if not p[0] and not p[1] and not p[2] and not p[3]:
                     pass
                 else:
                     errors.append(
                         'Hráča {} {} nebolo možné registrovať, pretože \
                         nemá správne vyplnené údaje. Meno aj priezvisko \
-                        musia byť vyplnené a ako pohlavie musíte vybrať \
-                        jednu z ponúknutých možností.'.format(p[0], p[1])
+                        musia byť vyplnené, ako pohlavie musíte vybrať \
+                        jednu z ponúknutých možností a číslo je číslo do 100.'.format(p[0], p[1])
                     )
 
         s = 'Hráči '

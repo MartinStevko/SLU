@@ -144,6 +144,9 @@ class Player(models.Model):
         choices=GENDERS,
         verbose_name='pohlavie'
     )
+    number = models.SmallIntegerField(
+        verbose_name='číslo',
+    )
 
     is_exception = models.BooleanField(
         default=False,
@@ -155,7 +158,14 @@ class Player(models.Model):
         verbose_name_plural = 'hráči'
 
     def __str__(self):
-        return "{} {}".format(
-            self.first_name,
-            self.last_name
-        )
+        if self.number or self.number == 0:
+            return "{} {} ({})".format(
+                self.first_name,
+                self.last_name,
+                self.number,
+            )
+        else:
+            return "{} {}".format(
+                self.first_name,
+                self.last_name
+            )

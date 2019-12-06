@@ -132,7 +132,7 @@ class PlayerForm(forms.ModelForm):
     class Meta:
         model = Player
 
-        fields = ['first_name', 'last_name', 'sex']
+        fields = ['first_name', 'last_name', 'sex', 'number']
 
 PlayerFormSet = modelformset_factory(
     Player,

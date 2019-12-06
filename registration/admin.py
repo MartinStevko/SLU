@@ -165,7 +165,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
-    list_display_links = ('first_name',)
+    list_display_links = ('first_name', 'last_name')
     list_filter = ('sex', 'school__region')
     list_per_page = 100
 
@@ -174,7 +174,8 @@ class PlayerAdmin(admin.ModelAdmin):
         'last_name',
         'school__name',
         'school__street',
-        'school__city'
+        'school__city',
+        'number',
     ]
     ordering = ('-pk',)
 
@@ -183,7 +184,7 @@ class PlayerAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Základné informácie', {
             'classes': ('wide',),
-            'fields': ('school', ('first_name', 'last_name')),
+            'fields': ('school', ('first_name', 'last_name', 'number')),
             # 'description': 'Základné informácie o hráčovi',
         }),
         ('Turnajové štatistiky', {

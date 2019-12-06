@@ -105,14 +105,17 @@
         <div class="featurette">
             <h3>Súpiska</h3>
             <div class="row responsive-form-header">
-                <div class="form-group col-sm-4">
+                <div class="form-group col-sm-3">
                     <strong>Meno <span style="color: red">*</span></strong>
                 </div>
-                <div class="form-group col-sm-4">
+                <div class="form-group col-sm-3">
                     <strong>Priezvisko <span style="color: red">*</span></strong>
                 </div>
-                <div class="form-group col-sm-4">
+                <div class="form-group col-sm-3">
                     <strong>Pohlavie <span style="color: red">*</span></strong>
+                </div>
+                <div class="form-group col-sm-3">
+                    <strong>Číslo <span style="color: red">*</span></strong>
                 </div>
             </div>
             <form method="POST">
@@ -128,7 +131,7 @@
                 {% for f in form %}
                     {% bootstrap_form_errors f %}
                     <div class="row">
-                        {% bootstrap_form f show_label=False form_group_class='form-group col-sm-4' %}
+                        {% bootstrap_form f show_label=False form_group_class='form-group col-sm-3' %}
                     </div>
                     <hr class="featurette-divider responsive-form mt-2 mb-4">
                 {% endfor %}
