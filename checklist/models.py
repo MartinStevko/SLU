@@ -86,3 +86,20 @@ class TaskStatus(models.Model):
             task=self.task,
             done=False
         )
+
+class Document(models.Model):
+    name = models.CharField(
+        max_length=63,
+        verbose_name='meno',
+    )
+    document = models.FileField(
+        upload_to='organization/documents/',
+        verbose_name='súbor',
+    )
+
+    class Meta:
+        verbose_name = 'dokument'
+        verbose_name_plural = 'dokumenty'
+    
+    def __str__(self):
+        return str(self.name)

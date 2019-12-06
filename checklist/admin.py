@@ -3,6 +3,23 @@ from django.contrib import admin, messages
 from checklist.models import *
 
 
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    list_per_page = 100
+
+    search_fields = [
+        'name',
+    ]
+    ordering = ('-pk',)
+
+    fieldsets = (
+        ('Dokument', {
+            'classes': ('wide',),
+            'fields': ('name', 'document'),
+        }),
+    )
+
+
 class TaskAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     list_filter = ('phase',)
@@ -114,5 +131,6 @@ class ChecklistAdmin(admin.ModelAdmin):
         return super().response_change(request, obj)
 
 
+admin.site.register(Document, DocumentAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(Checklist, ChecklistAdmin)

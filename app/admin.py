@@ -28,8 +28,9 @@ MODEL_ORDERING = {
         'message': 4,
     }, 
     'checklist': {
-        'task': 1,
-        'checklist': 2,
+        'document': 1,
+        'task': 2,
+        'checklist': 3,
     },
     'tournament': {
         'team': 1,

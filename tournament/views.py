@@ -147,7 +147,15 @@ def get_toolbox(user, obj):
         # Basic toolgroup
         toolgroups.append([])
 
-        if user in obj.orgs.all():
+        if user in obj.orgs.all() or user.has_perm('tournament.change_tournament'):
+            # Organizers checklist
+            toolgroups[0].append((
+                'Organizačné dokumenty',
+                reverse('checklist:documents', kwargs=({
+                    'pk': obj.pk,
+                }))
+            ))
+
             # Organizers checklist
             toolgroups[0].append((
                 'Zoznam úloh',
@@ -156,7 +164,6 @@ def get_toolbox(user, obj):
                 }))
             ))
 
-        if user.has_perm('tournament.change_tournament'):
             # Tournament administration site
             toolgroups[0].append((
                 'Spravovať turnaj',

@@ -145,3 +145,27 @@ class ChangeTaskAjaxView(JSONResponseMixin, BaseDetailView):
         }
 
         return self.render_to_json_response(context, **kwargs)
+
+
+class DocumentListView(DetailView):
+    template_name = 'checklist/organization_documents.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(DocumentListView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if self.request.user.is_staff:
+            documents = Document.objects.all()
+        else:
+            documents = []
+
+        context.update({
+            'tabs': get_tabs(self.request, t),
+            'toolbox': get_toolbox(self.request.user, t),
+            'documents': documents,
+        })
+
+        return context
