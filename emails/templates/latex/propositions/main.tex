@@ -1,0 +1,43 @@
+\documentclass[10pt, a4paper]{article}
+
+\input macros.tex
+\input hyphenation.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\kolo={ {{- round -}} }
+\sezona={ {{- season -}} }
+\postupujuci={ {{- qualified -}} }
+\cap={ {{- cap -}} }
+
+\rok={ {{- year -}} }
+\termin={ {{- date -}} }
+\terminPrihlasky={ {{- reg_date -}} }
+
+\miesto={ {{- place -}} }
+\usporiadatel={ {{- institute -}} }
+\obrazokURL={ {{- path -}} }
+\riaditel={ {{- director -}} }
+\delegat={ {{- delegate -}} }
+\organizacia={%
+    \item Organizační pracovníci: 
+    \begin{itemize}
+        \setlength{\itemindent}{15pt}
+        {% for org in orgs %}
+            \item {{ org }}
+        {% endfor %}
+    \end{itemize}%
+}
+
+\casPrichodu={ {{- arrival_time -}} }
+\casPorady={ {{- meeting_time -}} }
+\zaciatok={ {{- game_time -}} }
+
+\vMeste={ {{- in_city -}} }
+\kontakt={}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\propozicie
+
+\end{document}

@@ -132,4 +132,40 @@ contents={%
     \end{minipage}
     \newpage
 }
+
+\def\spiritDiplom{%
+    \BgThispage
+    \begin{center}
+        \resizebox{!}{20pt}{udeľuje diplom tímu}
+
+        \vspace{1cm}
+        \resizebox{!}{32pt}{\textit{\textbf{#1}}}
+
+        \vspace{1cm}
+        \resizebox{!}{20pt}{za výhru ocenenia Spirit of The Game}
+        \vskip.6cm
+        \if\the\kolo1{\resizebox{!}{20pt}{na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+        \if\the\kolo2{\resizebox{!}{20pt}{na \if\the\sezona2{halovom }\else\fi finále SLU 2018}}\fi
+    \end{center}
+
+    \vfill
+
+
+    \begin{minipage}{0.25\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{16pt}{\the\kde}
+
+            \resizebox{!}{14pt}{\the\termin}
+        \end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{14pt}{SLU tím}
+        \end{center}
+    \end{minipage}
+    \newpage
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
