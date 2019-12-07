@@ -21,5 +21,7 @@ urlpatterns = [
     path('<int:pk>/player/stats/', PlayerStatsView.as_view(), name='player_stats'),
     path('<int:pk>/results/', TournamentResultsView.as_view(), name='results'),
     path('<int:pk>/gallery/', TournamentGalleryView.as_view(), name='gallery'),
+    path('<int:pk>/documents/diplomas/', diplomas_view, name='diplomas'),
+    path('<int:pk>/documents/propositions/', propositions_view, name='propositions'),
     path('', TournamentListView.as_view(), name='list'),
 ]

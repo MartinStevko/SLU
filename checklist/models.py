@@ -91,6 +91,7 @@ class Document(models.Model):
     name = models.CharField(
         max_length=63,
         verbose_name='meno',
+        unique=True,
     )
     document = models.FileField(
         upload_to='organization/documents/',

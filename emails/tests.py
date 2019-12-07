@@ -3,9 +3,14 @@ from django.test import TestCase
 import datetime
 
 
+class CustomPerson:
+    def all():
+        return ['Person 1', 'Person 2']
+
+
 class CustomSeason:
     pk = 1
-    orgs = ['C.Org 1', 'C.Org 2']
+    orgs = CustomPerson
     school_year = '2018/2019'
     season = 'outdoor'
     game_format = 'loose_mix'
@@ -18,7 +23,7 @@ class CustomTournament:
     pk = 1
     season = CustomSeason()
     state = 'registration'
-    orgs = ['L.Org 1', 'L.Org 2']
+    orgs = CustomPerson
     delegate = 'SAF delegat'
     director = 'Ted'
     institute = 'SLU-cka'
@@ -104,7 +109,7 @@ class CustomTeam:
     status = 'invited'
     school = CustomSchool()
     teacher = CustomTeacher()
-    players = ['Plater 1', 'Player 2']
+    players = CustomPerson
     name = 'SLU herny tim'
     extra_email = ''
     identifier = 'vf1brf4vfsdb5v4'

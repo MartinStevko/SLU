@@ -387,7 +387,7 @@ class Tournament(models.Model):
             SendMail(
                 sotg_winner.get_emails(),
                 str(self) + ' - výsledky',
-            ).result_email(team, result, sotg=True)
+            ).result_email(team, 1, sotg=True)
 
     def registration_open_notification(self):
         if self.region != 'F':

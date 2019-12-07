@@ -4,6 +4,7 @@ from django.http import Http404
 from django.core import serializers
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView, DetailView, TemplateView, FormView, RedirectView
@@ -11,10 +12,12 @@ from django.views.generic.list import BaseListView
 from django.views.generic.edit import DeleteView
 
 import datetime
+from django_tex.shortcuts import render_to_pdf
 
 from app.utils import decode, get_key
 from tournament.models import *
 from tournament.forms import *
+from emails.views import diplomas_context, propositions_context
 
 
 def get_tabs(request, t):
@@ -184,6 +187,18 @@ def get_toolbox(user, obj):
             toolgroups[0].append((
                 'Spravovať turnaj',
                 reverse('admin:tournament_tournament_change', args=(obj.id,))
+            ))
+
+            # Generate propositions
+            toolgroups[0].append((
+                'Vygenerovať propozície',
+                reverse('tournament:propositions', args=(obj.id,))
+            ))
+
+            # Generate diplomas
+            toolgroups[0].append((
+                'Vygenerovať diplomy',
+                reverse('tournament:diplomas', args=(obj.id,))
             ))
 
         if user in obj.orgs.all() and obj.state == 'active':
@@ -965,3 +980,28 @@ class QRCheckinRedirectView(RedirectView):
             'tournament:confirm_checkin',
             kwargs={'pk': tour_pk, 'team': team.pk}
         )
+
+
+@staff_member_required
+def diplomas_view(request, pk):
+    tournament = get_object_or_404(Tournament, pk=pk)
+    teams = Team.objects.filter(
+        tournament=tournament,
+        status='invited',
+    )
+    if len(teams) == 0:
+        messages.error(request, 'Na turnaj je pozvaných 0 tímov, nie je komu generovať diplomy.')
+
+        return redirect('tournament:detail', pk=pk)
+
+    template, context, filename = diplomas_context(tournament, teams)
+
+    return render_to_pdf(request, template, context, filename=filename)
+
+
+@staff_member_required
+def propositions_view(request, pk):
+    tournament = get_object_or_404(Tournament, pk=pk)
+    template, context, filename = propositions_context(tournament)
+
+    return render_to_pdf(request, template, context, filename=filename)

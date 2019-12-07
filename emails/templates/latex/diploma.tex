@@ -12,17 +12,10 @@
 \usepackage{wrapfig}
 
 \pagenumbering{gobble}
-\usepackage[pages=some]{background}
+\usepackage{tikz}
 
 {% graphicspath %}
 
-\backgroundsetup{
-    scale=1,
-    color=black,
-    opacity=1,
-    angle=0,
-    contents={\put(-422.5,285){\includegraphics[width=\paperwidth]{logo.jpg}}}
-}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,8 +24,8 @@
 \newtoks\termin
 \newtoks\kde
 
-\def\diplom#1{
-    \BgThispage
+\newcommand{\diplom}[1]{
+    {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (11.85,2.9){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
     \begin{center}
         \resizebox{!}{22pt}{udeľuje diplom tímu}
 
@@ -65,8 +58,42 @@
     \newpage
 }
 
+\newcommand{\diplomMiesto}[2]{
+    {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (11.85,2.9){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
+    \begin{center}
+        \resizebox{!}{22pt}{udeľuje diplom tímu}
+
+        \vspace{1cm}
+        \resizebox{!}{32pt}{\textit{\textbf{ #1}}}
+
+        \vspace{1cm}
+        \if\the\kolo1{\resizebox{!}{22pt}{za\textbf{ #2.} miesto na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+        \if\the\kolo2{\resizebox{!}{22pt}{za\textbf{ #2.} miesto na \if\the\sezona2{halovom }\fi finále SLU 2018}}\fi
+    \end{center}
+
+    \vfill
+
+
+    \begin{minipage}{0.25\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{16pt}{\the\kde}
+
+            \resizebox{!}{14pt}{\the\termin}
+        \end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{14pt}{Tím SLU}
+        \end{center}
+    \end{minipage}
+    \newpage
+}
+
 \def\diplomPrazdny{
-    \BgThispage
+    {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (11.85,2.9){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
     \begin{center}
         \resizebox{!}{22pt}{udeľuje diplom tímu}
 
@@ -97,7 +124,7 @@
 }
 
 \def\spirit{
-    \BgThispage
+    {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (11.85,2.9){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
     \begin{center}
         \resizebox{!}{20pt}{udeľuje diplom tímu}
 
@@ -132,8 +159,8 @@
     \newpage
 }
 
-\def\spiritDiplom{
-    \BgThispage
+\newcommand{\spiritDiplom}[1]{
+    {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (11.85,2.9){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
     \begin{center}
         \resizebox{!}{20pt}{udeľuje diplom tímu}
 
@@ -170,10 +197,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
-\kolo={ {{- round -}} }
-\sezona={ {{- season -}} }
+\kolo {{- round -}} 
+\sezona {{- season -}} 
 
-\termin={ {{- time -}} }
+\termin={ {{- time|date('d.m.Y') -}} }
 \kde={ {{- place -}} }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -190,7 +217,7 @@
             \diplom{ {{- team -}} }
         {% endfor %}
     {% else %}
-        \diplom{ {{- team -}} }
+        \diplomMiesto{ {{- team -}} }{ {{- result -}} }
     {% endif %}
 {% endif %}
 

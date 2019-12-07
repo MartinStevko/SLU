@@ -4,48 +4,18 @@ from django.core.files.base import ContentFile
 from emails.models import Generic
 
 
-def test():
-    template = 'latex/confirmation.tex'
-    context = {
-        'players': ['']*10,
-        'teacher': 'Meno Ucitela',
-        'school': 'Nazov skoly',
-        'place': 'SOS Ostrovskeho 1',
-        'time': '15.12.2019',
-        'round': 1,
-        'season': 2,
-        'num': 2,
-    }
-    pdf = compile_template_to_pdf(template, context)
-    filename = 'test.pdf'
-
-    obj = Generic.objects.create(slug='test')
-    obj.pdf.save(filename, ContentFile(pdf))
-
-    email = EmailMessage(
-        'Test LaTeX-u',
-        'Ahoj, toto je testovacia sprava.',
-        getattr(settings, 'FROM_EMAIL_NAME', 'SLU'),
-        ['mstevko10@gmail.com'],
-    )
-
-    email.attach_file(obj.pdf.path)
-
-    email.send(fail_silently=False)
-
-
 class Tex:
     @staticmethod
     def generate_invitation(team):
         template = 'latex/invitation.tex'
 
-        time = str(team.tournament.date)
-        time += ' od '+team.tournament.arrival_time.strftime("%H:%M")
+        time = ' od '+team.tournament.arrival_time.strftime("%H:%M")
         time += ' do '+team.tournament.end_time.strftime("%H:%M")
         context = {
             'team': str(team),
             'school': str(team.school),
             'place': 'v '+team.tournament.in_city,
+            'date': team.tournament.date,
             'time': time,
             'round': 0,
             'season': 0,
@@ -85,7 +55,7 @@ class Tex:
             'teacher': str(team.teacher),
             'school': str(team.school),
             'place': team.tournament.place,
-            'time': str(team.tournament.date),
+            'time': team.tournament.date,
             'round': 1,
             'season': 2,
             'num': int(team.tournament.season.school_year.split('/')[0])-2018,
@@ -116,7 +86,7 @@ class Tex:
             'qualified': tournament.number_qualified,
             'cap': 1,
             'year': tournament.season.school_year,
-            'date': str(tournament.date),
+            'date': tournament.date,
             'reg_date': tournament.signup_deadline,
             'place': tournament.place,
             'arrival_time': tournament.arrival_time,
@@ -127,7 +97,7 @@ class Tex:
             'director': tournament.director,
             'path': 'blue_icon.png',
             'institute': '',
-            'orgs': tournament.orgs,
+            'orgs': tournament.orgs.all(),
         }
         if tournament.region == 'F':
             context['round'] = 2
@@ -150,16 +120,17 @@ class Tex:
         return obj
 
     @staticmethod
-    def generate_diploma(team, sotg=False):
+    def generate_diploma(team, result, sotg=False):
         template = 'latex/diploma.tex'
 
         context = {
             'all': False,
             'round': 1,
             'season': 2,
-            'time': str(team.tournament.date),
+            'time': team.tournament.date,
             'place': 'V '+str(team.tournament.in_city),
             'team': str(team),
+            'result': result,
             'sotg': sotg,
         }
         if team.tournament.region == 'F':

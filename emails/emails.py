@@ -223,7 +223,7 @@ class SendMail:
             'place': place,
         })
 
-        diploma = Tex.generate_diploma(team, sotg=sotg)
+        diploma = Tex.generate_diploma(team, place, sotg=sotg)
 
         self.send_rendered_email(
             context,

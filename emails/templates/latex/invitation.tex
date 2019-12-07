@@ -11,17 +11,10 @@
 \usepackage{wrapfig}    % obrazky
 
 \pagenumbering{gobble}
-\usepackage[pages=some]{background}
+\usepackage{tikz}
 
 {% graphicspath %}
 
-\backgroundsetup{
-  scale=1,
-  color=black,
-  opacity=1,
-  angle=0,
-  contents={ \put(-299,200){\includegraphics[width=\paperwidth]{logo_min.jpg}} }
-}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Macros %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +28,7 @@
 \newtoks\skola
 
 \def\pozvanka{
-  \BgThispage
+  {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (8,2.1){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
 
   \begin{center}
       \resizebox{!}{14pt}{pozýva tím}
@@ -61,7 +54,7 @@
 \kolo {{- round -}} 
 \sezona {{- season -}} 
 
-\kedy={ {{- time -}} }
+\kedy={ {{- date|date('d.m.Y') -}}  {{- time -}} }
 \kde={ {{- place -}} }
 
 \tim={ {{- team -}} }
