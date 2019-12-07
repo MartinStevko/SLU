@@ -1,0 +1,68 @@
+\documentclass[12pt, a5paper]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[a5paper, top=5.5cm, left=2.5cm, right=2.5cm, bottom=2cm, landscape]{geometry}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+\usepackage{comment}
+\usepackage{graphicx}   % obrazky
+\usepackage{wrapfig}    % obrazky
+
+\pagenumbering{gobble}
+\usepackage{tikz}
+
+{% graphicspath %}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% Macros %%%%%%%%%%%%%%%%%%%%%%%%%%
+\newtoks\rocnik
+\newcount\kolo
+\newcount\sezona
+\newtoks\kedy
+\newtoks\kde
+
+\newtoks\tim
+\newtoks\skola
+
+\def\pozvanka{
+  {\begin{tikzpicture}[remember picture,overlay] \node[opacity=1,inner sep=0pt] at (8,2.1){\includegraphics[width=\paperwidth]{logo.jpg}};\end{tikzpicture}}
+
+  \begin{center}
+      \resizebox{!}{14pt}{pozýva tím}
+
+      \vspace{.7cm}
+      \resizebox{!}{26pt}{\textit{\textbf{\the\tim}}}
+  \end{center}
+
+  \vspace{.4cm}
+  zo~ško\-ly \textit{\the\skola} na~\if\the\sezona0{ha\-lo\-vé }\fi\if\the\kolo0{kva\-li\-fi\-kač\-né ko\-lo }\fi\if\the\kolo1{fi\-ná\-le }\fi\the\rocnik\ roč\-ní\-ka Stre\-do\-škol\-skej li\-gy ul\-ti\-ma\-te, kto\-ré sa us\-ku\-toč\-ní \the\kedy\ \the\kde. Zá\-ro\-veň tým\-to chce\-me po\-pro\-siť o~u\-voľ\-ne\-nie žia\-kov v~da\-nom ter\-mí\-ne z~vy\-u\-čo\-va\-nia.
+
+  \vfill
+
+  \begin{flushright}
+      Tím SLU
+  \end{flushright}
+  \newpage
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\rocnik={ {{- num -}} .}
+\kolo {{- round -}} 
+\sezona {{- season -}} 
+
+\kedy={ {{- date|date('d.m.Y') -}}  {{- time -}} }
+\kde={ {{- place -}} }
+
+\tim={ {{- team -}} }
+\skola={ {{- school -}} }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\pozvanka
+
+\end{document}

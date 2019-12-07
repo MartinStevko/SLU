@@ -1,0 +1,7 @@
+<div class="progress" style="height: 30px; width: 100%;">
+    {% for p in phases %}
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-{{ p.0 }}" role="progressbar" aria-valuenow="{{ p.1 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ p.1 }}%">
+            {% if p.2 != 0 %}{{ p.2 }} %{% endif %}
+        </div>
+    {% endfor %}
+</div>

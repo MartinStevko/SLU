@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Hráči škôl | SLU{% endblock %}
+
+{% block content %}
+    <h1>Základné informácie o hráčoch na jednotlivých školách</h1>
+    {% for s,players in schools %}
+        <p style="padding: 5px;">
+            <b>{{ s }}</b><br>
+            Hráči - {{ players.all|join:", " }}
+        </p>
+    {% endfor %}
+{% endblock %}

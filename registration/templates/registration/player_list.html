@@ -105,14 +105,17 @@
         <div class="featurette">
             <h3>Súpiska</h3>
             <div class="row responsive-form-header">
-                <div class="form-group col-sm-4">
+                <div class="form-group col-sm-3">
                     <strong>Meno <span style="color: red">*</span></strong>
                 </div>
-                <div class="form-group col-sm-4">
+                <div class="form-group col-sm-3">
                     <strong>Priezvisko <span style="color: red">*</span></strong>
                 </div>
-                <div class="form-group col-sm-4">
+                <div class="form-group col-sm-3">
                     <strong>Pohlavie <span style="color: red">*</span></strong>
+                </div>
+                <div class="form-group col-sm-3">
+                    <strong>Číslo <span style="color: red">*</span></strong>
                 </div>
             </div>
             <form method="POST">
@@ -128,17 +131,22 @@
                 {% for f in form %}
                     {% bootstrap_form_errors f %}
                     <div class="row">
-                        <!--{% for field in f %}
-                            {% bootstrap_field field show_label=False form_group_class='form-group col-sm-4' %}
-                        {% endfor %}-->
-                        {% bootstrap_form f show_label=False form_group_class='form-group col-sm-4' %}
+                        {% bootstrap_form f show_label=False form_group_class='form-group col-sm-3' %}
                     </div>
                     <hr class="featurette-divider responsive-form mt-2 mb-4">
                 {% endfor %}
 
-                <button class="btn btn-primary btn-block" type="submit">Odoslať</button>
+                <button class="btn btn-primary btn-block" type="submit" title="GDPR" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Odoslaním súhlasíte so spracovaním osobných údajov v rozsahu vyššie uvedenom.">Odoslať</button>
             </form>
         </div>
         <hr class="featurette-divider">
     </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
 {% endblock %}

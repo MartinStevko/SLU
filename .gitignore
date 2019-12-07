@@ -5,6 +5,14 @@ media/
 */migrations/*
 !*/migrations/__init__.py
 
+*.json
+
+# LaTeX
+*.aux
+*.out
+*.log
+*.pdf
+
 # Editors
 .vs/
 .vscode/

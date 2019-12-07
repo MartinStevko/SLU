@@ -7,7 +7,7 @@
         {% if next_tournaments %}
             {% for tournament,tags in next_tournaments %}
                 <div id="accordion{{ tournament.pk }}">
-                    <div class="card bg-light mb-3">
+                    <div class="card bg-white mb-3">
                         <a class="card-header btn" id="heading{{ tournament.pk }}" data-toggle="collapse" data-target="#collapse{{ tournament.pk }}" aria-expanded="true" aria-controls="{{ tournament.pk }}">
                             <h5 class="mb-0 float-left">
                                 {{ tournament }}

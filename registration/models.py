@@ -1,5 +1,9 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import (
+    RegexValidator,
+    MaxValueValidator,
+    MinValueValidator
+)
 
 GENDERS = (
     ('male', 'muž'),
@@ -25,7 +29,8 @@ class School(models.Model):
     )
     web = models.URLField(
         max_length=255,
-        verbose_name='webová stránka'
+        verbose_name='webová stránka',
+        help_text='Webové sídlo školy.'
     )
 
     street = models.CharField(
@@ -36,7 +41,9 @@ class School(models.Model):
                 message='Ulica musí byť vo formáte Hlavná pri Rieke 14.',
             )
         ],
-        verbose_name='ulica'
+        verbose_name='ulica',
+        help_text='Názov ulice bez čiarok, pomlčiek a iných \
+        špeciálnych znakov spolu s popisným číslom.'
     )
     # Warnign! Forms.py rely exactly on this Regex pattern.
     postcode = models.CharField(
@@ -47,7 +54,8 @@ class School(models.Model):
                 message='PSČ musí byť vo formáte 123 45.',
             )
         ],
-        verbose_name='PSČ'
+        verbose_name='PSČ',
+        help_text='Poštové smerové číslo v tvare "123 45".'
     )
     city = models.CharField(
         max_length=255,
@@ -104,7 +112,9 @@ class Teacher(models.Model):
                 message='Telefónne číslo musí byť vo formáte +421 123 456 789.',
             ),
         ],
-        verbose_name='telefónne číslo'
+        verbose_name='telefónne číslo',
+        help_text='Telefonné číslo oddelené medzerami po trojčísliach \
+        na začiatku s predvoľbou.'
     )
 
     class Meta:
@@ -138,6 +148,13 @@ class Player(models.Model):
         choices=GENDERS,
         verbose_name='pohlavie'
     )
+    number = models.SmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(99),
+        ],
+        verbose_name='číslo',
+    )
 
     is_exception = models.BooleanField(
         default=False,
@@ -149,7 +166,14 @@ class Player(models.Model):
         verbose_name_plural = 'hráči'
 
     def __str__(self):
-        return "{} {}".format(
-            self.first_name,
-            self.last_name
-        )
+        if self.number or self.number == 0:
+            return "{} {} ({})".format(
+                self.first_name,
+                self.last_name,
+                self.number,
+            )
+        else:
+            return "{} {}".format(
+                self.first_name,
+                self.last_name
+            )

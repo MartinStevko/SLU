@@ -1,0 +1,309 @@
+\documentclass[10pt, a4paper]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[top=3cm, left=2.5cm, right=2.5cm, bottom=3cm]{geometry}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{color}
+
+{% graphicspath %}
+
+\pagenumbering{gobble}
+
+\parindent=0pt
+\parskip=10pt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
+\newtoks\rok
+\newtoks\cap
+\newtoks\kolo
+\newtoks\sezona
+\newtoks\postupujuci
+\newtoks\usporiadatel
+\newtoks\riaditel
+\newtoks\delegat
+\newtoks\organizacia
+\newtoks\obrazokURL
+
+\newtoks\miesto
+\newtoks\termin
+\newtoks\terminPrihlasky
+\newtoks\casPrichodu
+\newtoks\casPorady
+\newtoks\zaciatok
+
+\newtoks\vMeste
+\newtoks\kontakt
+
+\newcommand\textbox[1]{\parbox{.333\textwidth}{ #1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%% Propozicne makro %%%%%%%%%%%%%%%%%%%%
+\newcommand{\propozicie}[1]{
+	\begin{center}
+	\noindent\textbox{
+		\includegraphics[height=.08\textheight]{\the\obrazokURL}\hfill}\textbox{
+		\hfil\textbf{\huge{Propozície} }\hfil}\textbox{
+		\hfill\includegraphics[height=.08\textheight]{safka.PNG}}
+	\end{center}
+
+	\if\the\kolo1 Kvalifikačné\else Finálové\fi\ kolo celoštátnej Stredoškolskej ligy ultimate frisbee \if\the\sezona1 (outdoor\else (indoor\fi) pre školský rok \the\rok .
+
+	\begin{enumerate}[label={\Alph*.},font={\bfseries}]
+		\item \textbf{Všeobecné ustanovenia:}
+		
+		\vspace{5pt}
+		\textbf{Usporiadateľ:} \the\usporiadatel Stredoškolská liga ultimate frisbee, Slovenská asociácia frisbee\par
+		\textbf{Termín:} \the\termin\par
+		\textbf{Miesto:} \the\miesto\par
+		\textbf{Organizačný výbor:} 
+		\begin{itemize}[label={}]
+			\item Riaditeľ turnaja: \the\riaditel
+			\the\organizacia
+			\item Delegát SAF: \the\delegat
+		\end{itemize}\par
+		\textbf{Prihlášky:} vyplnením elektronického formulára 
+		{% raw %}(\href{https://slu.szf.sk/tournament/}{{\color{blue}\underline{slu.szf.sk}}}) {% endraw %}
+		do \the\terminPrihlasky\par
+		\textbf{Porada vedúcich:} uskutoční sa dňa \the\termin\ o~\the\casPorady
+		\item \textbf{Technické ustanovenia:}
+		
+		\vspace{5pt}
+		\textbf{Predpis:} Hrá sa podľa platných pravidiel WFDF 2017 a týchto propozícií\par
+		\textbf{Právo štartu:} Žiaci základných a stredných škôl v~školskom roku \the\rok\if\the\kolo2, ktorých tím sa kvalifikoval\fi\par
+		\textbf{Podmienky štartu:} Preukaz poistenca, za zdravotný stav zodpovedá vysielajúca škola, za prípadnú stratu osobných vecí organizátor nezodpovedá, odovzdať školou potvrdenú súpisku organizátorovi, prítomnosť pedagogického dozoru vysielajúcej školy\par
+		\textbf{Formát:} Loose Mix (vždy musí hrať aspoň jedno dievča a aspoň jeden chlapec), 
+		\if\the\sezona1%
+			5 na 5, pull play, 
+		\else
+			4 na 4, continuous, 
+		\fi%
+		1 timeout na zápas na tím, hra do 15, alebo skončenia času, \if\the\cap1 v~skupinovom zápase sa po skončení času dohráva bod, v~krížovom zápase sa po skončení času dohráva bod a následne sa stanoví bodový cap $+1$\else po skončení času sa dohráva bod\fi\par
+		\textbf{Výstroj:} Sada očíslovaných dresov jednotnej farby, \if\the\sezona1 športová obuv\else športová obuv nezanechávajúca šmuhy\fi\par
+		\textbf{Systém:} \if\the\kolo1 Bude oznámený prostredníctvom e-mailu na kontaktné adresy prihlásených tímov, \the\postupujuci\ víťazné tímy postupujú na finálové kolo Stredoškolskej ligy ultimate frisbee\else 2 skupiny po 4 tímy rozdelené podľa nasadenia, skupinové zápasy každý s~každým, krížové zápasy podľa výsledkov v~skupine\fi\par
+		\textbf{Časový rozpis:} 
+		\begin{itemize}
+		\setlength{\itemindent}{15pt}
+			\item \textbf{\the\casPrichodu} -- príchod tímov, 
+			\item \textbf{\the\casPorady} -- porada vedúcich tímov, 
+			\item \textbf{\the\zaciatok} -- začiatok turnaja
+		\end{itemize}\par
+		\textbf{Informácie:} e-mail \textit{slu.central.org@gmail.com}\par
+	\end{enumerate}
+
+	\vfill
+	\begin{minipage}{.2\textwidth}
+		\begin{center}
+			V~\the\vMeste, \\
+			dňa~\the\day .\the\month .\the\year
+		\end{center}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{.25\textwidth}
+		\begin{center}
+			\the\riaditel
+		\end{center}
+	\end{minipage}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\hyphenation{
+    Kva-li-fi-kač-né
+    Fi-ná-lo-vé
+    ko-lo
+    ce-lo-štát-nej
+    Stre-do-škol-skej
+    li-gy
+    ul-ti-ma-te
+    fris-bee
+    out-door
+    in-door
+    pre
+    škol-ský
+    rok
+    Vše-o-bec-né
+    us-ta-no-ve-nia
+    Us-po-ria-da-teľ
+    Stre-do-škol-ská
+    li-ga
+    Slo-vens-ká
+    a-so-ci-á-cia
+    Ter-mín
+    Mies-to
+    Or-ga-ni-zač-ný
+    vý-bor
+    Ria-di-teľ
+    tur-na-ja
+    De-le-gát
+    SAF
+    Prih-láš-ky
+    vy-pl-ne-ním
+    e-lek-tro-nic-ké-ho
+    for-mu-lá-ra
+    Po-ra-da
+    ve-dú-cich
+    us-ku-toč-ní
+    dňa
+    Tech-nic-ké
+    Pred-pis
+    Hrá
+    pod-ľa
+    plat-ných
+    pra-vi-diel
+    WFDF
+    tých-to
+    pro-po-zí-cií
+    Prá-vo
+    štar-tu
+    Žia-ci
+    zá-klad-ných
+    stred-ných
+    škôl
+    škol-skom
+    ro-ku
+    kto-rých
+    tím
+    kva-li-fi-ko-val
+    Pod-mien-ky
+    Pre-u-kaz
+    po-is-ten-ca
+    zdra-vot-ný
+    stav
+    zod-po-ve-dá
+    vy-sie-la-jú-ca
+    ško-la
+    prí-pad-nú
+    stra-tu
+    o-sob-ných
+    ve-cí
+    or-ga-ni-zá-tor
+    ne-zod-po-ve-dá
+    o-dovz-dať
+    ško-lou
+    po-tvr-de-nú
+    sú-pis-ku
+    or-ga-ni-zá-to-ro-vi
+    prí-to-mnosť
+    pe-da-go-gic-ké-ho
+    do-zo-ru
+    vy-sie-la-jú-cej
+    ško-ly
+    For-mát
+    Loose
+    Mix
+    vždy
+    mu-sí
+    hrať
+    as-poň
+    jed-no
+    diev-ča
+    je-den
+    chla-pec
+    pull
+    play
+    con-ti-nuo-us
+    time-out
+    zá-pas
+    hra
+    a-le-bo
+    skon-če-nia
+    ča-su
+    sku-pi-no-vom
+    zá-pa-se
+    skon-če-ní
+    do-hrá-va
+    bod
+    krí-žo-vom
+    nás-led-ne
+    sta-no-ví
+    bo-do-vý
+    cap
+    skon-če-ní
+    Výs-troj
+    Sa-da
+    o-čís-lo-va-ných
+    dre-sov
+    jed-not-nej
+    far-by
+    špor-to-vá
+    o-buv
+    ne-za-ne-chá-va-jú-ca
+    šmu-hy
+    Sys-tém
+    Bu-de
+    oz-ná-me-ný
+    pros-tred-níc-tvom
+    kon-takt-né
+    a-dre-sy
+    pri-hlá-se-ných
+    tí-mov
+    ví-ťaz-né
+    tí-my
+    pos-tu-pu-jú
+    fi-ná-lo-vé
+    sku-pi-ny
+    tí-my
+    roz-de-le-né
+    pod-ľa
+    na-sa-de-nia
+    sku-pi-no-vé
+    zá-pa-sy
+    kaž-dý
+    kaž-dým
+    krí-žo-vé
+    výs-led-kov
+    sku-pi-ne
+    Ča-so-vý
+    roz-pis
+    prí-chod
+    tí-mov
+    za-čia-tok
+    tur-na-ja
+    In-for-má-cie
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\kolo={ {{- round -}} }
+\sezona={ {{- season -}} }
+\postupujuci={ {{- qualified -}} }
+\cap={ {{- cap -}} }
+
+\rok={ {{- year -}} }
+\termin={ {{- date|date('d.m.Y') -}} }
+\terminPrihlasky={ {{- reg_date|date('d.m.Y') -}} }
+
+\miesto={ {{- place -}} }
+\usporiadatel={ {{- institute -}} }
+\obrazokURL={ {{- path -}} }
+\riaditel={ {{- director -}} }
+\delegat={ {{- delegate -}} }
+\organizacia={
+    \item Organizační pracovníci: 
+    \begin{itemize}
+        \setlength{\itemindent}{15pt}
+        {% for org in orgs %}
+            \item {{ org }}
+        {% endfor %}
+    \end{itemize}
+}
+
+\casPrichodu={ {{- arrival_time -}} }
+\casPorady={ {{- meeting_time -}} }
+\zaciatok={ {{- game_time -}} }
+
+\vMeste={ {{- in_city -}} }
+\kontakt={}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\propozicie
+
+\end{document}

@@ -1,0 +1,85 @@
+\documentclass[11pt, a5paper]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[a5paper, top=2cm, left=1.5cm, right=1.5cm, bottom=2cm]{geometry}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+
+\pagenumbering{gobble}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
+\newtoks\rocnik
+\newtoks\kolo
+\newtoks\sezona
+\newtoks\termin
+\newtoks\miesto
+
+\newcommand{\potvrdenka}[3]{
+    \renewcommand{\arraystretch}{1.48}
+    \parskip=10pt
+    \begin{center}
+        {\LARGE\textbf{Potvrdenie o účasti}}
+    \end{center}
+
+    \begin{tabular}{p{3.2cm} l}
+        Súťaž:&Stredoškolská liga ultimate frisbee\\
+        Sezóna:&\if\the\sezona2 indoor\else outdoor\fi\\
+        Kolo:&\if\the\kolo2 finálové\else kvalifikačné\fi\\
+        Miesto:&\the\miesto\\
+        Dátum:&\the\termin\\
+        Škola:&#1\\
+        Vedúci družstva:&#2\\
+        Súpiska:
+    \end{tabular}
+
+    \vspace{-41pt}
+    \begin{center}
+        \begin{tabular}{|c|p{6cm}|}
+            \hline
+            P.č.&Meno a priezvisko\\
+            \hline \hline
+            #3
+        \end{tabular}
+    \end{center}
+
+    \vfill
+    \begin{flushright}
+        \begin{minipage}{4.5cm}
+            \begin{center}
+                Tím SLU
+            \end{center}
+        \end{minipage}
+    \end{flushright}
+    \newpage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\rocnik={ {{- num -}} .}
+\kolo{ {{- round -}} }
+\sezona{ {{- season -}} }
+
+\termin={ {{- time|date('d.m.Y') -}} }
+\miesto={ {{- place -}} }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\potvrdenka{ {{- school -}} }{}{
+    1.& {{ players[0] }} \\ \hline
+    2.& {{ players[1] }} \\ \hline
+    3.& {{ players[2] }} \\ \hline
+    4.& {{ players[3] }} \\ \hline
+    5.& {{ players[4] }} \\ \hline
+    6.& {{ players[5] }} \\ \hline
+    7.& {{ players[6] }} \\ \hline
+    8.& {{ players[7] }} \\ \hline
+    9.& {{ players[8] }} \\ \hline
+    10.& {{ players[9] }} \\ \hline
+}
+
+\end{document}

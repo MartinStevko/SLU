@@ -12,9 +12,10 @@ from django.views.generic.edit import FormMixin
 import time
 
 from app.utils import encode, decode, get_key
-from app.emails import SendMail, org_list
+from emails.emails import SendMail, org_list
 from registration.models import *
 from tournament.models import Tournament, Team
+from user.models import User
 from .forms import *
 
 
@@ -122,6 +123,25 @@ class TeamRegistrationView(FormView):
         except(Tournament.DoesNotExist, School.DoesNotExist, Teacher.DoesNotExist):
             raise PermissionDenied('Registrácia neplatná, chcete nás hacknúť?!')
 
+        try:
+            User.objects.get(email=team.teacher.email)
+        except(User.DoesNotExist):
+            User.objects.create(
+                email=team.teacher.email,
+                first_name=team.teacher.first_name,
+                last_name=team.teacher.last_name
+            )
+
+        if team.extra_email:
+            try:
+                User.objects.get(email=team.extra_email)
+            except(User.DoesNotExist):
+                User.objects.create(
+                    email=team.extra_email,
+                    first_name=team.name,
+                    last_name=team.school.name
+                )
+
         message = form.cleaned_data.get('message', '')
 
         SendMail(
@@ -193,7 +213,7 @@ def confirmation_redirect(request, identifier):
 
     key = get_key()
     registered = request.session.get('team_list', None)
-    if not registered or type(registered) != list:
+    if not registered:
         registered = []
 
     registered.append(encode(key, identifier))
@@ -212,7 +232,12 @@ class ChangeTeamView(FormMixin, DetailView):
         authorizied = self.request.session.get('team_list', None)
         key = get_key()
 
-        if encode(key, str(team.identifier)) in authorizied:
+        if self.request.user.is_authenticated and (
+            self.request.user.email in [team.extra_email, team.teacher.email]
+        ):
+                return True
+
+        if authorizied and encode(key, str(team.identifier.hex)) in authorizied:
             return True
         else:
             time.sleep(3)
@@ -234,14 +259,15 @@ class ChangeTeamView(FormMixin, DetailView):
                 request.POST[field+'first_name'],
                 request.POST[field+'last_name'],
                 request.POST[field+'sex'],
+                request.POST[field+'number'],
                 request.POST[field+'id']
             ])
 
         changes = []
         errors = []
         for p in players:
-            if p[3]:
-                player = Player.objects.get(pk=int(p[3]))
+            if p[4]:
+                player = Player.objects.get(pk=int(p[4]))
             else:
                 player = Player(
                     school=team.school,
@@ -249,11 +275,13 @@ class ChangeTeamView(FormMixin, DetailView):
             
             if (p[0] and len(p[0]) > 2 and len(p[0]) < 255 and
                 p[1] and len(p[1]) > 2 and len(p[1]) < 255 and
-                p[2] and p[2] in ['male', 'female']):
+                p[2] and (p[2] in ['male', 'female']) and
+                p[3] and p[3].isdigit() and int(p[3]) < 100):
 
                 player.first_name = p[0]
                 player.last_name = p[1]
                 player.sex = p[2]
+                player.number = int(p[3])
 
                 player.save()
                 team.players.add(player)
@@ -261,14 +289,14 @@ class ChangeTeamView(FormMixin, DetailView):
                 changes.append(str(player))
             
             else:
-                if not p[0] and not p[1] and not p[2]:
+                if not p[0] and not p[1] and not p[2] and not p[3]:
                     pass
                 else:
                     errors.append(
                         'Hráča {} {} nebolo možné registrovať, pretože \
                         nemá správne vyplnené údaje. Meno aj priezvisko \
-                        musia byť vyplnené a ako pohlavie musíte vybrať \
-                        jednu z ponúknutých možností.'.format(p[0], p[1])
+                        musia byť vyplnené, ako pohlavie musíte vybrať \
+                        jednu z ponúknutých možností a číslo je číslo do 100.'.format(p[0], p[1])
                     )
 
         s = 'Hráči '

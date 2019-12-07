@@ -1,0 +1,19 @@
+{% extends 'tournament/tables.html' %}
+
+{% block title %}Manuálna kontrola{% endblock %}
+
+{% block head %}
+    <th scope="row">#</th>
+    <th class="text-left">Tím</th>
+{% endblock %}
+
+{% block table %}
+    {% for team in teams %}
+        <tr>
+            <td scope="row">.</td>
+            <td class="text-left"><a href="{% url 'tournament:team_checkin' tournament.pk team.pk %}">{{ team.school }}</a></td>
+        </tr>
+    {% empty %}
+        <h5>Nebol nájdený žiaden tím na kontrolu.</h5>
+    {% endfor %}
+{% endblock %}

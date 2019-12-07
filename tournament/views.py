@@ -1,19 +1,23 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.http import Http404
 from django.core import serializers
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import ListView, DetailView, TemplateView, FormView
+from django.views.generic import ListView, DetailView, TemplateView, FormView, RedirectView
 from django.views.generic.list import BaseListView
 from django.views.generic.edit import DeleteView
 
+import datetime
+from django_tex.shortcuts import render_to_pdf
+
 from app.utils import decode, get_key
 from tournament.models import *
-from .forms import *
-# from todoes.models import Todo
+from tournament.forms import *
+from emails.views import diplomas_context, propositions_context
 
 
 def get_tabs(request, t):
@@ -49,8 +53,16 @@ def get_tabs(request, t):
             False
         ))
 
+    # Spirit of the Game
+    if t.state == 'active':
+        tabs.append((
+            'SOTG',
+            reverse('tournament:spirit', kwargs={'pk': t.pk}),
+            False
+        ))
+
     # Player stats
-    if t.player_stats and (t.state == 'active' or t.state == 'results'):
+    if t.player_stats and t.state in ['active', 'results']:
         tabs.append((
             'Štatistiky hráčov',
             reverse('tournament:player_stats', kwargs={'pk': t.pk}),
@@ -64,6 +76,23 @@ def get_tabs(request, t):
             reverse('tournament:results', kwargs={'pk': t.pk}),
             False
         ))
+
+    # Spirit of the Game results
+    if t.state == 'results':
+        tabs.append((
+            'SOTG',
+            reverse('tournament:spirit_results', kwargs={'pk': t.pk}),
+            False
+        ))
+
+    # Gallery
+    if t.state == 'results':
+        if len(Photo.objects.filter(tournament=1)) > 1:
+            tabs.append((
+                'Galéria',
+                reverse('tournament:gallery', kwargs={'pk': t.pk}),
+                False
+            ))
 
     # My team
     team_cookies = request.session.get('team_list', False)
@@ -91,6 +120,42 @@ def get_tabs(request, t):
                 if tab not in tabs:
                     tabs.append(tab)
 
+    if request.user.is_authenticated:
+        teachers = Teacher.objects.filter(email=request.user.email)
+        for team in Team.objects.filter(teacher__in=teachers):
+            if team.tournament.date < datetime.datetime.now().date():
+                continue
+            else:
+                if len(team.get_name()) > 20:
+                    name_str = team.get_name()[:17] + '...'
+                else:
+                    name_str = team.get_name()
+
+                tab = (
+                    name_str,
+                    reverse('registration:change', kwargs={'pk': team.pk}),
+                    False
+                )
+                if tab not in tabs:
+                    tabs.append(tab)
+
+        for team in Team.objects.filter(extra_email=request.user.email):
+            if team.tournament.date < datetime.datetime.now().date():
+                continue
+            else:
+                if len(team.get_name()) > 20:
+                    name_str = team.get_name()[:17] + '...'
+                else:
+                    name_str = team.get_name()
+
+                tab = (
+                    name_str,
+                    reverse('registration:change', kwargs={'pk': team.pk}),
+                    False
+                )
+                if tab not in tabs:
+                    tabs.append(tab)
+
     return tabs
 
 
@@ -100,25 +165,58 @@ def get_toolbox(user, obj):
 
         # Basic toolgroup
         toolgroups.append([])
-        if user.has_perm('tournament.change_tournament'):
+
+        if user in obj.orgs.all() or user.has_perm('tournament.change_tournament'):
+            # Organizers checklist
+            toolgroups[0].append((
+                'Organizačné dokumenty',
+                reverse('checklist:documents', kwargs=({
+                    'pk': obj.pk,
+                }))
+            ))
+
+            # Organizers checklist
+            toolgroups[0].append((
+                'Zoznam úloh',
+                reverse('checklist:todo', kwargs=({
+                    'pk': obj.pk,
+                }))
+            ))
 
             # Tournament administration site
-            toolgroups[-1].append((
+            toolgroups[0].append((
                 'Spravovať turnaj',
                 reverse('admin:tournament_tournament_change', args=(obj.id,))
             ))
-        '''if user in obj.orgs and Todo.objects.filter(tournament=obj):
 
-            # Organizers checklist
-            toolgroups[-1].append((
-                'Zoznam úloh',
-                reverse('todoes:tournament_todoes', kwargs=({
+            # Generate propositions
+            toolgroups[0].append((
+                'Vygenerovať propozície',
+                reverse('tournament:propositions', args=(obj.id,))
+            ))
+
+            # Generate diplomas
+            toolgroups[0].append((
+                'Vygenerovať diplomy',
+                reverse('tournament:diplomas', args=(obj.id,))
+            ))
+
+        if user in obj.orgs.all() and obj.state == 'active':
+            # Check-in team
+            toolgroups[0].append((
+                'Manuálna kontrola',
+                reverse('tournament:checkin_list', kwargs=({
                     'pk': obj.pk,
                 }))
-            ))'''
+            ))
+            toolgroups[0].append((
+                'QR kontrola',
+                reverse('tournament:checkin_scanner', kwargs=({
+                    'pk': obj.pk,
+                }))
+            ))
 
-        toolgroups.append([])
-        # team management - add
+        # toolgroups.append([])
 
         toolbox = []
         for group in toolgroups:
@@ -158,6 +256,37 @@ class TournamentIsPublicMixin(object):
             raise Http404('Hľadaný turnaj nebol zverejnený')
         else:
             return context
+
+
+class TournamentIsActiveMixin(object):
+
+    def get_context_data(self, **kwargs):
+        context = super(TournamentIsActiveMixin, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state == 'active' and self.request.user.is_authenticated:
+            return context
+        elif t.state == 'active':
+            raise PermissionDenied('Musíte sa najprv prihlásiť')
+        else:
+            raise Http404('Hľadaný turnaj nebol zahájený, ešte nemôžete spravovať SOTG.')
+
+
+class TournamentIsActiveOrgMixin(object):
+
+    def get_context_data(self, **kwargs):
+        context = super(TournamentIsActiveOrgMixin, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state == 'active' and self.request.user.is_staff:
+            if self.request.user in t.orgs.all() or \
+                self.request.user in t.season.orgs.all() or \
+                    self.request.user.is_superuser:
+                        return context
+            else:
+                Http404('Nemáte oprávnenie na kontrolu tímov tohto turnaja')
+        else:
+            raise Http404('Hľadaný turnaj nebol zahájený, ešte nemôže začať kontrola tímov')
 
 
 class HavePlayerStatsMixin(object):
@@ -282,7 +411,7 @@ class JSONPointListView(JSONResponseMixin, BaseListView):
                     'assist__last_name',
                 )'''
                 p_dict = {}
-                p_dict['time'] = p.time
+                p_dict['time'] = p.time.strftime("%H:%M")
                 if p.score:
                     p_dict['score__first_name'] = p.score.first_name
                     p_dict['score__last_name'] = p.score.last_name
@@ -446,10 +575,17 @@ class MatchDetailView(FormView):
 
         point.save()
 
-        messages.success(
-            self.request,
-            'Bol pridaný bod pre tím {}.'.format(point.score.team.name)
-        )
+        if 'add_to_home_team' in self.request.POST:
+            messages.success(
+                self.request,
+                'Bol pridaný bod pre tím {}.'.format(point.match.home_team.name)
+            )
+        elif 'add_to+host_team' in self.request.POST:
+            messages.success(
+                self.request,
+                'Bol pridaný bod pre tím {}.'.format(point.match.host_team.name)
+            )
+
         return super(MatchDetailView, self).form_valid(form)
 
     def get_success_url(self):
@@ -555,3 +691,317 @@ class TournamentResultsView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
         })
 
         return context
+
+
+class SpiritScoreView(TournamentIsActiveMixin, TabsViewMixin, FormView):
+    template_name = 'tournament/spirit_score.html'
+
+    model = Tournament
+    form_class = SpiritForm
+    context_object_name = 'tournament'
+
+    def form_valid(self, form):
+        pk = self.kwargs.get('pk', None)
+        tournament = Tournament.objects.get(pk=pk)
+
+        to_team = Team.objects.get(pk=form.cleaned_data.get('to_team', None).pk)
+        from_team = Team.objects.get(pk=form.cleaned_data.get('from_team', None).pk)
+
+        teachers = Teacher.objects.filter(email=self.request.user.email)
+        if (from_team in Team.objects.filter(teacher__in=teachers) and 
+            from_team.tournament == to_team.tournament and 
+            to_team.tournament == tournament):
+
+            spirit = form.save(commit=False)
+            spirit.tournament = tournament
+            spirit.save()
+
+            s = spirit.sum_score([spirit])
+            messages.success(
+                self.request,
+                'Spirit skóre bolo úspešne pridané. '+\
+                'Tímu {} ste dali {} bodov.'.format(spirit.to_team, s)
+            )
+
+        elif from_team in Team.objects.filter(teacher__in=teachers):
+            messages.error(
+                self.request,
+                'Turnaje tímov sa nezhodujú, spiritové skóre nemôže byť pridané.'
+            )
+        else:
+            messages.error(
+                self.request,
+                'Nemáte oprávnenie pridávať spiritové skóre tomuto tímu.'
+            )
+
+        return super(SpiritScoreView, self).form_valid(form)
+
+    def get_success_url(self):
+        pk = self.kwargs.get('pk', None)
+        return reverse('tournament:spirit', args=(pk,))
+
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs.get('pk', None)
+        context = super(SpiritScoreView, self).get_context_data(**kwargs)
+
+        try:
+            t = Tournament.objects.get(pk=pk)
+        except(Tournament.DoesNotExist):
+            raise Http404('Hľadaný turnaj neexistuje, nemôžete pridať spirit')
+
+        related_teams = Team.objects.filter(tournament=t)
+        f_fields = context['form'].fields
+        f_fields['to_team'].queryset = related_teams
+
+        no_spirit = []
+        if self.request.user.is_staff:
+            f_fields['from_team'].queryset = related_teams
+            if self.request.user in t.orgs.all():
+                related_from_teams = related_teams
+            else:
+                related_from_teams = None
+        else:
+            teachers = Teacher.objects.filter(email=self.request.user.email)
+            related_from_teams = related_teams.filter(teacher__in=teachers)
+            f_fields['from_team'].queryset = related_from_teams
+
+        if related_from_teams is not None:
+            hm = Match.objects.filter(
+                tournament=t,
+                home_team__in=related_from_teams,
+            )
+            am = Match.objects.filter(
+                tournament=t,
+                host_team__in=related_from_teams,
+            )
+
+            for m in hm:
+                if len(SpiritScore.objects.filter(
+                    tournament=t,
+                    from_team=m.home_team,
+                    to_team=m.host_team,
+                    ))+no_spirit.count(str(m.home_team)+' vs. '+str(m.host_team))\
+                    < len(hm.filter(host_team=m.host_team)):
+
+                    no_spirit.append(str(m.home_team)+' vs. '+str(m.host_team))
+            for m in am:
+                if len(SpiritScore.objects.filter(
+                    tournament=t,
+                    from_team=m.host_team,
+                    to_team=m.home_team,
+                    ))+no_spirit.count(str(m.host_team)+' vs. '+str(m.home_team))\
+                    < len(am.filter(host_team=m.home_team)):
+
+                    no_spirit.append(str(m.host_team)+' vs. '+str(m.home_team))
+
+        context.update({
+            'tournament': t,
+            'no_spirit': no_spirit,
+        })
+
+        return context
+
+    def get_object(self):
+        pk = self.kwargs.get('pk', None)
+        try:
+            tournament = Tournament.objects.get(pk=pk)
+        except(Tournament.DoesNotExist):
+            return None
+        else:
+            return tournament
+
+
+class SpiritResultView(TabsViewMixin, DetailView):
+    template_name = 'tournament/spirit_results.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(SpiritResultView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state != 'results':
+            raise Http404('Výsledky spiritu pre tento turnaj ešte neexistujú.')
+
+        results = []
+        teams = Team.objects.filter(
+            tournament=t,
+            status='attended',
+        )
+        i = 0
+        for team in teams:
+            i += 1
+            spirits = SpiritScore.objects.filter(
+                tournament=t,
+                to_team=team,
+            )
+            if len(spirits) != 0:
+                results.append({
+                    'place': i,
+                    'name': team.get_name(),
+                    'sum': round(SpiritScore.sum_score(spirits)/len(spirits), 2),
+                    'rules': round(SpiritScore.sum_rules(spirits)/len(spirits), 2),
+                    'fouls': round(SpiritScore.sum_fouls(spirits)/len(spirits), 2),
+                    'fair': round(SpiritScore.sum_fair(spirits)/len(spirits), 2),
+                    'selfcontrol': round(SpiritScore.sum_selfcontrol(spirits)/len(spirits), 2),
+                    'communication': round(SpiritScore.sum_communication(spirits)/len(spirits), 2),
+                })
+
+        results.sort(key=lambda x: -x['sum'])
+
+        for i in range(1, len(results)):
+            if results[i-1]['sum'] == results[i]['sum']:
+                results[i]['place'] = results[i-1]['place']
+            else:
+                results[i]['place'] = results[i-1]['place']+1
+
+        context.update({
+            'results': results,
+        })
+
+        return context
+
+
+class TournamentGalleryView(TournamentIsPublicMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/gallery.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(TournamentGalleryView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        if t.state != 'results':
+            raise Http404('Galéria pre tento turnaj ešte neexistuje.')
+
+        context.update({
+            'photos': Photo.objects.filter(tournament=t),
+        })
+
+        return context
+
+
+class CheckinListView(TournamentIsActiveOrgMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/checkin_list.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(CheckinListView, self).get_context_data(**kwargs)
+        t = self.get_object()
+
+        context.update({
+            'teams': Team.objects.filter(
+                tournament=t,
+                status='invited',
+            ),
+        })
+
+        return context
+
+
+class QRCheckinView(TournamentIsActiveOrgMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/checkin_scanner.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+
+class TeamCheckinView(TournamentIsActiveOrgMixin, TabsViewMixin, DetailView):
+    template_name = 'tournament/team_checkin.html'
+
+    model = Tournament
+    context_object_name = 'tournament'
+
+    def get_context_data(self, **kwargs):
+        context = super(TeamCheckinView, self).get_context_data(**kwargs)
+        t = self.get_object()
+        team_pk = self.kwargs.get('team', None)
+
+        try:
+            team = Team.objects.get(pk=team_pk)
+        except(Team.DoesNotExist):
+            messages.error(
+                self.request,
+                'Zvolený tím neexistuje'
+            )
+
+            return reverse('tournament:detail', kwargs={'pk': t.pk})
+
+        context.update({
+            'team': team,
+        })
+
+        self.request.session['checkin'] = True
+
+        return context
+
+
+class ConfirmCheckinView(RedirectView):
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.request.session['checkin'] = False
+
+        tour_pk = self.kwargs.get('pk', None)
+        team_pk = self.kwargs.get('team', None)
+
+        try:
+            tournament = Tournament.objects.get(pk=tour_pk)
+            team = Team.objects.get(pk=team_pk)
+        except(Tournament.DoesNotExist, Team.DoesNotExist):
+            msg = 'Tím alebo turnaj neexistujú'
+        else:
+            msg = team.checkin(tournament)
+
+        if msg is not None:
+            messages.error(self.request, msg)
+        else:
+            messages.success(self.request, msg)
+
+        return reverse('tournament:detail', kwargs={'pk': tour_pk})
+
+
+class QRCheckinRedirectView(RedirectView):
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.request.session['checkin'] = False
+
+        tour_pk = self.kwargs.get('pk', None)
+        key = self.kwargs.get('key', None)
+
+        team = get_object_or_404(Team, identifier=key)
+
+        return reverse(
+            'tournament:confirm_checkin',
+            kwargs={'pk': tour_pk, 'team': team.pk}
+        )
+
+
+@staff_member_required
+def diplomas_view(request, pk):
+    tournament = get_object_or_404(Tournament, pk=pk)
+    teams = Team.objects.filter(
+        tournament=tournament,
+        status='invited',
+    )
+    if len(teams) == 0:
+        messages.error(request, 'Na turnaj je pozvaných 0 tímov, nie je komu generovať diplomy.')
+
+        return redirect('tournament:detail', pk=pk)
+
+    template, context, filename = diplomas_context(tournament, teams)
+
+    return render_to_pdf(request, template, context, filename=filename)
+
+
+@staff_member_required
+def propositions_view(request, pk):
+    tournament = get_object_or_404(Tournament, pk=pk)
+    template, context, filename = propositions_context(tournament)
+
+    return render_to_pdf(request, template, context, filename=filename)

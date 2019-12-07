@@ -1,0 +1,9 @@
+Dobrý deň,
+
+dovoľujeme si vás upozorniť, že bola práve otvorená registrácia 
+na regionálnu kvalifikáciu SLU vo vašom regióne. V prípade záujmu 
+môžete viac informácií ako aj odkaz na registráciu nájsť na hlavnej 
+SLU stránke v podstránke s turnajmi 
+https://slu.szf.sk/tournament/{{ pk }}/detail/.
+
+S pozdravom, Váš tím SLU!

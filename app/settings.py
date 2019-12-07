@@ -14,7 +14,7 @@ SECURE_SSL_REDIRECT = (DEBUG == False)
 # Application definition
 
 INSTALLED_APPS = [
-    'app.apps.AdminSiteConfig',
+    'app.apps.OrderedAdminSiteConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -24,8 +24,13 @@ INSTALLED_APPS = [
     'content.apps.ContentConfig',
     'registration.apps.RegistrationConfig',
     'tournament.apps.TournamentConfig',
+    'emails.apps.EmailsConfig',
+    'checklist.apps.ChecklistConfig',
     'form_utils',
     'bootstrap4',
+    'froala_editor',
+    'imagekit',
+    'django_tex',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +63,11 @@ TEMPLATES = [
             ],
         },
     },
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine',
+        'APP_DIRS': True,
+    }
 ]
 
 STATICFILES_DIRS = [
@@ -94,7 +104,11 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
-LOGIN_URL = 'admin:login'
+LOGIN_URL = 'user:login'
+
+LOGOUT_REDIRECT_URL = 'content:home'
+
+AUTH_USER_MODEL = 'user.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -164,3 +178,11 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',
 }
+
+# LaTeX
+
+LATEX_INTERPRETER = 'pdflatex'
+
+LATEX_GRAPHICSPATH = [
+    os.path.join(BASE_DIR, 'app', 'static', 'img')
+]

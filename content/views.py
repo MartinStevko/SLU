@@ -1,12 +1,15 @@
 from django.urls import reverse
+from django.core import management
 from django.contrib import messages
-
+from django.shortcuts import redirect
+from django.http import HttpResponse
 from django.views.generic import TemplateView, View, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
+from django.views.decorators.cache import never_cache
 
 from content.models import Section, News, Message, OrganizerProfile
 from content.forms import ContactForm
-from app.emails import SendMail
+from emails.emails import SendMail
 
 
 class ContentView(TemplateView):
@@ -83,3 +86,20 @@ class ContactView(View):
     def post(self, request, *args, **kwargs):
         view = ContactFormView.as_view()
         return view(request, *args, **kwargs)
+
+
+class DumpdataView(View):
+
+    @never_cache
+    def get(self, *args, **kwargs):
+        if self.request.user.is_superuser:
+            with open('data.json', 'w') as f:
+                management.call_command('dumpdata', indent=4, stdout=f)
+            with open('data.json', 'r') as f:
+                data = f.read()
+            response = HttpResponse(data, content_type='text/json')
+
+        else:
+            response = redirect(reverse('content:home'))
+
+        return response

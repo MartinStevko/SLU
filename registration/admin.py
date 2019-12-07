@@ -1,13 +1,14 @@
 from django.contrib import admin
+from django.shortcuts import render
 
 from .models import *
+from tournament.models import Team
 
 
 class TeacherInline(admin.TabularInline):
     model = Teacher
     extra = 0
 
-    exclude = ['email_verified']
     can_delete = False
 
 
@@ -34,6 +35,65 @@ class SchoolAdmin(admin.ModelAdmin):
             # 'description': 'optional description',
         }),
     )
+
+    actions = [
+        'get_emails',
+        'get_info',
+        'get_players'
+    ]
+
+    def get_emails(self, request, queryset):
+        template = 'admin/teacher_contact_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        context['teachers'] = Teacher.objects.filter(school__in=queryset)
+        context['email'] = True
+
+        return render(request, template, context)
+
+    get_emails.short_description = 'Zobraz e-maily'
+
+    def get_info(self, request, queryset):
+        template = 'admin/school_info_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        context['schools'] = queryset
+        context['email'] = True
+
+        return render(request, template, context)
+
+    get_info.short_description = 'Zobraz základné informácie'
+
+    def get_players(self, request, queryset):
+        template = 'admin/school_players_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        players = []
+        for s in queryset:
+            players.append(Player.objects.filter(school=s).order_by(
+                'last_name',
+                'first_name',
+            ))
+
+        context['schools'] = zip(queryset, players)
+        context['email'] = True
+
+        return render(request, template, context)
+
+    get_players.short_description = 'Zobraz hráčov'
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj in team.school:
+                        return True
+
+        return request.user.has_perm('registration.change_school')
 
 
 class TeacherAdmin(admin.ModelAdmin):
@@ -65,10 +125,47 @@ class TeacherAdmin(admin.ModelAdmin):
         }),
     )
 
+    actions = [
+        'get_emails',
+        'get_phone_numbers'
+    ]
+
+    def get_emails(self, request, queryset):
+        return self.get_contacts(request, queryset, True)
+
+    get_emails.short_description = 'Zobraz e-maily'
+
+    def get_phone_numbers(self, request, queryset):
+        return self.get_contacts(request, queryset, False)
+
+    get_phone_numbers.short_description = 'Zobraz telefóonne čísla'
+
+    def get_contacts(self, request, queryset, email):
+        template = 'admin/teacher_contact_list.html'
+
+        context = dict(self.admin_site.each_context(request))
+        context['teachers'] = queryset
+        context['email'] = email
+
+        return render(request, template, context)
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj == team.teacher:
+                        return True
+
+        return request.user.has_perm('registration.change_teacher')
+
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'school')
-    list_display_links = ('first_name',)
+    list_display_links = ('first_name', 'last_name')
     list_filter = ('sex', 'school__region')
     list_per_page = 100
 
@@ -77,7 +174,8 @@ class PlayerAdmin(admin.ModelAdmin):
         'last_name',
         'school__name',
         'school__street',
-        'school__city'
+        'school__city',
+        'number',
     ]
     ordering = ('-pk',)
 
@@ -86,7 +184,7 @@ class PlayerAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Základné informácie', {
             'classes': ('wide',),
-            'fields': ('school', ('first_name', 'last_name')),
+            'fields': ('school', ('first_name', 'last_name', 'number')),
             # 'description': 'Základné informácie o hráčovi',
         }),
         ('Turnajové štatistiky', {
@@ -96,6 +194,33 @@ class PlayerAdmin(admin.ModelAdmin):
             # generovanie štatistík a rebríčku hráčov',
         }),
     )
+
+    def has_change_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj in team.players:
+                        return True
+
+        return request.user.has_perm('registration.change_player')
+
+    def has_delete_permission(self, request, obj=None):
+        if obj is not None:
+            if request.user.is_superuser:
+                return True
+
+            for t in request.user.tournament:
+                teams = Team.objects.filter(tournament=t)
+                for team in teams:
+                    if obj in team.players:
+                        return True
+
+        return request.user.has_perm('registration.delete_player')
+
 
 admin.site.register(School, SchoolAdmin)
 admin.site.register(Teacher, TeacherAdmin)

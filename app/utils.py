@@ -1,12 +1,12 @@
+from django.conf import settings
+
+from datetime import date as res
 from uuid import uuid4
 
 
 def get_key():
-    from django.conf import settings
-    from datetime import date as res
-
-    # CRYPTOGRAPHY_KEY containing only letters and digits, \
-    # should have exactly 32 characters
+    # CRYPTOGRAPHY_KEY containing only letters and digits
+    # and should have exactly 32 characters
     cry_key = 2*getattr(settings, 'CRYPTOGRAPHY_KEY', uuid4().hex)
     c = getattr(settings, 'KEY_EXPIRATION', 1)
 

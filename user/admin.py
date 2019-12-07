@@ -1,68 +1,67 @@
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib import admin, messages
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth.models import User
 
-from .models import SpecialPermission
-
-
-class EmailRequiredMixin(object):
-    def __init__(self, *args, **kwargs):
-        super(EmailRequiredMixin, self).__init__(*args, **kwargs)
-        # make user email field required
-        self.fields['email'].required = True
+from emails.emails import SendMail
+from .models import User
 
 
-class OrganizerCreationForm(EmailRequiredMixin, UserCreationForm):
-    pass
-
-
-class OrganizerChangeForm(EmailRequiredMixin, UserChangeForm):
-    pass
-
-
-class SpecialPermissionInline(admin.StackedInline):
-    model = SpecialPermission
-
-
-class OrganizerUserAdmin(UserAdmin):
-    form = OrganizerChangeForm
-    add_form = OrganizerCreationForm
-    add_fieldsets = ((None, {
-        'fields': ('username', 'email', 'password1', 'password2'), 
-        'classes': ('wide',)
-    }),)
-
-    list_filter = UserAdmin.list_filter + (
-        'specialpermission__email_verified',
-    )
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('email', 'first_name', 'last_name')
+    list_filter = ('is_staff', 'is_superuser', 'groups')
     list_per_page = 100
 
-    inlines = UserAdmin.inlines + [SpecialPermissionInline]
-
     search_fields = [
-        'username',
         'first_name',
         'last_name',
         'email',
     ]
     ordering = ('-pk',)
 
+    filter_horizontal = ['groups', 'user_permissions']
 
-class SpecialPermissionAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'email_verified')
-    list_filter = ('user__is_superuser', 'email_verified')
-    list_per_page = 100
+    readonly_fields = ('password_expiration', 'last_login')
 
-    search_fields = [
-        'user__username',
-        'user__first_name',
-        'user__last_name',
+    fieldsets = (
+        ('Prihlásenie', {
+            'classes': ('wide',),
+            'fields': ('email', 'password_expiration', 'last_login'),
+        }),
+        ('Osoba', {
+            'classes': ('wide',),
+            'fields': ('first_name', 'last_name'),
+        }),
+        ('Oprávnenia', {
+            'classes': ('wide',),
+            'fields': ('is_staff', 'is_superuser', 'groups'),
+        }), 
+        ('Extra oprávnenia', {
+            'classes': ('collapse',), 
+            'fields': ('user_permissions',), 
+            'description': 'Za normálnych okolností sa neudeľujú a mali by vystačiť '+\
+                'skupiny oprávnení, avšak pre nejaké špeciálne potreby môžu byť '+\
+                    'využité. Priraďujú oprávnenia nad rámec skupín. '
+        }), 
+    )
+
+    actions = [
+        'send_creation_email',
     ]
-    ordering = ('-pk',)
 
-admin.site.unregister(User)
-admin.site.register(User, OrganizerUserAdmin)
+    def send_creation_email(self, request, queryset):
+        if request.user.has_perm('user.send_creation_email'):
+            for q in queryset:
+                SendMail(
+                    [q.email],
+                    'Vytvorenie konta'
+                ).user_creation(q)
+            
+            messages.add_message(request, messages.SUCCESS, 'E-maily boli úspešne odoslané.')
+        else:
+            messages.add_message(request, messages.WARNING, 'Na túto akciu nemáte oprávnenie.')
 
-# It isn't necessary to have SpecialPermissions shown
-# admin.site.register(SpecialPermission, SpecialPermissionAdmin)
+    send_creation_email.short_description = 'Poslať e-mail o vytvorení účtu'
+
+
+admin.site.register(User, UserAdmin)
+admin.site.register(Permission)

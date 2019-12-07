@@ -7,12 +7,24 @@ from django.core.validators import (
     MaxValueValidator,
     MinValueValidator
 )
+from django.contrib import messages
+from django.shortcuts import redirect
 
 import os
 from uuid import uuid4
 import datetime
 
-from django.contrib.auth.models import User
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+from PIL import Image
+from zipfile import ZipFile
+from io import BytesIO
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.core.exceptions import PermissionDenied
+
+from emails.emails import SendMail
+from user.models import User
 from registration.models import School, Teacher, Player
 
 SEASONS = (
@@ -56,12 +68,10 @@ STATES = (
 class Season(models.Model):
     orgs = models.ManyToManyField(
         User,
-        limit_choices_to={
-            'is_staff': True,
-            'specialpermission__email_verified': True
-        },
+        limit_choices_to={'is_staff': True},
         blank=True,
-        verbose_name='organizátori'
+        verbose_name='organizátori',
+        help_text='Centrálni organizátori sezóny.'
     )
 
     school_year = models.CharField(
@@ -72,7 +82,8 @@ class Season(models.Model):
                 message='Školský rok musí byť vo formáte YYYY/YYYY.',
             ),
         ],
-        verbose_name='školský rok'
+        verbose_name='školský rok',
+        help_text='Školský rok vo formáte YYYY/YYYY.'
     )
 
     season = models.CharField(
@@ -127,20 +138,27 @@ class Tournament(models.Model):
     state = models.CharField(
         max_length=63,
         choices=STATES,
-        default='registration',
+        default='public',
         verbose_name='stav',
         help_text='Odvíjajú sa od neho akcie, ktoré môžu \
-        návštevníci pri turnaji vykonávať.'
+        návštevníci pri turnaji vykonávať. Mení sa prostredníctvom \
+        funkcií pri zozname turnajov.'
     )
 
     orgs = models.ManyToManyField(
         User,
-        limit_choices_to={
-            'is_staff': True,
-            'specialpermission__email_verified': True
-        },
+        limit_choices_to={'is_staff': True},
         blank=True,
-        verbose_name='organizátori'
+        verbose_name='organizátori',
+        help_text='Lokálni organizátori turnaja.'
+    )
+    scorekeepers = models.ManyToManyField(
+        User,
+        limit_choices_to={'is_staff': True},
+        blank=True,
+        verbose_name='zapisovatelia skóre',
+        help_text='Používatelia s povoleným zapisovaním skóre.',
+        related_name='tournament_scoring',
     )
 
     delegate = models.CharField(
@@ -185,18 +203,11 @@ class Tournament(models.Model):
         upload_to='tournaments',
         verbose_name='obrázok',
         help_text='Bude zobrazený pri turnaji a jeho náhľade.')
-    prop_image = models.ImageField(
-        upload_to='tournaments/propositions',
-        null=True,
-        blank=True,
-        verbose_name='logo do propozícií',
-        help_text='V hlavičke propozícií bude na pravej strane \
-        logo SAF a na ľavej toto logo, alebo ak nie je nahrané, logo SLU.'
-    )
 
     cap = models.BooleanField(
         default=False,
-        help_text='Budú zápasy s capom?')
+        help_text='Budú zápasy s capom?'
+    )
     game_duration = models.DurationField(
         blank=True,
         null=True,
@@ -311,6 +322,92 @@ class Tournament(models.Model):
     def __str__(self):
         return "{}".format(self.get_name())
 
+    def change_state(self, new):
+        if new == 'not_public': # zosukromnit
+            self.state = new
+        elif new == 'public': # zverejnit
+            self.state = new
+        elif new == 'registration': # otvorit registraciu
+            self.state = new
+            self.registration_open_notification()
+        elif new == 'active': # zacat turnaj
+            self.state = new
+            recipients = []
+            for org in self.orgs.all():
+                recipients.append(org.email)
+            for org in self.season.orgs.all():
+                recipients.append(org.email)
+            SendMail(
+                recipients,
+                'Turnaj '+str(self)+' začal'
+            ).tournament_activation(self)
+        elif new == 'results': # zverejnit vysledky
+            if self.state in ['active', 'public'] and \
+                len(Result.objects.filter(tournament=self)) > 0:
+                self.state = new
+                self.send_certificate()
+            else:
+                return 'Výsledky buď neexistujú, alebo stav turnaja '+\
+                    'nepovoľuje ich zverejnenie.'
+        else:
+            return 'Stav neexistuje.'
+
+        self.save()
+        return None
+
+    def send_certificate(self):
+        teams = Team.objects.filter(
+            tournament=self,
+            status='attended',
+        )
+
+        max_spirit = 0
+        sotg_winner = None
+        for team in teams:
+            result = Result.objects.get(
+                tournament=self,
+                team=team,
+            ).place
+
+            SendMail(
+                team.get_emails(),
+                str(self) + ' - výsledky',
+            ).result_email(team, result)
+
+            scores = SpiritScore.objects.filter(
+                tournament=self,
+                to_team=team,
+            )
+            s = SpiritScore.sum_score(scores)
+            if s > max_spirit:
+                max_spirit = s
+                sotg_winner = team
+        
+        if sotg_winner is not None:
+            SendMail(
+                sotg_winner.get_emails(),
+                str(self) + ' - výsledky',
+            ).result_email(team, 1, sotg=True)
+
+    def registration_open_notification(self):
+        if self.region != 'F':
+            tournaments = Tournament.objects.filter(
+                region=self.region,
+            )
+            teams = Team.objects.filter(
+                tournament__in=tournaments,
+            )
+
+            recipients = []
+            for team in teams:
+                recipients += team.get_emails()
+
+            SendMail(
+                recipients,
+                '{}'.format(str(self)),
+                bcc=True
+            ).registration_open_notification(self.pk)
+
 
 class Team(models.Model):
     tournament = models.ForeignKey(
@@ -380,6 +477,9 @@ class Team(models.Model):
         verbose_name = 'tím'
         verbose_name_plural = 'tímy'
 
+    def __str__(self):
+        return "{}".format(self.get_name())
+
     def get_name(self):
         if self.name:
             return self.name
@@ -393,8 +493,92 @@ class Team(models.Model):
 
         return email_list
 
+    def attend(self):
+        if self.status == 'invited':
+            self.status = 'attended'
+            self.save()
+            return 'Stav tímu {} bol zmenený na zúčastnený.'.format(self.name), messages.SUCCESS
+        else:
+            return 'Tím {} nebol pozvaný na turnaj {}, preto sa ho nemôže zúčastniť.'.format(
+                self.name,
+                self.tournament
+            ), messages.WARNING
+
+    def invite(self):
+        if self.status == 'waitlisted':
+            self.status = 'invited'
+            self.save()
+
+            SendMail(
+                self.get_emails(),
+                'Pozvánka na {}'.format(self.tournament)
+            ).team_invitation(self)
+
+            return 'Tím {} bol pozvaný na {}.'.format(self.name, self.tournament), messages.SUCCESS
+        elif self.status == 'invited':
+            return 'Tím {} už bol pozvaný.'.format(self.name), messages.WARNING
+        else:
+            return 'Tím {} nemá potvrdenú registráciu a preto nemôže byť pozvaný.'.format(self.name), messages.WARNING
+
+    def cancel(self):
+        self.status = 'canceled'
+        self.save()
+
+        return 'Tím {} bol odmietnutý.'.format(self.name)
+
+    def not_attend(self):
+        if self.status == 'invited':
+            self.status = 'not_attended'
+            self.save()
+
+            return 'Stav tím {} bol zmenený na nezúčastnený.'.format(self.name)
+        else:
+            return 'Tím {} nemôže byť označený za nezúčastnený, pretože sa turnaja zúčastniť nemal.'.format(self.name)
+
+    def checkin(self, tournament):
+        if self.tournament == tournament:
+            if self.status == 'invited':
+                self.status = 'attended'
+                self.save()
+
+                Checkin.objects.create(
+                    team=self,
+                    time_created=timezone.now(),
+                ).save()
+
+                SendMail(
+                    self.get_emails(),
+                    '{} - potvrdenie účasti'.format(str(tournament)),
+                ).attendee_email(self)
+
+                return None
+            else:
+                return 'Tento tím na turnaj nebol pozvaný'
+        else:
+            return 'Turnaj sa nezhoduje s tímom'
+
+
+class Checkin(models.Model):
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        verbose_name='tím'
+    )
+    time_created = models.DateTimeField(
+        verbose_name='čas vytvorenia',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'kontrola'
+        verbose_name_plural = 'kontroly'
+
     def __str__(self):
-        return "{}".format(self.get_name())
+        return '{} - {}'.format(
+            str(self.time_created),
+            self.team.get_name()
+        )
 
 
 class Result(models.Model):
@@ -472,8 +656,8 @@ class Point(models.Model):
         verbose_name='zápas'
     )
     time = models.TimeField(
-        default=datetime.datetime.now().time(),
-        verbose_name='čas'
+        verbose_name='čas',
+        help_text='Čas v ktorom bod padol.'
     )
 
     score = models.ForeignKey(
@@ -482,7 +666,8 @@ class Point(models.Model):
         related_name='score',
         blank=True,
         null=True,
-        verbose_name='skórujúci'
+        verbose_name='skórujúci',
+        help_text='Hráč, ktorý dal bod.'
     )
     assist = models.ForeignKey(
         Player,
@@ -490,7 +675,8 @@ class Point(models.Model):
         related_name='assist',
         blank=True,
         null=True,
-        verbose_name='asistujúci'
+        verbose_name='asistujúci',
+        help_text='Hráč, ktorý prihral na bod.'
     )
 
     class Meta:
@@ -502,6 +688,136 @@ class Point(models.Model):
             str(self.time),
             self.match
         )
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.time = timezone.now()
+
+        super(Point, self).save(*args, **kwargs)
+
+
+class SpiritScore(models.Model):
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        verbose_name='turnaj',
+    )
+    from_team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name='spirit_from',
+        verbose_name='od tímu',
+    )
+    to_team = models.ForeignKey(
+        Team,
+        on_delete=models.PROTECT,
+        related_name='spirit_to',
+        verbose_name='pre tím',
+    )
+
+    rules = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='znalosť a použitie pravidiel',
+        default=2,
+    )
+    fouls = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='fouly a telesný kontakt',
+        default=2,
+    )
+    fair = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='férové zmýšľanie',
+        default=2,
+    )
+    selfcontrol = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='pozitívny prístup a sebaovládanie',
+        default=2,
+    )
+    communication = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(4),
+        ],
+        verbose_name='komunikácia',
+        default=2,
+    )
+    note = models.TextField(
+        blank=True,
+        verbose_name='poznámka'
+    )
+
+    class Meta:
+        verbose_name = 'SOTG'
+        verbose_name_plural = 'SOTG'
+
+    def __str__(self):
+        return "{} bodov od {} pre {}".format(
+            str(self.rules+self.fouls+self.fair+self.selfcontrol+self.communication),
+            self.from_team,
+            self.to_team,
+        )
+
+    @classmethod
+    def sum_score(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += sum([
+                spirit.rules,
+                spirit.fouls,
+                spirit.fair,
+                spirit.selfcontrol,
+                spirit.communication
+            ])
+        return s
+
+    @classmethod
+    def sum_rules(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.rules
+        return s
+
+    @classmethod
+    def sum_fouls(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.fouls
+        return s
+
+    @classmethod
+    def sum_fair(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.fair
+        return s
+
+    @classmethod
+    def sum_selfcontrol(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.selfcontrol
+        return s
+
+    @classmethod
+    def sum_communication(self, spirits):
+        s = 0
+        for spirit in spirits:
+            s += spirit.communication
+        return s
 
 
 @deconstructible
@@ -539,9 +855,70 @@ class Photo(models.Model):
         verbose_name='fotka'
     )
 
+    image_thumbnail = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(300, 225)],
+        format='JPEG',
+        options={'quality': 60}
+    )
+
     class Meta:
         verbose_name = 'fotka'
         verbose_name_plural = 'fotky'
 
     def __str__(self):
-        return "Image {} - {}".format(self.pk, self.tournament.get_name())
+        return "Fotka {} - {}".format(self.pk, self.tournament.get_name())
+
+
+class AbstractGallery(models.Model):
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        verbose_name='turnaj'
+    )
+    zip_file = models.FileField(
+        blank=True,
+        upload_to='galleries',
+        verbose_name='súbor ZIP'
+    )
+
+    class Meta:
+        verbose_name = 'fotky zo súboru ZIP'
+        verbose_name_plural = 'fotky zo súborov ZIP'
+
+    def __str__(self):
+        return "Galéria {} - {}".format(self.pk, self.tournament.get_name())
+
+    def save(self, delete_zip_file=True, *args, **kwargs):
+        super(AbstractGallery, self).save(*args, **kwargs)
+        if self.zip_file:
+            zf = ZipFile(self.zip_file)
+            for name in zf.namelist():
+                data = zf.read(name)
+                try:
+                    image = Image.open(BytesIO(data))
+                    image.load()
+                    image = Image.open(BytesIO(data))
+                    image.verify()
+                except ImportError:
+                    print('import error')
+                '''
+                except:
+                    print('iny error')
+                    continue
+                '''
+                name = os.path.split(name)[1]
+                path = os.path.join(
+                    settings.MEDIA_ROOT,
+                    'tournaments',
+                    str(name)
+                )
+                saved_path = default_storage.save(path, ContentFile(data))
+                p = Photo.objects.create(
+                    tournament=self.tournament,
+                    image=saved_path
+                )
+                p.save()
+            if delete_zip_file:
+                zf.close()
+                self.zip_file.delete(save=True)

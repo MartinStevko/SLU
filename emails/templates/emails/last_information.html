@@ -1,0 +1,34 @@
+<p>Dobrý deň,</p>
+<p>
+    posielame vám posledné informácie ohľadom priebehu nastávajúceho kola SLU. 
+    Všetky dôležité faktografické informácie o tom čo si doniesť, kam prísť a 
+    aký bude časový harmonogram nájdete v už skôr zaslaných propozíciách turnaja. 
+</p>
+<p>
+    Prezentácia tímov prebehne ešte pred poradov kapitánov tímov, takže by sme 
+    vás chceli poprosiť, aby ste po príchode na miesto konania súťaže vyhľadali 
+    organizátorov. Tí vám dajú konkrétne informácie o priebehu organizačnej časti 
+    turnaja. PZároveň prebehne aj váš check-in, na ktorý si so sebou potrebujete 
+    priniesť súpisku tímu podpísanú školou a tento QR kód:
+</p>
+<div style="text-align: center;">
+    <img src="https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl={{ team.identifier }}" alt="QR" style="margin: auto;">
+</div>
+<p>
+    Na porade kapitánov budú kapitánom povedané informácie o priebehu hernej časti 
+    turnaja a budú poučení o tzv. Spirit of the Game, respektíve duchu hry. Nižšie 
+    je rozpis zápasov vášho tímu v skupinovej časti:
+</p>
+<div>
+    <ul>
+        {% for match in matches %}
+            <li><b>{{ match.begining_time }}</b> - {{ match }}</li>
+        {% endfor %}
+    </ul>
+</div>
+<p>
+    Po odohraní zápasov sa uskutoční vyhodnotenie súťaže. Po skončení 
+    vyhodnotenia prebehne aj oficiálne uzatvorenie turnaja a odchod tímov. 
+    Prajeme vám veľa šťastia a dúfame, že sa tešíte aspoň tak ako my!
+</p>
+<p>S pozdravom, váš tím SLU!</p>

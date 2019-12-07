@@ -1,0 +1,154 @@
+{% extends 'tournament/tournament_tabs.html' %}
+
+{% block title %}Potvrdenie tímu{% endblock %}
+
+{% block body %}
+    <h4>Potvrdiť tento tím?</h4>
+    <div class="featurette">
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Tím:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead">{{ team }}</span>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Stav:</span>
+            </div>
+            <div class="col-md-9">
+                <p class="lead mb-0">
+                    {% ifequal team.status 'registered' %}
+                        <span class="badge badge-pill badge-info px-3">Zaregistrovaný</span>
+                    {% endifequal %}
+                    {% ifequal team.status 'invited' %}
+                        <span class="badge badge-pill badge-success px-3">Pozvaný</span>
+                    {% endifequal %}
+                    {% ifequal team.status 'waitlisted' %}
+                        <span class="badge badge-pill badge-warning px-3">Čakajúci na pozvanie</span>
+                    {% endifequal %}
+                    {% ifequal team.status 'canceled' %}
+                        <span class="badge badge-pill badge-danger px-3">Odmietnutý</span>
+                    {% endifequal %}
+                    {% ifequal team.status 'attended' %}
+                        <span class="badge badge-pill badge-success px-3">Zúčastnený</span>
+                    {% endifequal %}
+                    {% ifequal team.status 'not_attended' %}
+                        <span class="badge badge-pill badge-danger px-3">Nezúčastnený</span>
+                    {% endifequal %}
+                </p>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">GDPR:</span>
+            </div>
+            <div class="col-md-9">
+                {% if team.confirmed %}
+                    <p class="lead mb-0"><span class="badge badge-pill badge-success px-3">Potvrdené</span></p>
+                {% else %}
+                    <p class="lead mb-0"><span class="badge badge-pill badge-danger px-3">Nepotvrdené</span></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <hr class="featurette-divider">
+    <div class="featurette">
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Škola:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead">{{ team.school }}</span>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Web:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead"><a href="{{ team.school.web }}">{{ team.school.web }}</a></span>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Región:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead">{{ team.school.region }}</span>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Disk:</span>
+            </div>
+            <div class="col-md-9">
+                {% if team.confirmed %}
+                    <p class="lead mb-0"><span class="badge badge-pill badge-success px-3">Odovzdaný</span></p>
+                {% else %}
+                    <p class="lead mb-0"><span class="badge badge-pill badge-danger px-3">Neodovzdaný</span></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <hr class="featurette-divider">
+    <div class="featurette">
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Učiteľ:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead">{{ team.teacher }}</span>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">E-mail:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead"><a href="mailto:{{ team.teacher.email }}">{{ team.teacher.email }}</a></span>
+            </div>
+        </div>
+        <div class="row mb-1">
+            <div class="col-md-3">
+                <span class="lead">Mobil:</span>
+            </div>
+            <div class="col-md-9">
+                <span class="lead">{{ team.teacher.phone_number }}</span>
+            </div>
+        </div>
+    </div>
+    {% if team.tournament.player_stats %}
+        <hr class="featurette-divider">
+        <div class="featurette">
+            <div class="row mb-1">
+                <div class="col-md-3">
+                    <span class="lead">Súpiska:</span>
+                </div>
+                <div class="col-md-9">
+                    <p class="lead">{{ team.players.all|join:", " }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="row featurette my-4">
+        <div class="col-md-6">
+            <a href="{% url 'admin:tournament_team_change' team.pk %}" class="btn btn-primary btn-block" title="" data-toggle="popover" data-trigger="hover" data-placement="top" data-content="Prejde na úpravu v administračnom rozhraní">
+                Zmena údajov
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'tournament:confirm_checkin' tournament.pk team.pk %}" class="btn btn-success btn-block">Potvrdiť tím</a>
+        </div>
+        
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+{% endblock %}
