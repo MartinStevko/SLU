@@ -1,6 +1,7 @@
 # Project
 local_settings.py
 media/
+static/admin/
 
 */migrations/*
 !*/migrations/__init__.py
