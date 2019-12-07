@@ -203,14 +203,6 @@ class Tournament(models.Model):
         upload_to='tournaments',
         verbose_name='obrázok',
         help_text='Bude zobrazený pri turnaji a jeho náhľade.')
-    prop_image = models.ImageField(
-        upload_to='tournaments/propositions',
-        null=True,
-        blank=True,
-        verbose_name='logo do propozícií',
-        help_text='V hlavičke propozícií bude na pravej strane \
-        logo SAF a na ľavej toto logo, alebo ak nie je nahrané, logo SLU.'
-    )
 
     cap = models.BooleanField(
         default=False,

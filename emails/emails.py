@@ -9,6 +9,7 @@ import string
 
 from emails.models import Template as T_model
 from emails.tests import CustomTeam, CustomMatch
+from emails.latex import Tex
 
 '''
 SendMail(
@@ -163,8 +164,7 @@ class SendMail:
         self.send_rendered_email(context, plaintext, html_template=template)
 
     def team_invitation(self, team):
-        # pre tim, ze ich pozyvame aj info o turnaji a tak
-        # priloha pdf pozvanka (path to list), pdf propozicie (path to list)
+        # pre tim, ze ich pozyvame aj info o turnaji
         # ako priloha mozno aj nieco o spirite?
         t = T_model.objects.get(tag='team_invitation')
         plaintext = Template(t.text)
@@ -175,7 +175,15 @@ class SendMail:
             'tournament': team.tournament,
         })
 
-        self.send_rendered_email(context, plaintext, html_template=template)
+        invitation = Tex.generate_invitation(team)
+        propositions = Tex.generate_propositions(team.tournament)
+
+        self.send_rendered_email(
+            context,
+            plaintext,
+            html_template=template,
+            attachement=[invitation.pdf.path, propositions.pdf.path],
+        )
 
     def last_info_email(self, team, matches):
         plaintext = get_template('emails/last_information.txt')
@@ -197,9 +205,13 @@ class SendMail:
             'tournament': team.tournament,
         })
 
-        # priloha pdf potvrdenka (path to list)
+        confirmation = Tex.generate_confirmation(team)
 
-        self.send_rendered_email(context, plaintext)
+        self.send_rendered_email(
+            context,
+            plaintext,
+            attachment=[confirmation.pdf.path]
+        )
 
     def result_email(self, team, place, sotg=False):
         t = T_model.objects.get(tag='result_email')
@@ -211,10 +223,14 @@ class SendMail:
             'place': place,
         })
 
-        # priloha pdf diplom (path to list)
-        # ak SOTG, tak diplom za vyhru toho
+        diploma = Tex.generate_diploma(team, sotg=sotg)
 
-        self.send_rendered_email(context, plaintext, template)
+        self.send_rendered_email(
+            context,
+            plaintext,
+            template,
+            attachment=[diploma.pdf.path]
+        )
 
     def test_mail(self, tag):
         team = CustomTeam()

@@ -50,6 +50,7 @@ MODEL_ORDERING = {
     }, 
     'emails': {
         'template': 1,
+        'generic': 2,
     }
 }
 

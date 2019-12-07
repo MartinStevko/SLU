@@ -124,4 +124,26 @@ class TemplateAdmin(admin.ModelAdmin):
     test_last_info_email.short_description = 'Poslať skúšobný e-mail - tímový checkin'
 
 
+class GenericAdmin(admin.ModelAdmin):
+    list_display = ('name', 'pdf')
+    list_filter = ('doc_type',)
+
+    search_fields = ['name',]
+    ordering = ('-time_created', '-pk',)
+
+    date_hierarchy = 'time_created'
+
+    fieldsets = (
+        ('Hlavička', {
+            'classes': ('wide',),
+            'fields': ('name', 'doc_type',),
+        }),
+        ('Súbor', {
+            'classes': ('wide',),
+            'fields': ('pdf',),
+        }),
+    )
+
+
 admin.site.register(Template, TemplateAdmin)
+admin.site.register(Generic, GenericAdmin)
