@@ -1,0 +1,58 @@
+%%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[a5paper, top=2cm, left=1.5cm, right=1.5cm, bottom=2cm]{geometry}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+
+\pagenumbering{gobble}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
+\newtoks\rocnik
+\newtoks\kolo
+\newtoks\sezona
+\newtoks\termin
+\newtoks\den
+\newtoks\miesto
+
+\newcommand{\potvrdenka}[3]{%
+    \renewcommand{\arraystretch}{1.48}
+    \parskip=10pt
+    \begin{center}
+        {\LARGE\textbf{Potvrdenie o účasti}}
+    \end{center}
+
+    \begin{tabular}{p{3.2cm} l}
+        Súťaž:&Stredoškolská liga ultimate frisbee\\
+        Sezóna:&\if\the\sezona2 indoor\else outdoor\fi\\
+        Kolo:&\if\the\kolo2 finálové\else kvalifikačné\fi\\
+        Miesto:&\the\miesto\\
+        Dátum:&\the\den\ \the\termin\\
+        Škola:&#1\\
+        Vedúci družstva:&#2\\
+        Súpiska:
+    \end{tabular}
+
+    \vspace{-41pt}
+    \begin{center}
+        \begin{tabular}{|c|p{6cm}|}
+            \hline
+            P.č.&Meno a priezvisko\\
+            \hline \hline
+            #3
+        \end{tabular}
+    \end{center}
+
+    \vfill
+    \begin{flushright}
+        \begin{minipage}{4.5cm}
+            \begin{center}
+                Tím SLU
+            \end{center}
+        \end{minipage}
+    \end{flushright}
+    \newpage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

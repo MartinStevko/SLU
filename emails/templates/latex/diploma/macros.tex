@@ -1,0 +1,135 @@
+%%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[a4paper, top=8cm, left=3cm, right=3cm, bottom=2.5cm, landscape]{geometry}
+\setlength{\parindent}{0pt}
+
+\usepackage[utf8]{inputenc}
+\usepackage[IL2]{fontenc}
+\usepackage{comment}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+
+\pagenumbering{gobble}
+\usepackage[pages=some]{background}
+
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=1,
+angle=0,
+contents={%
+  \put(-422.5,285){\includegraphics[width=\paperwidth]{images/title.jpg}}
+  }%
+}
+
+%\usepackage{stackengine}
+%\newcommand\funderline[1]{\underline{\stackengine{0pt}{\qquad}{#1}{O}{c}{F}{F}{L}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
+\newcount\kolo
+\newcount\sezona
+\newtoks\termin
+\newtoks\kde
+
+\def\diplom#1{%
+    \BgThispage
+    \begin{center}
+        \resizebox{!}{22pt}{udeľuje diplom tímu}
+
+        \vspace{1cm}
+        \resizebox{!}{32pt}{\textit{\textbf{#1}}}
+
+        \vspace{1cm}
+        \if\the\kolo1{\resizebox{!}{22pt}{za \hspace{10pt} miesto na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+        \if\the\kolo2{\resizebox{!}{22pt}{za \hspace{10pt} miesto na \if\the\sezona2{halovom }\fi finále SLU 2018}}\fi
+    \end{center}
+
+    \vfill
+
+
+    \begin{minipage}{0.25\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{16pt}{\the\kde}
+
+            \resizebox{!}{14pt}{\the\termin}
+        \end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{14pt}{Tím SLU}
+        \end{center}
+    \end{minipage}
+    \newpage
+}
+
+\def\diplomPrazdny{%
+    \BgThispage
+    \begin{center}
+        \resizebox{!}{22pt}{udeľuje diplom tímu}
+
+        \vspace{3.2cm}
+        \if\the\kolo1{\resizebox{!}{22pt}{za \hspace{10pt} miesto na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+        \if\the\kolo2{\resizebox{!}{22pt}{za \hspace{10pt} miesto na \if\the\sezona2{halovom }\fi finále SLU 2018}}\fi
+    \end{center}
+
+    \vfill
+
+
+    \begin{minipage}{0.25\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{16pt}{\the\kde}
+
+            \resizebox{!}{14pt}{\the\termin}
+        \end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{14pt}{Tím SLU}
+        \end{center}
+    \end{minipage}
+    \newpage
+}
+
+\def\spirit{%
+    \BgThispage
+    \begin{center}
+        \resizebox{!}{20pt}{udeľuje diplom tímu}
+
+        \vspace{2.4cm}
+        \rule{14cm}{0.7pt}
+
+        \vspace{1cm}
+        \resizebox{!}{20pt}{za výhru ocenenia Spirit of The Game}
+        \vskip.6cm
+        \if\the\kolo1{\resizebox{!}{20pt}{na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
+        \if\the\kolo2{\resizebox{!}{20pt}{na \if\the\sezona2{halovom }\else\fi finále SLU 2018}}\fi
+    \end{center}
+
+    \vfill
+
+
+    \begin{minipage}{0.25\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{16pt}{\the\kde}
+
+            \resizebox{!}{14pt}{\the\termin}
+        \end{center}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.4\textwidth}
+        \parskip=10pt
+        \begin{center}
+            \resizebox{!}{14pt}{SLU tím}
+        \end{center}
+    \end{minipage}
+    \newpage
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
