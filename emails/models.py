@@ -61,7 +61,6 @@ class Generic(models.Model):
         blank=True,
     )
     time_created = models.DateTimeField(
-        auto_now=True,
         auto_now_add=True,
         verbose_name='čas vytvorenia',
     )

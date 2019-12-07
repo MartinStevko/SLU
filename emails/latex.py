@@ -5,12 +5,21 @@ from emails.models import Generic
 
 
 def test():
-    template = 'emails/test.tex'
-    context = {'foo': 'Bar'}
+    template = 'latex/confirmation.tex'
+    context = {
+        'players': ['']*10,
+        'teacher': 'Meno Ucitela',
+        'school': 'Nazov skoly',
+        'place': 'SOS Ostrovskeho 1',
+        'time': '15.12.2019',
+        'round': 1,
+        'season': 2,
+        'num': 2,
+    }
     pdf = compile_template_to_pdf(template, context)
     filename = 'test.pdf'
 
-    obj = PDFModel.objects.create(slug='test')
+    obj = Generic.objects.create(slug='test')
     obj.pdf.save(filename, ContentFile(pdf))
 
     email = EmailMessage(
@@ -28,7 +37,7 @@ def test():
 class Tex:
     @staticmethod
     def generate_invitation(team):
-        template = 'latex/invitation/main.tex'
+        template = 'latex/invitation.tex'
 
         time = str(team.tournament.date)
         time += ' od '+team.tournament.arrival_time.strftime("%H:%M")
@@ -60,7 +69,7 @@ class Tex:
 
     @staticmethod
     def generate_confirmation(team):
-        template = 'latex/confirmation/main.tex'
+        template = 'latex/confirmation.tex'
 
         players = ['']*10
         i = 0
@@ -99,7 +108,7 @@ class Tex:
 
     @staticmethod
     def generate_propositions(tournament):
-        template = 'latex/propositions/main.tex'
+        template = 'latex/propositions.tex'
 
         context = {
             'round': 1,
@@ -116,15 +125,15 @@ class Tex:
             'in_city': tournament.in_city,
             'delegate': tournament.delegate,
             'director': tournament.director,
-            'path': 'logo/logo_zima.png',
+            'path': 'blue_icon.png',
             'institute': '',
-            'orgs': tournament.orgs.all(),
+            'orgs': tournament.orgs,
         }
         if tournament.region == 'F':
             context['round'] = 2
         if tournament.season.season == 'outdoor':
             context['season'] = 1
-            context['path'] = 'logo/logo_leto.png'
+            context['path'] = 'red_icon.png'
         if not tournament.cap:
             context['cap'] += 1
         if tournament.institute:
@@ -133,7 +142,7 @@ class Tex:
 
         filename = 'propositions.pdf'
         obj = Generic.objects.create(
-            name='Propozície - {}'.format(str(team)),
+            name='Propozície - {}'.format(str(tournament)),
             doc_type='propositions',
         )
         obj.pdf.save(filename, ContentFile(pdf))
@@ -142,7 +151,7 @@ class Tex:
 
     @staticmethod
     def generate_diploma(team, sotg=False):
-        template = 'latex/diploma/main.tex'
+        template = 'latex/diploma.tex'
 
         context = {
             'all': False,

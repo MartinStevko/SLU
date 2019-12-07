@@ -182,7 +182,7 @@ class SendMail:
             context,
             plaintext,
             html_template=template,
-            attachement=[invitation.pdf.path, propositions.pdf.path],
+            attachment=[invitation.pdf.path, propositions.pdf.path],
         )
 
     def last_info_email(self, team, matches):
@@ -284,7 +284,7 @@ class SendMail:
             )
 
         if attachment is not None:
-            for att in attachement:
+            for att in attachment:
                 email.attach_file(att)
 
         email.send(fail_silently=False)

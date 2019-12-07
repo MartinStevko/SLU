@@ -1,3 +1,5 @@
+\documentclass[11pt, a5paper]{article}
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[a5paper, top=2cm, left=1.5cm, right=1.5cm, bottom=2cm]{geometry}
 \setlength{\parindent}{0pt}
@@ -15,7 +17,7 @@
 \newtoks\termin
 \newtoks\miesto
 
-\newcommand{\potvrdenka}[3]{%
+\newcommand{\potvrdenka}[3]{
     \renewcommand{\arraystretch}{1.48}
     \parskip=10pt
     \begin{center}
@@ -55,3 +57,29 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\rocnik={ {{- num -}} .}
+\kolo={ {{- round -}} }
+\sezona={ {{- season -}} }
+
+\termin={ {{- time -}} }
+\miesto={ {{- place -}} }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\potvrdenka{ {{- school -}} }{}{
+    1.& {{ players[0] }} \\ \hline
+    2.& {{ players[1] }} \\ \hline
+    3.& {{ players[2] }} \\ \hline
+    4.& {{ players[3] }} \\ \hline
+    5.& {{ players[4] }} \\ \hline
+    6.& {{ players[5] }} \\ \hline
+    7.& {{ players[6] }} \\ \hline
+    8.& {{ players[7] }} \\ \hline
+    9.& {{ players[8] }} \\ \hline
+    10.& {{ players[9] }} \\ \hline
+}
+
+\end{document}

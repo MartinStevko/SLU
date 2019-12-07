@@ -1,3 +1,5 @@
+\documentclass[12pt, a5paper]{article}
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[a5paper, top=5.5cm, left=2.5cm, right=2.5cm, bottom=2cm, landscape]{geometry}
 \setlength{\parindent}{0pt}
@@ -11,14 +13,14 @@
 \pagenumbering{gobble}
 \usepackage[pages=some]{background}
 
+{% graphicspath %}
+
 \backgroundsetup{
-scale=1,
-color=black,
-opacity=1,
-angle=0,
-contents={%
-  \put(-299,200){\includegraphics[width=\paperwidth]{images/title.jpg}}
-  }%
+  scale=1,
+  color=black,
+  opacity=1,
+  angle=0,
+  contents={ \put(-299,200){\includegraphics[width=\paperwidth]{logo_min.jpg}} }
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -32,7 +34,7 @@ contents={%
 \newtoks\tim
 \newtoks\skola
 
-\def\pozvanka{%
+\def\pozvanka{
   \BgThispage
 
   \begin{center}
@@ -53,3 +55,21 @@ contents={%
   \newpage
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\rocnik={ {{- num -}} .}
+\kolo {{- round -}} 
+\sezona {{- season -}} 
+
+\kedy={ {{- time -}} }
+\kde={ {{- place -}} }
+
+\tim={ {{- team -}} }
+\skola={ {{- school -}} }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\pozvanka
+
+\end{document}

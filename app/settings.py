@@ -182,3 +182,7 @@ MESSAGE_TAGS = {
 # LaTeX
 
 LATEX_INTERPRETER = 'pdflatex'
+
+LATEX_GRAPHICSPATH = [
+    os.path.join(BASE_DIR, 'app', 'static', 'img')
+]

@@ -1,3 +1,5 @@
+\documentclass[11pt, a4paper]{article}
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Dokument %%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[a4paper, top=8cm, left=3cm, right=3cm, bottom=2.5cm, landscape]{geometry}
 \setlength{\parindent}{0pt}
@@ -12,18 +14,15 @@
 \pagenumbering{gobble}
 \usepackage[pages=some]{background}
 
-\backgroundsetup{
-scale=1,
-color=black,
-opacity=1,
-angle=0,
-contents={%
-  \put(-422.5,285){\includegraphics[width=\paperwidth]{images/title.jpg}}
-  }%
-}
+{% graphicspath %}
 
-%\usepackage{stackengine}
-%\newcommand\funderline[1]{\underline{\stackengine{0pt}{\qquad}{#1}{O}{c}{F}{F}{L}}}
+\backgroundsetup{
+    scale=1,
+    color=black,
+    opacity=1,
+    angle=0,
+    contents={\put(-422.5,285){\includegraphics[width=\paperwidth]{logo.jpg}}}
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Ine makra %%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,13 +31,13 @@ contents={%
 \newtoks\termin
 \newtoks\kde
 
-\def\diplom#1{%
+\def\diplom#1{
     \BgThispage
     \begin{center}
         \resizebox{!}{22pt}{udeľuje diplom tímu}
 
         \vspace{1cm}
-        \resizebox{!}{32pt}{\textit{\textbf{#1}}}
+        \resizebox{!}{32pt}{\textit{\textbf{ #1}}}
 
         \vspace{1cm}
         \if\the\kolo1{\resizebox{!}{22pt}{za \hspace{10pt} miesto na \if\the\sezona2{halovej }\fi kvalifikácii SLU 2018}}\fi
@@ -66,7 +65,7 @@ contents={%
     \newpage
 }
 
-\def\diplomPrazdny{%
+\def\diplomPrazdny{
     \BgThispage
     \begin{center}
         \resizebox{!}{22pt}{udeľuje diplom tímu}
@@ -97,7 +96,7 @@ contents={%
     \newpage
 }
 
-\def\spirit{%
+\def\spirit{
     \BgThispage
     \begin{center}
         \resizebox{!}{20pt}{udeľuje diplom tímu}
@@ -133,13 +132,13 @@ contents={%
     \newpage
 }
 
-\def\spiritDiplom{%
+\def\spiritDiplom{
     \BgThispage
     \begin{center}
         \resizebox{!}{20pt}{udeľuje diplom tímu}
 
         \vspace{1cm}
-        \resizebox{!}{32pt}{\textit{\textbf{#1}}}
+        \resizebox{!}{32pt}{\textit{\textbf{ #1} } }
 
         \vspace{1cm}
         \resizebox{!}{20pt}{za výhru ocenenia Spirit of The Game}
@@ -169,3 +168,30 @@ contents={%
     \newpage
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Settings %%%%%%%%%%%%%%%%%%%%%%%%%
+\kolo={ {{- round -}} }
+\sezona={ {{- season -}} }
+
+\termin={ {{- time -}} }
+\kde={ {{- place -}} }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+{% if sotg %}
+    \spiritDiplom{ {{- team -}} }
+{% else %}
+    {% if all %}
+        \diplomPrazdny
+        \spirit
+        \spirit
+        {% for team in teams %}
+            \diplom{ {{- team -}} }
+        {% endfor %}
+    {% else %}
+        \diplom{ {{- team -}} }
+    {% endif %}
+{% endif %}
+
+\end{document}
