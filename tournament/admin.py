@@ -145,7 +145,7 @@ class TournamentAdmin(admin.ModelAdmin):
         }),
         ('Prílohy', {
             'classes': ('wide',),
-            'fields': ('image', 'prop_image',),
+            'fields': ('image',),
             # 'description': 'optional description',
         }),
     )
