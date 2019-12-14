@@ -493,6 +493,7 @@ class TeamAdmin(admin.ModelAdmin):
         'make_attended',
         'cancel_registration',
         'make_not_attended',
+        'make_qualified',
     ]
 
     def response_change(self, request, team):
@@ -591,6 +592,52 @@ class TeamAdmin(admin.ModelAdmin):
         return render(request, template, context)
 
     get_contacts.short_description = 'Zobraziť kontakty'
+
+    def make_qualified(self, request, queryset):
+        seasons = []
+        for team in queryset:
+            if team.tournament.season not in seasons:
+                seasons.append(team.tournament.season)
+        if len(seasons) > 1:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                'Zvolené tímy neboli na kvalifikačných turnajoch ' + \
+                'v rovnakej sezóne, nedá sa kvalifikovať ich na finále.'
+            )
+        else:
+            try:
+                final = Tournament.objects.filter(
+                    season=seasons[0]
+                ).get(region='F')
+            except(Tournament.DoesNotExist):
+                messages.add_message(
+                    request,
+                    messages.WARNING,
+                    'Finále v tejto sezóne neexistuje, nemám kam kvalifikovať tímy.'
+                )
+            else:
+                new_team = Team.objects.create(
+                    tournament=final,
+                    confirmed=False,
+                    school=team.school,
+                    teacher=team.teacher,
+                    name=team.name,
+                    extra_email=team.extra_email,
+                    accept_gdpr=True,
+                )
+                new_team.save()
+
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    'Tím {} bol označený ako kvalifikovaný na {}.'.format(
+                        team.name,
+                        final,
+                    )
+                )
+
+    make_qualified.short_description = 'Kvalifikovať tímy na finále'
 
     def has_change_permission(self, request, obj=None):
         if obj is not None:
