@@ -46,7 +46,7 @@ class SchoolRegistrationView(FormView):
         return context
 
     def form_valid(self, form):
-        school = form.cleaned_data.get('choose_school', None)
+        school = str(form.cleaned_data.get('choose_school', None))
         if not school:
             school = form.save()
             school = str(school.pk)

@@ -54,6 +54,8 @@ class SchoolForm(OverwriteOnlyModelFormMixin, BetterModelForm):
                 raise forms.ValidationError('Takáto škola v zozname nie je. Vyber \
                 buď presný názov školy zo zoznamu, alebo školu vytvor.')
 
+        return cleaned_data
+
     def fieldsets(self):
         self._fieldsets = [
             (
